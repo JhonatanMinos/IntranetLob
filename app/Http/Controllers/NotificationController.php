@@ -31,7 +31,47 @@ class NotificationController extends Controller
      */
     public function create()
     {
-        //
+        $priorities = [
+            [
+                'value' => 'normal',
+                'label' => 'Normal',
+                'color' => 'bg-green-500',
+            ],
+            [
+                'value' => 'importante',
+                'label' => 'Importante',
+                'color' => 'bg-yellow-500',
+            ],
+            [
+                'value' => 'urgente',
+                'label' => 'Urgente',
+                'color' => 'bg-red-500',
+            ],
+        ];
+
+        $type = [
+            [
+                'value' => "aviso",
+                'label' => "Aviso",
+            ],
+            [
+                'value' => "noticia",
+                'label' => "Noticia",
+            ],
+            [
+                'value' => "articulo",
+                'label' => "Articulo",
+            ],
+            [
+                'value' => "mensaje",
+                'label' => 'Mensaje',
+            ]
+        ];
+
+        return Inertia::render('Notification/form_notification', [
+            'priorities' => $priorities,
+            'type' => $type
+        ]);
     }
 
     /**
