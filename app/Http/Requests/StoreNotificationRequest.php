@@ -11,7 +11,7 @@ class StoreNotificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max: 255',
+            'content' => 'required|string',
+            'priority' => 'required|string|in:normal,importante,urgente',
+            'type' => 'required|string|in:aviso,noticia,articulo,mensaje',
+            'published_at' => 'required|date',
         ];
     }
 }

@@ -11,14 +11,17 @@ use Laravel\Scout\Searchable;
 class Notification extends Model
 {
     /** @use HasFactory<\Database\Factories\NotificationFactory> */
-    use HasFactory, SoftDeletes, Searchable;
+    use HasFactory;
+    use SoftDeletes;
+    use Searchable;
 
     protected $fillable = [
         'title',
         'content',
         'priority',
         'type',
-        'published_at'
+        'published_at',
+        'created_by',
     ];
 
     public function toSearchableArray()
@@ -27,7 +30,7 @@ class Notification extends Model
             'title' => $this->title,
             'priority' => $this->priority,
             'type' => $this->type,
-            'published_at' => $this->published_at
+            'published_at' => $this->published_at,
         ];
     }
 

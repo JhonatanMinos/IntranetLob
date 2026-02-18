@@ -29,7 +29,7 @@ class EventController extends Controller
         $result = $query->get();
         return Inertia::render('events', [
             'search' => $search,
-            'results' => $result
+            'results' => $result,
         ]);
     }
 
@@ -46,7 +46,7 @@ class EventController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
-        Event::create($request->validated());
+        Event::created($request->validated());
         return redirect()->route('events.index')->with('success', 'Evento creado correctamente');
     }
 

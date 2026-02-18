@@ -6,10 +6,28 @@ use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class NotificationController extends Controller
 {
+    private function formData(): array
+    {
+        return [
+            'priorities' => [
+                ['value' => 'normal', 'label' => 'Normal', 'color' => 'bg-green-500'],
+                ['value' => 'importante', 'label' => 'Importante', 'color' => 'bg-yellow-500'],
+                ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'bg-red-500'],
+            ],
+            'type' => [
+                ['value' => 'aviso', 'label' => 'Aviso'],
+                ['value' => 'noticia', 'label' => 'Noticia'],
+                ['value' => 'articulo', 'label' => 'Articulo'],
+                ['value' => 'mensaje', 'label' => 'Mensaje'],
+            ],
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -22,7 +40,7 @@ class NotificationController extends Controller
             : Notification::paginate(10)->withQueryString();
 
         return Inertia::render('notifications', [
-            'data' => $notification
+            'data' => $notification,
         ]);
     }
 
@@ -31,47 +49,7 @@ class NotificationController extends Controller
      */
     public function create()
     {
-        $priorities = [
-            [
-                'value' => 'normal',
-                'label' => 'Normal',
-                'color' => 'bg-green-500',
-            ],
-            [
-                'value' => 'importante',
-                'label' => 'Importante',
-                'color' => 'bg-yellow-500',
-            ],
-            [
-                'value' => 'urgente',
-                'label' => 'Urgente',
-                'color' => 'bg-red-500',
-            ],
-        ];
-
-        $type = [
-            [
-                'value' => "aviso",
-                'label' => "Aviso",
-            ],
-            [
-                'value' => "noticia",
-                'label' => "Noticia",
-            ],
-            [
-                'value' => "articulo",
-                'label' => "Articulo",
-            ],
-            [
-                'value' => "mensaje",
-                'label' => 'Mensaje',
-            ]
-        ];
-
-        return Inertia::render('Notification/form_notification', [
-            'priorities' => $priorities,
-            'type' => $type
-        ]);
+        return Inertia::render('Notification/form_notification', [...$this->formData()]);
     }
 
     /**
@@ -79,7 +57,12 @@ class NotificationController extends Controller
      */
     public function store(StoreNotificationRequest $request)
     {
-        //
+        Notification::create([
+            ...$request->validated(),
+            'created_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('notifications.index')->with('success', 'Notificacion creada correctamente');
     }
 
     /**
@@ -87,7 +70,7 @@ class NotificationController extends Controller
      */
     public function show(Notification $notification)
     {
-        //
+        abort(404);
     }
 
     /**
@@ -95,7 +78,9 @@ class NotificationController extends Controller
      */
     public function edit(Notification $notification)
     {
-        //
+        return Inertia::render('Notification/form_notification', [
+            ...$this->formData(),
+            'notification' => $notification]);
     }
 
     /**
@@ -103,7 +88,11 @@ class NotificationController extends Controller
      */
     public function update(UpdateNotificationRequest $request, Notification $notification)
     {
-        //
+        $notification->update($request->validated());
+
+        return redirect()
+            ->route('notifications.index')
+            ->with('success', 'Notificación actualizada correctamente');
     }
 
     /**
@@ -111,6 +100,7 @@ class NotificationController extends Controller
      */
     public function destroy(Notification $notification)
     {
-        //
+        $notification->delete();
+        return redirect()->route('notifications.index')->with('success', 'Notification canceladad');
     }
 }
