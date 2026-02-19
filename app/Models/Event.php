@@ -24,4 +24,19 @@ class Event extends Model
     public const TYPE_CAMPANIA = 'campania';
     public const TYPE_LANZAMIENTO = 'lanzamiento';
     public const TYPE_EVENT = 'evento';
+
+    /**
+     * Get available event type options
+     */
+    public static function typeOptions(): array
+    {
+        return [
+            ['value' => self::TYPE_CUMPLE, 'label' => 'Cumpleaños'],
+            ['value' => self::TYPE_FESTIVO, 'label' => 'Festivo'],
+            ['value' => self::TYPE_CAMPANIA, 'label' => 'Campaña'],
+            ['value' => self::TYPE_LANZAMIENTO, 'label' => 'Lanzamiento'],
+            ['value' => self::TYPE_EVENT, 'label' => 'Evento'],
+        ];
+    }
 }
+

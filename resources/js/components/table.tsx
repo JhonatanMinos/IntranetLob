@@ -1,6 +1,7 @@
 import { flexRender } from '@tanstack/react-table';
+import type { Table } from '@tanstack/react-table';
 import {
-    Table,
+    Table as UITable,
     TableBody,
     TableCell,
     TableHead,
@@ -8,10 +9,14 @@ import {
     TableRow,
 } from '@/components/ui/table';
 
-export default function TableGeneric({ table }: unknown) {
+interface TableGenericProps<T> {
+    table: Table<T>;
+}
+
+export default function TableGeneric<T>({ table }: TableGenericProps<T>) {
     return (
         <div className="overflow-x-auto">
-            <Table className="border">
+            <UITable className="border">
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow
@@ -49,8 +54,7 @@ export default function TableGeneric({ table }: unknown) {
                         </TableRow>
                     ))}
                 </TableBody>
-            </Table>
-            <div></div>
+            </UITable>
         </div>
     );
 }

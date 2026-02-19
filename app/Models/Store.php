@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Store extends Model
 {
     /** @use HasFactory<\Database\Factories\StoreFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -26,10 +26,10 @@ class Store extends Model
         'phone',
         'email',
         'lat',
-        'lng'
+        'lng',
     ];
 
-    public  function brand(): BelongsTo
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }

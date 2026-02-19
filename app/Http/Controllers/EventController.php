@@ -5,28 +5,24 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
+use App\Services\EventService;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function __construct(private EventService $eventService) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $search = $request->search;
+        $year = $request->year ? (int)$request->year : null;
 
-        $query = Event::whereBetween('start_date', ['2026-01-01 00:00:00', '2026-12-31 00:00:00'])->orderBy('start_date');
+        $result = $this->eventService->searchEventsByYear($search, $year);
 
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('start_date', 'like', '%{$search}%');
-            });
-        }
-
-        $result = $query->get();
         return Inertia::render('events', [
             'search' => $search,
             'results' => $result,
@@ -38,7 +34,10 @@ class EventController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Event::class);
+        return Inertia::render('Event/create', [
+            'types' => Event::typeOptions(),
+        ]);
     }
 
     /**
@@ -46,7 +45,10 @@ class EventController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
-        Event::created($request->validated());
+        $this->authorize('create', Event::class);
+
+        $this->eventService->createEvent($request->validated());
+
         return redirect()->route('events.index')->with('success', 'Evento creado correctamente');
     }
 
@@ -55,7 +57,10 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        //
+        $this->authorize('view', $event);
+        return Inertia::render('Event/show', [
+            'event' => $this->eventService->getEventById($event->id),
+        ]);
     }
 
     /**
@@ -63,20 +68,34 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        //
+        $this->authorize('update', $event);
+        return Inertia::render('Event/edit', [
+            'event' => $this->eventService->getEventById($event->id),
+            'types' => Event::typeOptions(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEventRequest $request, Event $event) {}
+    public function update(UpdateEventRequest $request, Event $event)
+    {
+        $this->authorize('update', $event);
+
+        $this->eventService->updateEvent($event, $request->validated());
+
+        return back()->with('success', 'Evento actualizado correctamente');
+    }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Event $event)
     {
-        $event->delete();
+        $this->authorize('delete', $event);
+
+        $this->eventService->deleteEvent($event);
+
         return redirect()->route('events.index')->with('success', 'Evento eliminado correctamente');
     }
 }

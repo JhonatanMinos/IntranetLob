@@ -5,48 +5,48 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Services\UserService;
+use App\Services\DepartmentService;
+use App\Services\StoreService;
 use App\Models\Company;
-use App\Models\Department;
-use App\Models\Store;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private UserService $userService,
+        private DepartmentService $departmentService,
+        private StoreService $storeService,
+    ) {}
+
     public function index(Request $request)
     {
-        $searchInput = $request->search;
+        $this->authorize('viewAny', User::class);
 
-        $users = User::when($searchInput, function ($query, $searchInput) {
-            return User::search($searchInput)
-                ->query(
-                    fn($q) =>
-                    $q->with('department', 'company', 'store')
-                );
-        }, function ($query) {
-            return $query->with('department', 'company', 'store');
-        })
-            ->orderBy('department_id')
-            ->paginate(10)
-            ->withQueryString();
+        $searchInput = $request->search;
+        $users = $this->userService->searchUsers($searchInput);
 
         return Inertia::render('directory/users', [
-            'users' => $users,
-            'departments' => Department::orderBy('name')->get(),
-            'stores' => Store::all(),
+            'data' => $users,
+            'departments' => $this->departmentService->getAllDepartments(),
+            'stores' => $this->storeService->getAllStores(),
             'company' => Company::all(),
         ]);
     }
 
     public function create()
     {
+        $this->authorize('create', User::class);
         //
     }
 
     public function store(StoreUserRequest $request)
     {
-        User::create($request->validated());
+        $this->authorize('create', User::class);
+
+        $this->userService->createUser($request->validated());
+
         return redirect()->route('users.index');
     }
 
@@ -57,28 +57,29 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        //dd($request, $user);
-        $user->fill($request->safe()->except('password'));
+        $this->authorize('update', $user);
 
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        $user->save();
+        $this->userService->updateUser($user, $request->validated());
 
         return back()->with('success', 'Usuario actualizado');
     }
 
     public function assign(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $roleId = (int) $request->role_id;
-        $user->syncRoles([$roleId]);
+        $this->userService->assignRole($user, $roleId);
+
         return redirect()->route('profile.assign')->with('success', 'Rol asignado');
     }
 
     public function destroy(User $user)
     {
-        $user->delete();
+        $this->authorize('delete', $user);
+
+        $this->userService->deleteUser($user);
+
         return redirect()->route('users.index')->with('success', 'usuario eliminado');
     }
 }

@@ -2,6 +2,7 @@ import { router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { create } from '@/routes/notifications';
+import { ReactNode } from 'react';
 
 interface NotificationLayoutProps {
     children: ReactNode;

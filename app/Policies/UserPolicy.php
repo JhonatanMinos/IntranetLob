@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
@@ -20,7 +19,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        if ($user->hasRole('SA') || $user->hasRole('RH')) {
+        if ($user->hasRole('sa') || $user->hasRole('rh')) {
             return true;
         }
 
@@ -41,10 +40,14 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($user->hasRole('SA')) return true;
+        if ($user->hasRole('sa')) {
+            return true;
+        }
 
         // RH puede actualizar cualquier empleado
-        if ($user->hasRole('RH')) return true;
+        if ($user->hasRole('rh')) {
+            return true;
+        }
 
         // Empleado solo su perfil
         return $user->id === $model->user_id;
@@ -55,7 +58,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        if ($user->hasRole('SA') || $user->hasRole('RH')) {
+        if ($user->hasRole('sa') || $user->hasRole('rh')) {
             return true;
         }
     }

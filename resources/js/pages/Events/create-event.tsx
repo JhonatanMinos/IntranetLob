@@ -22,6 +22,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { store, update } from '@/routes/events';
+import { EventItem } from '@/types';
 
 const eventSchema = z.object({
     title: z.string().min(1, 'El título es requerido'),
@@ -39,17 +40,8 @@ const eventSchema = z.object({
 
 type EventFormData = z.infer<typeof eventSchema>;
 
-interface Event {
-    id: string;
-    title: string;
-    type: string;
-    start_date: string;
-    end_date: string;
-    all_day?: boolean;
-}
-
 interface CreateEventProps {
-    event?: Event;
+    event?: EventItem;
     onSuccess?: () => void;
 }
 

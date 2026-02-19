@@ -13,7 +13,7 @@ class IdentityContentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -21,7 +21,7 @@ class IdentityContentPolicy
      */
     public function view(User $user, IdentityContent $identityContent): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -29,7 +29,7 @@ class IdentityContentPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -37,7 +37,7 @@ class IdentityContentPolicy
      */
     public function update(User $user, IdentityContent $identityContent): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -45,7 +45,7 @@ class IdentityContentPolicy
      */
     public function delete(User $user, IdentityContent $identityContent): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -53,7 +53,7 @@ class IdentityContentPolicy
      */
     public function restore(User $user, IdentityContent $identityContent): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -61,6 +61,6 @@ class IdentityContentPolicy
      */
     public function forceDelete(User $user, IdentityContent $identityContent): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 }

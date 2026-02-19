@@ -13,7 +13,7 @@ class StorePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh') || $user->hasRole('gerente');
     }
 
     /**
@@ -21,7 +21,11 @@ class StorePolicy
      */
     public function view(User $user, Store $store): bool
     {
-        return false;
+        if ($user->hasRole('sa') || $user->hasRole('rh')) {
+            return true;
+        }
+        // Gerente puede ver solo su tienda
+        return $user->store_id === $store->id;
     }
 
     /**
@@ -29,7 +33,7 @@ class StorePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -37,7 +41,11 @@ class StorePolicy
      */
     public function update(User $user, Store $store): bool
     {
-        return false;
+        if ($user->hasRole('sa')) {
+            return true;
+        }
+        // Gerente puede actualizar su tienda
+        return $user->hasRole('gerente') && $user->store_id === $store->id;
     }
 
     /**
@@ -45,7 +53,7 @@ class StorePolicy
      */
     public function delete(User $user, Store $store): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -53,7 +61,7 @@ class StorePolicy
      */
     public function restore(User $user, Store $store): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -61,6 +69,6 @@ class StorePolicy
      */
     public function forceDelete(User $user, Store $store): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 }

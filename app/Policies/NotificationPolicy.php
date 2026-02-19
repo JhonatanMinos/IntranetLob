@@ -13,7 +13,7 @@ class NotificationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true; // Todos los usuarios autenticados pueden ver notificaciones
     }
 
     /**
@@ -21,7 +21,7 @@ class NotificationPolicy
      */
     public function view(User $user, Notification $notification): bool
     {
-        return false;
+        return true; // Todos pueden ver notificaciones
     }
 
     /**
@@ -29,7 +29,7 @@ class NotificationPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh') || $user->hasRole('comunicaciones');
     }
 
     /**
@@ -37,7 +37,11 @@ class NotificationPolicy
      */
     public function update(User $user, Notification $notification): bool
     {
-        return false;
+        if ($user->hasRole('sa')) {
+            return true;
+        }
+        // Solo el creador puede editar sus notificaciones
+        return $notification->created_by === $user->id;
     }
 
     /**
@@ -45,7 +49,11 @@ class NotificationPolicy
      */
     public function delete(User $user, Notification $notification): bool
     {
-        return false;
+        if ($user->hasRole('sa')) {
+            return true;
+        }
+        // Solo el creador o RH pueden eliminar
+        return $user->hasRole('rh') || $notification->created_by === $user->id;
     }
 
     /**
@@ -53,7 +61,7 @@ class NotificationPolicy
      */
     public function restore(User $user, Notification $notification): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -61,6 +69,6 @@ class NotificationPolicy
      */
     public function forceDelete(User $user, Notification $notification): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 }

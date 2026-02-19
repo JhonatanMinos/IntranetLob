@@ -13,7 +13,7 @@ class CompanyPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -21,7 +21,7 @@ class CompanyPolicy
      */
     public function view(User $user, Company $company): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -29,7 +29,7 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -37,7 +37,7 @@ class CompanyPolicy
      */
     public function update(User $user, Company $company): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -45,7 +45,7 @@ class CompanyPolicy
      */
     public function delete(User $user, Company $company): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -53,7 +53,7 @@ class CompanyPolicy
      */
     public function restore(User $user, Company $company): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -61,6 +61,6 @@ class CompanyPolicy
      */
     public function forceDelete(User $user, Company $company): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 }

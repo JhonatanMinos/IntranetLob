@@ -13,7 +13,7 @@ class EventPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true; // Todos los usuarios autenticados pueden ver eventos
     }
 
     /**
@@ -21,7 +21,7 @@ class EventPolicy
      */
     public function view(User $user, Event $event): bool
     {
-        return false;
+        return true; // Todos pueden ver eventos
     }
 
     /**
@@ -29,7 +29,7 @@ class EventPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -37,7 +37,7 @@ class EventPolicy
      */
     public function update(User $user, Event $event): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -45,7 +45,7 @@ class EventPolicy
      */
     public function delete(User $user, Event $event): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -53,7 +53,7 @@ class EventPolicy
      */
     public function restore(User $user, Event $event): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 
     /**
@@ -61,6 +61,6 @@ class EventPolicy
      */
     public function forceDelete(User $user, Event $event): bool
     {
-        return false;
+        return $user->hasRole('sa');
     }
 }
