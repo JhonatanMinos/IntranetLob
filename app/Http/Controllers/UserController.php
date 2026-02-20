@@ -11,6 +11,7 @@ use App\Services\StoreService;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -28,10 +29,14 @@ class UserController extends Controller
         $users = $this->userService->searchUsers($searchInput);
 
         return Inertia::render('directory/users', [
-            'data' => $users,
+            'data' => UserResource::collection($users),
             'departments' => $this->departmentService->getAllDepartments(),
             'stores' => $this->storeService->getAllStores(),
             'company' => Company::all(),
+            'can' => [
+                'create' => $request->user()->can('create', User::class),
+            ],
+
         ]);
     }
 

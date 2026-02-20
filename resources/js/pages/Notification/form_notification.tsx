@@ -60,24 +60,15 @@ interface types {
     label: string;
 }
 
-interface notification {
-    id: number;
-    title: string;
-    content: string;
-    priority: string;
-    type: string;
-    published_at: string;
-}
-
 type Props = {
     priorities: priority[];
-    type: types[];
-    notification?: notification;
+    types: types[];
+    notification?: Notification;
 };
 
 export default function FormNotification({
     priorities,
-    type,
+    types,
     notification,
 }: Props) {
     const isEdit = !!notification;
@@ -89,7 +80,7 @@ export default function FormNotification({
             content: notification?.content ?? '',
             priority: notification?.priority ?? '',
             type: notification?.type ?? '',
-            published_at: notification?.published_at ?? '',
+            published_at: notification?.publishedAt ?? '',
         },
     });
 
@@ -249,7 +240,7 @@ export default function FormNotification({
                                                     }
                                                     value={field.value}
                                                 >
-                                                    {type.map((types) => {
+                                                    {types.map((types) => {
                                                         const isSelected =
                                                             field.value ===
                                                             types.value;
@@ -311,17 +302,29 @@ export default function FormNotification({
                                     <FormField
                                         control={form.control}
                                         name="published_at"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Fecha</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="datetime-local"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
+                                        render={({ field }) => {
+                                            const formattedValue = field.value
+                                                ? new Date(field.value)
+                                                      .toISOString()
+                                                      .slice(0, 16)
+                                                : '';
+
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel>Fecha</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="datetime-local"
+                                                            {...field}
+                                                            value={
+                                                                formattedValue
+                                                            } // Forzamos el valor formateado
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
                                     />
                                 </CardContent>
                             </Card>

@@ -32,6 +32,7 @@ interface UserCardProps {
 }
 
 export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
+    console.log(user);
     const getInitials = useInitials();
     return (
         <Card className="mb-4 p-6">
@@ -65,32 +66,38 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
                             <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                                 {user.position}
                             </Badge>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => onEdit(user)}
-                                    >
-                                        <Pencil />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Editar usuario</TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="destructive"
-                                        size="icon"
-                                        onClick={() => onDelete(user.id)}
-                                    >
-                                        <Trash2 />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    Eliminar usuario
-                                </TooltipContent>
-                            </Tooltip>
+                            {user.can.update && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => onEdit(user)}
+                                        >
+                                            <Pencil />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Editar usuario
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
+                            {user.can.update && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="destructive"
+                                            size="icon"
+                                            onClick={() => onDelete(user.id)}
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Eliminar usuario
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
                         </div>
                     </CardHeader>
                     <Separator className="my-4" />

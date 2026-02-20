@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\DTOs\UserDTO;
 use App\Models\User;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 
 class UserService
@@ -12,7 +12,7 @@ class UserService
     /**
      * Search users with optional filters
      */
-    public function searchUsers(?string $search = null, int $page = 1): Paginator
+    public function searchUsers(?string $search = null, int $page = 1): LengthAwarePaginator
     {
         $query = User::with('department', 'company', 'store')
             ->when($search, function ($q) use ($search) {
@@ -50,7 +50,7 @@ class UserService
     public function createUser(array $data): UserDTO
     {
         $data['password'] = Hash::make($data['password']);
-        
+
         $user = User::create($data);
         $user->load('department', 'company', 'store');
 

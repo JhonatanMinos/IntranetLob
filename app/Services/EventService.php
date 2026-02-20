@@ -5,6 +5,7 @@ namespace App\Services;
 use App\DTOs\EventDTO;
 use App\Models\Event;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
 class EventService
@@ -12,9 +13,9 @@ class EventService
     /**
      * Search events by year
      */
-    public function searchEventsByYear(?string $search = null, ?int $year = null, int $page = 1): Paginator
+    public function searchEventsByYear(?string $search = null, ?int $year = null, int $page = 1): LengthAwarePaginator
     {
-        $year = $year ?? Carbon::now()->year;
+        $year ??= Carbon::now()->year;
 
         $query = Event::when($search, function ($q) use ($search) {
             return $q->where('title', 'like', "%{$search}%")
@@ -24,6 +25,7 @@ class EventService
         ->orderBy('start_date');
 
         return $query->paginate(10, ['*'], 'page', $page)
+            ->through(fn($event) => EventDTO::fromModel($event)->toArray())
             ->withQueryString();
     }
 

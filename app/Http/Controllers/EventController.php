@@ -19,11 +19,11 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        $year = $request->year ? (int)$request->year : null;
+        $year = $request->year ? (int) $request->year : null;
 
         $result = $this->eventService->searchEventsByYear($search, $year);
 
-        return Inertia::render('events', [
+        return inertia::render('events', [
             'search' => $search,
             'results' => $result,
         ]);

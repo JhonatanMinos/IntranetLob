@@ -21,7 +21,10 @@ class Notification extends Model
         'priority',
         'type',
         'published_at',
-        'created_by',
+    ];
+
+    protected $casts = [
+        'published_at' => 'datetime',
     ];
 
     public function toSearchableArray()

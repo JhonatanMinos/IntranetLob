@@ -54,9 +54,9 @@ export function CreateEvent({ event, onSuccess }: CreateEventProps) {
         defaultValues: {
             title: event?.title ?? '',
             type: event?.type ?? '',
-            start_date: event?.start_date ?? '',
-            end_date: event?.end_date ?? '',
-            all_day: event?.all_day ?? false,
+            start_date: event?.startDate ?? '',
+            end_date: event?.endDate ?? '',
+            all_day: event?.allDay ?? false,
         },
     });
 
@@ -153,7 +153,15 @@ export function CreateEvent({ event, onSuccess }: CreateEventProps) {
                             <FormItem>
                                 <FormLabel>Fecha de inicio</FormLabel>
                                 <FormControl>
-                                    <Input type="date" {...field} />
+                                    <Input
+                                        type="date"
+                                        {...field}
+                                        value={
+                                            field.value
+                                                ? field.value.split('T')[0]
+                                                : ''
+                                        }
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -167,7 +175,15 @@ export function CreateEvent({ event, onSuccess }: CreateEventProps) {
                             <FormItem>
                                 <FormLabel>Fecha de finalización</FormLabel>
                                 <FormControl>
-                                    <Input type="date" {...field} />
+                                    <Input
+                                        type="date"
+                                        {...field}
+                                        value={
+                                            field.value
+                                                ? field.value.split('T')[0]
+                                                : ''
+                                        }
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

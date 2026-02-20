@@ -55,7 +55,7 @@ export default function Profile({
             <h1 className="sr-only">Profile Settings</h1>
 
             <SettingsLayout>
-                <div className="space-y-6">
+                <div className="items-center justify-center space-y-6 md:max-w-2xl">
                     <Heading
                         variant="small"
                         title="Profile information"

@@ -103,4 +103,3 @@ class NotificationController extends Controller
         return redirect()->route('notifications.index')->with('success', 'Notificación eliminada correctamente');
     }
 }
-

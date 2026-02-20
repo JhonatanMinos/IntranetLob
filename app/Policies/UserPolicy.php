@@ -11,7 +11,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('sa') || $user->hasRole('rh');
+        return $user->hasRole('sa') || $user->hasRole('rh') || $user->hasRole('user');
     }
 
     /**
@@ -32,7 +32,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasPermissionTo('create user');
     }
 
     /**
@@ -58,9 +58,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        if ($user->hasRole('sa') || $user->hasRole('rh')) {
-            return true;
-        }
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**

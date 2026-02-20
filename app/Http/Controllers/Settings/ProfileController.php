@@ -32,7 +32,7 @@ class ProfileController extends Controller
     {
         return Inertia::render('settings/assignroles', [
             'users' => User::with('roles')
-                ->select('id', 'name', 'email')
+                ->select('id', 'name', 'position', 'email')
                 ->paginate(10),
 
             'roles' => Role::select('id', 'name')->get(),
@@ -55,11 +55,6 @@ class ProfileController extends Controller
     {
         return Inertia::render('settings/permissions', [
             'permissions' => Permission::select('id', 'name')->get(),
-
-            'breadcrumbs' => [
-                ['title' => 'Configuración', 'href' => route('settings.index')],
-                ['title' => 'Permisos'],
-            ],
         ]);
     }
 

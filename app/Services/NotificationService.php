@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\DTOs\NotificationDTO;
 use App\Models\Notification;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class NotificationService
 {
@@ -31,7 +31,7 @@ class NotificationService
     /**
      * Search notifications
      */
-    public function searchNotifications(?string $search = null, int $page = 1, int $perPage = 10): Paginator
+    public function searchNotifications(?string $search = null, int $page = 1, int $perPage = 10): LengthAwarePaginator
     {
         $query = Notification::with('creator');
 
@@ -41,6 +41,7 @@ class NotificationService
 
         return $query->latest('published_at')
             ->paginate($perPage, ['*'], 'page', $page)
+            ->through(fn($notification) => NotificationDTO::fromModel($notification)->toArray())
             ->withQueryString();
     }
 
@@ -69,7 +70,7 @@ class NotificationService
     public function createNotification(array $data, int $createdBy): NotificationDTO
     {
         $data['created_by'] = $createdBy;
-        
+
         $notification = Notification::create($data);
         $notification->load('creator');
 

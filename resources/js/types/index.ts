@@ -7,6 +7,7 @@ import type { Auth } from './auth';
 export type SharedData = {
     name: string;
     auth: Auth;
+    permissions?: string[];
     sidebarOpen: boolean;
     [key: string]: unknown;
 };
@@ -31,6 +32,10 @@ export interface User {
     emailVerifiedAt?: string | null; // ISO 8601
     createdAt?: string | null; // ISO 8601
     updatedAt?: string | null; // ISO 8601
+    can: {
+        update: boolean;
+        delete: boolean;
+    };
 }
 
 // ===================== Store DTO =====================
