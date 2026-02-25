@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
+use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -23,7 +24,6 @@ class NotificationController extends Controller
 
         $searchInput = $request->search;
         $notifications = $this->notificationService->searchNotifications($searchInput);
-
         return Inertia::render('notifications', [
             'data' => $notifications,
         ]);

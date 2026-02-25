@@ -16,7 +16,7 @@ class Store extends Model
     protected $fillable = [
         'name',
         'code',
-        'brand',
+        'brand_id',
         'type',
         'address',
         'neighborhood',
@@ -29,7 +29,7 @@ class Store extends Model
         'lng',
     ];
 
-    public function brand(): BelongsTo
+    public function brands(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }

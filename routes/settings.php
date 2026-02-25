@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
@@ -32,8 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'role:sa'])->group(function () {
-    Route::get('settings/assignrolesroles', [ProfileController::class, 'assignsRoles'])->name('profile.assign');
+    Route::get('settings/assignroles', [ProfileController::class, 'assignsRoles'])->name('profile.assign');
     Route::put('settings/assignroles/{user}', [UserController::class, 'assign'])->name('users.assign');
-    Route::get('settings/roles', [ProfileController::class, 'roles'])->name('profile.roles');
-    Route::get('settings/permissions', [ProfileController::class, 'permissions'])->name('profile.permissions');
+
+    Route::resource('settings/roles', RoleController::class);
+    Route::resource('settings/permissions', PermissionController::class)
+        ->only(['store', 'destroy']);
 });

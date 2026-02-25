@@ -1,9 +1,9 @@
+import { type ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import TableGeneric from '@/components/table';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { permissions } from '@/routes/profile';
-import { BreadcrumbItem } from '@/types';
-import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'permissions settings', href: permissions() }];
 

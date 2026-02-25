@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class ProfileController extends Controller
@@ -36,25 +35,6 @@ class ProfileController extends Controller
                 ->paginate(10),
 
             'roles' => Role::select('id', 'name')->get(),
-        ]);
-    }
-
-    public function roles(Request $request)
-    {
-        return Inertia::render('settings/roles', [
-            'roles' => Role::with('permissions')
-                ->select('id', 'name')
-                ->orderBy('id')
-                ->get(),
-
-            'permissions' => Permission::select('id', 'name')->get(),
-        ]);
-    }
-
-    public function permissions()
-    {
-        return Inertia::render('settings/permissions', [
-            'permissions' => Permission::select('id', 'name')->get(),
         ]);
     }
 

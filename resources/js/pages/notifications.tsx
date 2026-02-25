@@ -1,13 +1,13 @@
 import { Head, router } from '@inertiajs/react';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useMemo } from 'react';
+import PaginationGeneric from '@/components/pagination';
 import TableGeneric from '@/components/table';
 import AppLayout from '@/layouts/app-layout';
 import NotificationLayout from '@/layouts/notification/layout';
-import { index as notifications, edit, destroy } from '@/routes/notifications';
-import type { BreadcrumbItem, NotificationItem, paginatedResponse } from '@/types';
-import PaginationGeneric from '@/components/pagination';
 import { getNotificationColumns } from '@/pages/Notification/columns-notifications';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { destroy, edit, index as notifications } from '@/routes/notifications';
+import type { BreadcrumbItem, NotificationItem, paginatedResponse } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -35,7 +35,7 @@ export default function Notification({ data }: NotificationProps) {
         onEdit: handleEditOpen,
         onDelete: handleDelete,
       }),
-    []
+    [handleDelete, handleEditOpen]
   );
 
   const table = useReactTable({

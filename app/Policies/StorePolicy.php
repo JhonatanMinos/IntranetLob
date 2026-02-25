@@ -13,7 +13,7 @@ class StorePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('sa') || $user->hasRole('rh') || $user->hasRole('gerente');
+        return $user->hasRole('sa') || $user->hasRole('rh') || $user->hasRole('user');
     }
 
     /**

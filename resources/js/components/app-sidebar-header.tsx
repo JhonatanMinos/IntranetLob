@@ -14,8 +14,8 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
       </div>
       <div className="flex w-100 items-center gap-2 sm:ml-auto sm:w-auto">
         <SearchForm />
-        <ButtonNotification />
         <AppearanceTabs />
+        <ButtonNotification />
       </div>
     </header>
   );

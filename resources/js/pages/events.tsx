@@ -1,16 +1,15 @@
 import { Head, router } from '@inertiajs/react';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import PaginationGeneric from '@/components/pagination';
+import TableGeneric from '@/components/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/app-layout';
+import EventLayout from '@/layouts/event/layout';
 import { CreateEvent } from '@/pages/Events/create-event';
 import { destroy, index as events } from '@/routes/events';
-import type { BreadcrumbItem, EventItem, paginatedResponse, PaginationLink } from '@/types';
-import EventLayout from '@/layouts/event/layout';
-import TableGeneric from '@/components/table';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-
-import PaginationGeneric from '@/components/pagination';
+import type { BreadcrumbItem, EventItem, paginatedResponse } from '@/types';
 import { getEventColumns } from './Events/columns-events';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -56,7 +55,7 @@ export default function Events({ results }: EventsProps) {
         onEdit: handleEditOpen,
         onDelete: handleDelete,
       }),
-    []
+    [handleDelete, handleEditOpen]
   );
 
   const table = useReactTable({

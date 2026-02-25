@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,9 +13,11 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->longText('content');
-            $table->string('priority')->default('normal');
-            $table->string('type');
+            $table->string('subject')->nullable()->comment('Asunto para los avisos');
+            $table->longText('content')->comment('Contenido que se mostrara en los 4 tipos');
+            $table->string('imagen_path')->nullable()->comment('Imagen que puede ser un diseno');
+            $table->string('priority')->default('normal')->comment('La prioridad que se enviara la notificacion');
+            $table->string('type')->comment('El tipo de notificacion');
             $table->foreignId('created_by')->constrained('users')->cascadeOnUpdate();
             $table->timestamp('published_at')->nullable();
             $table->softDeletes();

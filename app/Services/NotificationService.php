@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\DTOs\NotificationDTO;
 use App\Models\Notification;
+use App\Notifications\NuevaNotificacion;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 
 class NotificationService
 {
@@ -69,12 +72,40 @@ class NotificationService
      */
     public function createNotification(array $data, int $createdBy): NotificationDTO
     {
-        $data['created_by'] = $createdBy;
+        // Procesar la imagen si existe
+        if (isset($data['imagen_path']) && $data['imagen_path'] instanceof UploadedFile) {
+            $imagePath = $this->storeNotificationImage($data['imagen_path']);
+            $data['imagen_path'] = $imagePath;
+        } else {
+            // Si no hay imagen, remover la clave
+            unset($data['imagen_path']);
+        }
 
+        $data['created_by'] = $createdBy;
         $notification = Notification::create($data);
         $notification->load('creator');
 
+        $user = auth()->user();
+        $user->notify(new NuevaNotificacion($notification));
+
         return NotificationDTO::fromModel($notification);
+    }
+
+    /**
+     * Store a notification image in public/uploads/notifications
+     */
+    private function storeNotificationImage(UploadedFile $file): string
+    {
+        $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        
+        // Guardar en public/uploads/notifications
+        $path = $file->storeAs(
+            'uploads/notifications',
+            $fileName,
+            'public'
+        );
+
+        return '/' . $path;
     }
 
     /**
@@ -82,6 +113,26 @@ class NotificationService
      */
     public function updateNotification(Notification $notification, array $data): NotificationDTO
     {
+        // Procesar la imagen si existe
+        if (isset($data['imagen_path']) && $data['imagen_path'] instanceof UploadedFile) {
+            // Eliminar imagen anterior si existe
+            if ($notification->imagen_path) {
+                Storage::disk('public')->delete(ltrim($notification->imagen_path, '/'));
+            }
+            
+            $imagePath = $this->storeNotificationImage($data['imagen_path']);
+            $data['imagen_path'] = $imagePath;
+        } elseif (isset($data['imagen_path']) && is_string($data['imagen_path'])) {
+            // Si es un string, es la ruta anterior, se mantiene igual
+            unset($data['imagen_path']);
+        } else {
+            // Si tiene imagen anterior y se intenta eliminar
+            if (isset($data['imagen_path']) && $data['imagen_path'] === null && $notification->imagen_path) {
+                Storage::disk('public')->delete(ltrim($notification->imagen_path, '/'));
+                $data['imagen_path'] = null;
+            }
+        }
+
         $notification->update($data);
         $notification->load('creator');
 
@@ -104,6 +155,11 @@ class NotificationService
      */
     public function deleteNotification(Notification $notification): bool
     {
+        // Eliminar imagen si existe
+        if ($notification->imagen_path) {
+            Storage::disk('public')->delete(ltrim($notification->imagen_path, '/'));
+        }
+        
         return $notification->delete();
     }
 

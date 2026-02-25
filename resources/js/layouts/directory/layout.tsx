@@ -1,8 +1,9 @@
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Toaster } from '@/components/ui/sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
@@ -10,18 +11,19 @@ import { FormUser } from '@/pages/directory/form-user';
 import { index as shops } from '@/routes/shops';
 import { index as users } from '@/routes/users';
 import type { NavItem, SimpleModel, Store } from '@/types';
-import { Toaster } from '@/components/ui/sonner';
 
 const barNavItems: NavItem[] = [
   {
     title: 'Usuarios',
     href: users().url,
     icon: null,
+    can: '',
   },
   {
     title: 'Tiendas',
     href: shops().url,
     icon: null,
+    can: '',
   },
 ];
 
@@ -46,6 +48,7 @@ export default function DirectoryLayout({
   company,
   can,
 }: DirectoryLayoutProps) {
+  console.log(can);
   const { isCurrentUrl } = useCurrentUrl();
   const activeItem = barNavItems.find((item) => isCurrentUrl(item.href));
   const [open, setOpen] = useState(false);

@@ -17,10 +17,13 @@ class Notification extends Model
 
     protected $fillable = [
         'title',
+        'subject',
         'content',
+        'imagen_path',
         'priority',
         'type',
         'published_at',
+        'created_by',
     ];
 
     protected $casts = [

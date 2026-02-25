@@ -1,13 +1,13 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
+import PaginationGeneric from '@/components/pagination';
+import { useDeleteUser } from '@/hooks/use-delete-user';
 import AppLayout from '@/layouts/app-layout';
 import DirectoryLayout from '@/layouts/directory/layout';
 import { index as users } from '@/routes/users';
 import type { BreadcrumbItem, SimpleModel, Store, User } from '@/types';
-import PaginationGeneric from '@/components/pagination';
-import { UserCard } from './components/user-card';
-import { useDeleteUser } from '@/hooks/use-delete-user';
 import { EditUserDialog } from './components/edit-user-dialog';
+import { UserCard } from './components/user-card';
 
 export interface PaginationLink {
   url: string | null;

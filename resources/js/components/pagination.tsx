@@ -1,11 +1,11 @@
+import { Link } from '@inertiajs/react';
+import { buttonVariants } from '@/components/ui/button';
 import {
     Pagination,
     PaginationContent,
     PaginationItem,
 } from '@/components/ui/pagination';
 import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/react';
-import { buttonVariants } from '@/components/ui/button';
 
 interface PaginationLink {
     url: string | null;

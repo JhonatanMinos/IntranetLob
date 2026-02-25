@@ -27,7 +27,7 @@ export default function AppearanceToggleTab({
         <button
           onClick={() => updateAppearance(nextMode)}
           className={cn(
-            'flex items-center gap-2 rounded-md bg-neutral-100 px-3 py-2 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700',
+            'flex items-center gap-2 rounded-md px-3 py-2 transition-colors hover:bg-neutral-200  dark:hover:bg-neutral-700',
             className
           )}
           {...props}

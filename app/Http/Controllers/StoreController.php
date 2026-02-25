@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStoreRequest;
 use App\Http\Requests\UpdateStoreRequest;
+use App\Http\Resources\StoreResource;
 use App\Models\Store;
 use App\Services\StoreService;
 use Illuminate\Http\Request;
@@ -23,8 +24,13 @@ class StoreController extends Controller
         $search = $request->search;
         $shops = $this->storeService->searchStores($search);
 
+
         return Inertia::render('directory/shops', [
-            'shops' => $shops,
+            'data' => StoreResource::collection($shops),
+            'can' => [
+                'create' => $request->user()->can('create', Store::class),
+            ],
+
         ]);
     }
 
@@ -91,4 +97,3 @@ class StoreController extends Controller
         return redirect()->route('shops.index')->with('success', 'Tienda eliminada correctamente');
     }
 }
-

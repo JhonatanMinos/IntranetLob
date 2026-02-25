@@ -7,7 +7,9 @@ class NotificationDTO
     public function __construct(
         public int $id,
         public string $title,
+        public ?string $subject,
         public string $content,
+        public ?string $imagenPath,
         public string $priority,
         public string $type,
         public int $createdBy,
@@ -26,7 +28,9 @@ class NotificationDTO
         return new self(
             id: $notification->id,
             title: $notification->title,
+            subject: $notification?->subject,
             content: $notification->content,
+            imagenPath: $notification?->imagen_path,
             priority: $notification->priority,
             type: $notification->type,
             createdBy: $notification->created_by,
@@ -46,7 +50,9 @@ class NotificationDTO
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'subject' => $this->subject,
             'content' => $this->content,
+            'imagenPath' => $this->imagenPath,
             'priority' => $this->priority,
             'type' => $this->type,
             'createdBy' => $this->createdBy,

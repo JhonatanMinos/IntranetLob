@@ -1,69 +1,229 @@
-import type { ColumnDef } from '@tanstack/react-table';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { Building2, Shield, User } from 'lucide-react';
-import TableGeneric from '@/components/table';
-import { Toggle } from '@/components/ui/toggle';
+import { Head, router, useForm } from '@inertiajs/react';
+import { Building2, Shield, ShieldPlus, ShieldUser, User } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { roles } from '@/routes/profile';
-import type { BreadcrumbItem, Role } from '@/types';
+import { store as storePermission } from '@/routes/permissions'; // Asumiendo que existe
+import { index as rolesRoute, update } from '@/routes/roles';
+import type { BreadcrumbItem, Permission, Role } from '@/types';
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Roles settings', href: roles() }];
-
-interface permission {
-  id: string;
-  name: string;
-}
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Roles settings', href: rolesRoute.url() },
+];
 
 interface RolesProps {
-  roles: Role[];
-  permissions: permission[];
+    roles: Role[];
+    permissions: Permission[];
 }
 
-export default function Roles({ roles }: RolesProps) {
-  const data = roles;
-  const columns: ColumnDef<Role>[] = [
-    {
-      header: 'ID',
-      accessorKey: 'id',
-    },
-    {
-      header: 'Nombre del rol',
-      accessorKey: 'name',
-      cell: ({ row }) => {
-        const icon =
-          row.original.name === 'sa' ? (
-            <Shield className="h-4 w-4 text-red-500" />
-          ) : row.original.name === 'rh' ? (
-            <Building2 className="h-4 w-4 text-blue-500" />
-          ) : (
-            <User className="h-4 w-4 text-gray-500" />
-          );
-        return (
-          <Toggle aria-label="Toggle bookmark" size="sm" variant="outline">
-            {icon}
-            <span className="capitalize">{row.original.name}</span>
-          </Toggle>
+export default function Roles({ roles = [], permissions = [] }: RolesProps) {
+    const [openPermission, setOpenPermission] = useState(false);
+    const [activeRole, setActiveRole] = useState<Role | null>(roles[0] || null);
+    const [selected, setSelected] = useState<string[]>(
+        activeRole?.permissions?.map((p) => p.id) ?? [],
+    );
+
+    // Formulario para nuevo permiso
+    const { data, setData, post, processing, reset, errors } = useForm({
+        name: '',
+    });
+
+    const roleMap: Record<string, { icon: React.ReactNode; label: string }> = {
+        sa: { icon: <Shield className="mr-2 h-4 w-4" />, label: 'Super Admin' },
+        rh: {
+            icon: <Building2 className="mr-2 h-4 w-4" />,
+            label: 'Human Capital',
+        },
+        user: { icon: <User className="mr-2 h-4 w-4" />, label: 'User' },
+    };
+
+    // Actualizar selección cuando cambia el rol activo
+    useEffect(() => {
+        if (activeRole) {
+            setSelected(activeRole.permissions?.map((p) => p.id) ?? []);
+        }
+    }, [activeRole]);
+
+    const togglePermission = (id: string) => {
+        setSelected((prev) =>
+            prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
         );
-      },
-    },
-    {
-      header: 'Acciones',
-      id: 'actions',
-    },
-  ];
+    };
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+    const handleUpdatePermissions = () => {
+        if (!activeRole) return;
+        router.put(
+            update(activeRole.id).url,
+            { permissions: selected },
+            {
+                preserveScroll: true,
+            },
+        );
+    };
 
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <SettingsLayout>
-        <TableGeneric table={table} />
-      </SettingsLayout>
-    </AppLayout>
-  );
+    const handleCreatePermission = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(storePermission.url(), {
+            onSuccess: () => {
+                setOpenPermission(false);
+                reset();
+            },
+        });
+    };
+
+    if (!activeRole) return null;
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <SettingsLayout>
+                <Head title="Roles & Permissions" />
+
+                <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h2 className="text-base font-medium tracking-tight">
+                            Roles & Permissions
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                            Manage what each user group can see and do.
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                            <ShieldUser className="mr-2 h-4 w-4" /> Nuevo rol
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => setOpenPermission(true)}
+                        >
+                            <ShieldPlus className="mr-2 h-4 w-4" /> Nuevo
+                            permiso
+                        </Button>
+                    </div>
+                </header>
+
+                <Tabs
+                    value={activeRole.id}
+                    onValueChange={(id) =>
+                        setActiveRole(roles.find((r) => r.id === id) || null)
+                    }
+                >
+                    <TabsList className="mb-4">
+                        {roles.map((role) => (
+                            <TabsTrigger key={role.id} value={role.id}>
+                                {roleMap[role.name]?.icon || (
+                                    <Shield className="mr-2 h-4 w-4" />
+                                )}
+                                {roleMap[role.name]?.label || role.name}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>
+                                Permissions for {activeRole.name}
+                            </CardTitle>
+                            <CardDescription>
+                                Select the capabilities for this specific role.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                {permissions.map((permission) => (
+                                    <div
+                                        key={permission.id}
+                                        className="flex items-center space-x-3 rounded-md border p-3 transition-colors hover:bg-accent/50"
+                                    >
+                                        <Checkbox
+                                            id={`perm-${permission.id}`}
+                                            checked={selected.includes(
+                                                permission.id,
+                                            )}
+                                            onCheckedChange={() =>
+                                                togglePermission(permission.id)
+                                            }
+                                        />
+                                        <Label
+                                            htmlFor={`perm-${permission.id}`}
+                                            className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        >
+                                            {permission.name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-end border-t px-6 py-4">
+                            <Button onClick={handleUpdatePermissions}>
+                                Save Changes
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </Tabs>
+
+                {/* Dialog para Nuevo Permiso */}
+                <Dialog open={openPermission} onOpenChange={setOpenPermission}>
+                    <DialogContent>
+                        <form onSubmit={handleCreatePermission}>
+                            <DialogHeader>
+                                <DialogTitle>Create New Permission</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">
+                                        Permission Name
+                                    </Label>
+                                    <Input
+                                        id="name"
+                                        placeholder="e.g., users.create"
+                                        value={data.name}
+                                        onChange={(e) =>
+                                            setData('name', e.target.value)
+                                        }
+                                    />
+                                    {errors.name && (
+                                        <p className="text-xs text-destructive">
+                                            {errors.name}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => setOpenPermission(false)}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button type="submit" disabled={processing}>
+                                    Create Permission
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+            </SettingsLayout>
+        </AppLayout>
+    );
 }

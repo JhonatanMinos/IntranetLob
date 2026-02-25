@@ -1,9 +1,9 @@
-import type { EventItem } from '@/types';
 import type { ColumnDef } from '@tanstack/react-table';
-import { SquarePen, Trash } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { SquarePen, Trash } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import type { EventItem } from '@/types';
 
 interface EventcolumnsProps {
   onEdit: (item: EventItem) => void;
