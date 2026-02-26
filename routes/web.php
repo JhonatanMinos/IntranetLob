@@ -16,7 +16,7 @@ Route::get('/', function () {
 Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('events', EventController::class)->middleware(['auth', 'verified']);
-Route::resource('notifications', NotificationController::class);
+Route::resource('notifications', NotificationController::class)->middleware(['auth', 'verified']);
 
 Route::get('/services', function () {
     return Inertia::render('services');

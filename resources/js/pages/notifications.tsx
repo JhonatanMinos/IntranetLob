@@ -7,50 +7,62 @@ import AppLayout from '@/layouts/app-layout';
 import NotificationLayout from '@/layouts/notification/layout';
 import { getNotificationColumns } from '@/pages/Notification/columns-notifications';
 import { destroy, edit, index as notifications } from '@/routes/notifications';
-import type { BreadcrumbItem, NotificationItem, paginatedResponse } from '@/types';
+import type {
+    BreadcrumbItem,
+    NotificationItem,
+    paginatedResponse,
+} from '@/types';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Notificaciones',
-    href: notifications().url,
-  },
+    {
+        title: 'Notificaciones',
+        href: notifications().url,
+    },
 ];
 
 interface NotificationProps {
-  data: paginatedResponse<NotificationItem>;
+    data: paginatedResponse<NotificationItem>;
 }
 
 export default function Notification({ data }: NotificationProps) {
-  const handleEditOpen = (notification: NotificationItem) => {
-    router.get(edit(notification.id).url);
-  };
+    const handleEditOpen = (notification: NotificationItem) => {
+        router.get(edit(notification.id).url);
+    };
 
-  const handleDelete = (notification: NotificationItem) => {
-    router.delete(destroy(notification.id));
-  };
+    const handleDelete = (notification: NotificationItem) => {
+        router.delete(destroy(notification.id), {
+            onSuccess: () => {
+                toast.success('Notificacion eliminada', {
+                    position: 'bottom-right',
+                });
+                router.reload({ only: ['data'] });
+            },
+        });
+    };
 
-  const columns = useMemo(
-    () =>
-      getNotificationColumns({
-        onEdit: handleEditOpen,
-        onDelete: handleDelete,
-      }),
-    [handleDelete, handleEditOpen]
-  );
+    const columns = useMemo(
+        () =>
+            getNotificationColumns({
+                onEdit: handleEditOpen,
+                onDelete: handleDelete,
+            }),
+        [handleDelete, handleEditOpen],
+    );
 
-  const table = useReactTable({
-    data: data.data ?? [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+    const table = useReactTable({
+        data: data.data ?? [],
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    });
 
-  return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Notificaciones" />
-      <NotificationLayout>
-        <TableGeneric table={table} />
-        <PaginationGeneric links={data.links} />
-      </NotificationLayout>
-    </AppLayout>
-  );
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Notificaciones" />
+            <NotificationLayout>
+                <TableGeneric table={table} />
+                <PaginationGeneric links={data.links} />
+            </NotificationLayout>
+        </AppLayout>
+    );
 }

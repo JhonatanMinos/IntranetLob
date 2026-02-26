@@ -28,6 +28,7 @@ class UserController extends Controller
         $searchInput = $request->search;
         $users = $this->userService->searchUsers($searchInput);
 
+
         return Inertia::render('directory/users', [
             'data' => UserResource::collection($users),
             'departments' => $this->departmentService->getAllDepartments(),

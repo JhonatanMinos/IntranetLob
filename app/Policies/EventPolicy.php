@@ -21,7 +21,7 @@ class EventPolicy
      */
     public function view(User $user, Event $event): bool
     {
-        return true; // Todos pueden ver eventos
+        return $user->hasPermissionTo('view Event'); // Todos pueden ver eventos
     }
 
     /**
@@ -37,6 +37,7 @@ class EventPolicy
      */
     public function update(User $user, Event $event): bool
     {
+        logger('User roles', [$user->roles]);
         return $user->hasRole('sa') || $user->hasRole('rh');
     }
 

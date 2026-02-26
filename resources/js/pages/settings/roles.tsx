@@ -1,5 +1,12 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Building2, Shield, ShieldPlus, ShieldUser, User } from 'lucide-react';
+import {
+    Building2,
+    Loader2,
+    Shield,
+    ShieldPlus,
+    ShieldUser,
+    User,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +33,7 @@ import SettingsLayout from '@/layouts/settings/layout';
 import { store as storePermission } from '@/routes/permissions'; // Asumiendo que existe
 import { index as rolesRoute, update } from '@/routes/roles';
 import type { BreadcrumbItem, Permission, Role } from '@/types';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Roles settings', href: rolesRoute.url() },
@@ -44,9 +52,10 @@ export default function Roles({ roles = [], permissions = [] }: RolesProps) {
     );
 
     // Formulario para nuevo permiso
-    const { data, setData, post, processing, reset, errors } = useForm({
-        name: '',
-    });
+    const { data, setData, post, processing, reset, errors, isSubmitting } =
+        useForm({
+            name: '',
+        });
 
     const roleMap: Record<string, { icon: React.ReactNode; label: string }> = {
         sa: { icon: <Shield className="mr-2 h-4 w-4" />, label: 'Super Admin' },
@@ -70,17 +79,25 @@ export default function Roles({ roles = [], permissions = [] }: RolesProps) {
         );
     };
 
-    const handleUpdatePermissions = () => {
-        if (!activeRole) return;
-        router.put(
-            update(activeRole.id).url,
-            { permissions: selected },
-            {
-                preserveScroll: true,
-            },
-        );
-    };
+    const handleUpdatePermissions = async () => {
+        if (!activeRole || isSubmitting) return; // previene doble click
 
+        try {
+            await router.put(
+                update(activeRole.id).url,
+                { permissions: selected },
+                {
+                    preserveScroll: true,
+                },
+            );
+
+            // Opcional: mensaje de éxito
+            toast.success('Permisos asignados');
+        } catch (error) {
+            console.error(error);
+            toast.error('Error al actualizar permisos');
+        }
+    };
     const handleCreatePermission = (e: React.FormEvent) => {
         e.preventDefault();
         post(storePermission.url(), {
@@ -174,8 +191,16 @@ export default function Roles({ roles = [], permissions = [] }: RolesProps) {
                             </div>
                         </CardContent>
                         <CardFooter className="justify-end border-t px-6 py-4">
-                            <Button onClick={handleUpdatePermissions}>
-                                Save Changes
+                            <Button
+                                disabled={isSubmitting}
+                                onClick={handleUpdatePermissions}
+                            >
+                                {isSubmitting
+                                    ? 'Guardado cambios...'
+                                    : 'Guardar cambio'}
+                                {isSubmitting && (
+                                    <Loader2 className="animate-spin" />
+                                )}
                             </Button>
                         </CardFooter>
                     </Card>

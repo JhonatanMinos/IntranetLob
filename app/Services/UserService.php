@@ -12,7 +12,7 @@ class UserService
     /**
      * Search users with optional filters
      */
-    public function searchUsers(?string $search = null, int $page = 1): LengthAwarePaginator
+    public function searchUsers(?string $search = null): LengthAwarePaginator
     {
         $query = User::with('department', 'company', 'store')
             ->when($search, function ($q) use ($search) {
@@ -21,7 +21,7 @@ class UserService
             });
 
         return $query->orderBy('department_id')
-            ->paginate(10, ['*'], 'page', $page)
+            ->paginate(10)
             ->withQueryString();
     }
 

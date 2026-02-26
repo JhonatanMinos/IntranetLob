@@ -34,7 +34,7 @@ class NotificationService
     /**
      * Search notifications
      */
-    public function searchNotifications(?string $search = null, int $page = 1, int $perPage = 10): LengthAwarePaginator
+    public function searchNotifications(?string $search = null): LengthAwarePaginator
     {
         $query = Notification::with('creator');
 
@@ -43,7 +43,7 @@ class NotificationService
         }
 
         return $query->latest('published_at')
-            ->paginate($perPage, ['*'], 'page', $page)
+            ->paginate(10)
             ->through(fn($notification) => NotificationDTO::fromModel($notification)->toArray())
             ->withQueryString();
     }
@@ -97,7 +97,7 @@ class NotificationService
     private function storeNotificationImage(UploadedFile $file): string
     {
         $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        
+
         // Guardar en public/uploads/notifications
         $path = $file->storeAs(
             'uploads/notifications',
@@ -119,7 +119,7 @@ class NotificationService
             if ($notification->imagen_path) {
                 Storage::disk('public')->delete(ltrim($notification->imagen_path, '/'));
             }
-            
+
             $imagePath = $this->storeNotificationImage($data['imagen_path']);
             $data['imagen_path'] = $imagePath;
         } elseif (isset($data['imagen_path']) && is_string($data['imagen_path'])) {
@@ -159,7 +159,7 @@ class NotificationService
         if ($notification->imagen_path) {
             Storage::disk('public')->delete(ltrim($notification->imagen_path, '/'));
         }
-        
+
         return $notification->delete();
     }
 

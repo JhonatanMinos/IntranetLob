@@ -58,6 +58,10 @@ export interface Store {
   createdAt?: string | null; // ISO 8601
   updatedAt?: string | null; // ISO 8601
   deletedAt?: string | null; // ISO 8601
+  can: {
+    update: boolean;
+    delete: boolean;
+  };
 }
 
 // ===================== Department DTO =====================

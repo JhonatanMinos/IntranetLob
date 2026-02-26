@@ -4,24 +4,22 @@ namespace App\Services;
 
 use App\DTOs\StoreDTO;
 use App\Models\Store;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class StoreService
 {
     /**
      * Search stores
      */
-    public function searchStores(?string $search = null): \Illuminate\Database\Eloquent\Collection
+    public function searchStores(?string $search = null): LengthAwarePaginator
     {
-        $query = Store::with('brands');
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('code', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%");
+        dd(Store::with('brands')->firstOrFail());
+        $query = Store::with('brands')
+            ->when($search, function ($q) use ($search) {
+                return Store::search($search)
+                ->query(fn($q) => $q->with('brands'));
             });
-        }
-
-        return $query->get();
+        return $query->paginate(10)->withQueryString();
     }
 
     /**

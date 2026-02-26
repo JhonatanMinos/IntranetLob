@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
+use App\Models\Brand;
 
 class Store extends Model
 {
     /** @use HasFactory<\Database\Factories\StoreFactory> */
     use HasFactory;
     use SoftDeletes;
+    use Searchable;
 
     protected $fillable = [
         'name',
@@ -28,6 +31,15 @@ class Store extends Model
         'lat',
         'lng',
     ];
+
+    public function toSearchableArray()
+    {
+        return [
+            'name' => $this->name,
+            'code' => $this->code,
+            'type' => $this->type,
+        ];
+    }
 
     public function brands(): BelongsTo
     {
