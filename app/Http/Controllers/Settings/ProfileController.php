@@ -49,6 +49,11 @@ class ProfileController extends Controller
             $request->user()->email_verified_at = null;
         }
 
+        if ($request->hasFile('avatar_path')) {
+            $path = $request->file('avatar_path')->store('avatars', 'public');
+            $request->user()->avatar_path = $path; // Guardando la ruta en la BD
+        }
+
         $request->user()->save();
 
         return to_route('profile.edit');

@@ -14,9 +14,10 @@ import type { User } from '@/types';
 
 type Props = {
   user: User;
+  img: string;
 };
 
-export function UserMenuContent({ user }: Props) {
+export function UserMenuContent({ user, img }: Props) {
   const cleanup = useMobileNavigation();
 
   const handleLogout = () => {
@@ -28,7 +29,7 @@ export function UserMenuContent({ user }: Props) {
     <>
       <DropdownMenuLabel className="p-0 font-normal">
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-          <UserInfo user={user} showEmail={true} />
+          <UserInfo user={user} img={img} showEmail={true} />
         </div>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />

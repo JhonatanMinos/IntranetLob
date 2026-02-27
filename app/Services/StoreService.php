@@ -13,11 +13,10 @@ class StoreService
      */
     public function searchStores(?string $search = null): LengthAwarePaginator
     {
-        dd(Store::with('brands')->firstOrFail());
-        $query = Store::with('brands')
+        $query = Store::with('brand')
             ->when($search, function ($q) use ($search) {
                 return Store::search($search)
-                ->query(fn($q) => $q->with('brands'));
+                ->query(fn($q) => $q->with('brand'));
             });
         return $query->paginate(10)->withQueryString();
     }

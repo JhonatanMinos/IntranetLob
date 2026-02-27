@@ -7,7 +7,7 @@ export type User = {
     phone?: string | null;
     birthday?: string | null; // Y-m-d format
     dateEntry?: string | null; // Y-m-d format
-    avatar?: string;
+    avatar_path?: string;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     roles?: string;
@@ -18,6 +18,7 @@ export type User = {
 
 export type Auth = {
     user: User;
+    avatar_url: string;
 };
 
 export type TwoFactorSetupData = {

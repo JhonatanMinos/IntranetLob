@@ -55,7 +55,7 @@ export default function Profile({
             <h1 className="sr-only">Profile Settings</h1>
 
             <SettingsLayout>
-                <div className="items-center justify-center space-y-6 md:max-w-2xl">
+                <div className="items-center justify-center space-y-6">
                     <Heading
                         variant="small"
                         title="Profile information"
@@ -68,7 +68,7 @@ export default function Profile({
                             preserveScroll: true,
                             forceFormData: true,
                         }}
-                        className="space-y-6"
+                        className="grid grid-cols-2 gap-2 space-y-3"
                     >
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
@@ -79,9 +79,7 @@ export default function Profile({
                                     <div className="flex items-center gap-4">
                                         <Avatar className="h-20 w-20">
                                             <AvatarImage
-                                                src={
-                                                    preview ?? auth.user.avatar
-                                                }
+                                                src={preview ?? auth.avatar_url}
                                                 alt={auth.user.name}
                                             />
                                             <AvatarFallback>
@@ -91,7 +89,7 @@ export default function Profile({
 
                                         <Input
                                             id="photo"
-                                            name="photo"
+                                            name="avatar_path"
                                             type="file"
                                             accept="image/*"
                                             onChange={handlePhotoChange}

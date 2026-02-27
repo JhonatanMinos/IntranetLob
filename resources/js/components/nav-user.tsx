@@ -31,7 +31,7 @@ export function NavUser() {
               className="group text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent"
               data-test="sidebar-menu-button"
             >
-              <UserInfo user={auth.user} />
+              <UserInfo user={auth.user} img={auth.avatar_url} />
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -40,7 +40,7 @@ export function NavUser() {
             align="end"
             side={isMobile ? 'bottom' : state === 'collapsed' ? 'left' : 'bottom'}
           >
-            <UserMenuContent user={auth.user} />
+            <UserMenuContent user={auth.user} img={auth.avatar_url} />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

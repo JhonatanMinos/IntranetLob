@@ -40,6 +40,9 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user(),
+                'avatar_url' => $request->user()?->avatar_path
+                ? asset('storage/' . $request->user()->avatar_path)
+                : null,
                 'roles' => $request->user()?->getRoleNames(),
             ],
             'permissions' => $request->user() ? $request->user()->getAllPermissions()->pluck('name')->toArray() : [],

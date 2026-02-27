@@ -41,7 +41,7 @@ class Store extends Model
         ];
     }
 
-    public function brands(): BelongsTo
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }
