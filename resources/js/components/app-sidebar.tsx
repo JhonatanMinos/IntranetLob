@@ -112,7 +112,7 @@ export function AppSidebar() {
     (item) => !item.can || permissions.includes(item.can)
   );
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

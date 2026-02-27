@@ -55,7 +55,7 @@ export default function Profile({
             <h1 className="sr-only">Profile Settings</h1>
 
             <SettingsLayout>
-                <div className="items-center justify-center space-y-6">
+                <div className="space-y-6">
                     <Heading
                         variant="small"
                         title="Profile information"
@@ -68,7 +68,7 @@ export default function Profile({
                             preserveScroll: true,
                             forceFormData: true,
                         }}
-                        className="grid grid-cols-2 gap-2 space-y-3"
+                        className="space-y-3"
                     >
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
@@ -77,10 +77,11 @@ export default function Profile({
                                         Foto de perfil
                                     </Label>
                                     <div className="flex items-center gap-4">
-                                        <Avatar className="h-20 w-20">
+                                        <Avatar className="h-40 w-40">
                                             <AvatarImage
                                                 src={preview ?? auth.avatar_url}
                                                 alt={auth.user.name}
+                                                className="object-fill"
                                             />
                                             <AvatarFallback>
                                                 {auth.user.name.charAt(0)}

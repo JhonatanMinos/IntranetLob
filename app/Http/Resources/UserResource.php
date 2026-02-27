@@ -21,7 +21,7 @@ class UserResource extends JsonResource
             'employeeNumber' => $this->employeeNumber,
             'position' => $this->position,
             'phone' => $this->phone,
-            'birthday' => $this->birthday?->toDateString(),
+            'birthday' => $this->birthday,
             'dateEntry' => $this->dateEntry,
             'departmentId' => $this->department_id,
             'departmentName' => $this->department?->name,

@@ -26,7 +26,7 @@ class StoreService
      */
     public function getAllStores(): \Illuminate\Database\Eloquent\Collection
     {
-        return Store::with('brands')->get();
+        return Store::with('brand')->get();
     }
 
     /**
@@ -34,7 +34,7 @@ class StoreService
      */
     public function getStoreById(int $id): ?StoreDTO
     {
-        $store = Store::with('brands')->find($id);
+        $store = Store::with('brand')->find($id);
         return $store ? StoreDTO::fromModel($store) : null;
     }
 
@@ -44,7 +44,7 @@ class StoreService
     public function getStoresByBrand(int $brandId): \Illuminate\Database\Eloquent\Collection
     {
         return Store::where('brand_id', $brandId)
-            ->with('brands')
+            ->with('brand')
             ->get();
     }
 
@@ -54,7 +54,7 @@ class StoreService
     public function getStoresByCity(string $city): \Illuminate\Database\Eloquent\Collection
     {
         return Store::where('city', $city)
-            ->with('brands')
+            ->with('brand')
             ->get();
     }
 
@@ -64,7 +64,7 @@ class StoreService
     public function createStore(array $data): StoreDTO
     {
         $store = Store::create($data);
-        $store->load('brands');
+        $store->load('brand');
         return StoreDTO::fromModel($store);
     }
 
@@ -74,7 +74,7 @@ class StoreService
     public function updateStore(Store $store, array $data): StoreDTO
     {
         $store->update($data);
-        $store->load('brands');
+        $store->load('brand');
         return StoreDTO::fromModel($store);
     }
 

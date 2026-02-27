@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import PaginationGeneric from '@/components/pagination';
 import AppLayout from '@/layouts/app-layout';
@@ -21,7 +21,6 @@ export interface AssignRolesProps {
 }
 
 export default function AssignRoles({ users, roles }: AssignRolesProps) {
-  console.log(users);
   const handleRoleChange = async (userId: string, roleId: string) => {
     try {
       router.put(
@@ -38,6 +37,10 @@ export default function AssignRoles({ users, roles }: AssignRolesProps) {
               position: 'bottom-right',
             });
           },
+        },
+        {
+          preserveState: true,
+          preserveScroll: true,
         }
       );
     } catch (error) {
@@ -47,9 +50,12 @@ export default function AssignRoles({ users, roles }: AssignRolesProps) {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
+      <Head title="Roles" />
       <SettingsLayout>
         <TableUser data={users.data} roles={roles} handleChange={handleRoleChange} />
-        <PaginationGeneric links={users.links} />
+        <div className="sticky bottom-0 bg-background py-2">
+          <PaginationGeneric links={users.links} />
+        </div>
       </SettingsLayout>
     </AppLayout>
   );

@@ -31,8 +31,8 @@ class ProfileController extends Controller
     {
         return Inertia::render('settings/assignroles', [
             'users' => User::with('roles')
-                ->select('id', 'name', 'position', 'email')
-                ->paginate(10),
+                ->select('id', 'name', 'position', 'avatar_path')
+                ->paginate(12),
 
             'roles' => Role::select('id', 'name')->get(),
         ]);
