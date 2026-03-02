@@ -36,7 +36,6 @@ export default function Notification({ data }: NotificationProps) {
                 toast.success('Notificacion eliminada', {
                     position: 'bottom-right',
                 });
-                router.reload({ only: ['data'] });
             },
         });
     };

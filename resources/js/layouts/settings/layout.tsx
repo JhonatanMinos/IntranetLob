@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
-import { assign, edit } from '@/routes/profile';
+import { assign, edit, payroll } from '@/routes/profile';
 import { index as roles } from '@/routes/roles';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
@@ -16,6 +16,12 @@ const sidebarNavItems: NavItem[] = [
   {
     title: 'Profile',
     href: edit(),
+    icon: null,
+    can: '',
+  },
+  {
+    title: 'Nominas',
+    href: payroll(),
     icon: null,
     can: '',
   },

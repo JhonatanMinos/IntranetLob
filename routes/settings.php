@@ -14,6 +14,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('settings/payroll', [ProfileController::class, 'payroll'])->name('profile.payroll');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

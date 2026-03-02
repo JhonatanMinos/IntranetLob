@@ -75,4 +75,9 @@ class ProfileController extends Controller
 
         return redirect('/');
     }
+
+    public function payroll()
+    {
+        return Inertia::render('settings/payroll');
+    }
 }
