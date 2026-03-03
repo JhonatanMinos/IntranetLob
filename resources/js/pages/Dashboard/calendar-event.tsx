@@ -9,6 +9,7 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ButtonGroup } from '@/components/ui/button-group';
 
 type CalendarEvent = {
     id: string;
@@ -67,10 +68,11 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
 
         return (
             <div className="mb-6 flex flex-col items-center justify-between gap-4 md:flex-row">
-                <div className="flex gap-2">
+                <ButtonGroup>
                     <Button onClick={goToBack} className="rounded-lg px-3 py-1">
                         <ChevronLeft />
                     </Button>
+
                     <Button
                         onClick={goToToday}
                         className="rounded-lg px-4 py-1"
@@ -80,35 +82,33 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
                     <Button onClick={goToNext} className="rounded-lg px-3 py-1">
                         <ChevronRight />
                     </Button>
-                </div>
+                </ButtonGroup>
                 <h2 className="text-xl font-semibold">{toolbar.label}</h2>
                 <div className="flex gap-2">
-                    {['month', 'week', 'day', 'agenda'].map((v) => (
-                        <button
-                            key={v}
-                            onClick={() => toolbar.onView(v)}
-                            className={`rounded-lg px-3 py-1 text-gray-800 capitalize ${
-                                toolbar.view === v
-                                    ? 'bg-gray-700'
-                                    : 'bg-gray-200 hover:bg-gray-300'
-                            }`}
-                        >
-                            {v === 'month'
-                                ? 'Mes'
-                                : v === 'week'
-                                  ? 'Semana'
-                                  : v === 'day'
-                                    ? 'Día'
-                                    : 'Agenda'}
-                        </button>
-                    ))}
+                    <ButtonGroup>
+                        {['month', 'week', 'day', 'agenda'].map((v) => (
+                            <Button
+                                key={v}
+                                onClick={() => toolbar.onView(v)}
+                                className={`rounded-lg px-3 py-1 capitalize`}
+                            >
+                                {v === 'month'
+                                    ? 'Mes'
+                                    : v === 'week'
+                                      ? 'Semana'
+                                      : v === 'day'
+                                        ? 'Día'
+                                        : 'Agenda'}
+                            </Button>
+                        ))}
+                    </ButtonGroup>
                 </div>
             </div>
         );
     };
 
     return (
-        <div className="rounded-x h-[700px] w-full p-6 shadow-lg">
+        <div className="h-[700px] w-full">
             <BigCalendar
                 localizer={localizer}
                 culture="es"

@@ -10,6 +10,7 @@ import { EventsCard } from '@/pages/Dashboard/events-card';
 import { NewsCard } from '@/pages/Dashboard/news-card';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
+import { CalendarX } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -90,8 +91,8 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="h-[80vh] w-full max-w-5xl overflow-hidden rounded-lg shadow-lg md:h-[90vh] md:w-[90vw] md:max-w-none">
-          <DialogHeader className="border-b border-gray-200 p-4">
-            <DialogTitle className="text-xl">Calendario</DialogTitle>
+          <DialogHeader>
+            <DialogTitle>Calendario</DialogTitle>
           </DialogHeader>
           <div className="flex h-full flex-row gap-6">
             <div className="flex flex-1 items-center justify-center">
@@ -126,7 +127,10 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-400">No hay eventos hoy.</p>
+                <div className="flex flex-col h-44 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed">
+                  <CalendarX className="text-muted" />
+                  <p className="text-sm text-muted">No hay eventos programados.</p>
+                </div>
               )}
             </aside>
           </div>

@@ -139,4 +139,20 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .rbc-today {
+    @apply bg-gradient-to-br from-blue-800 to-indigo-600;
+  }
+
+  .rbc-today .rbc-button-link {
+    @apply font-semibold text-gray-800;
+  }
+
+  .rbc-today .rbc-off-range-bg {
+    @apply bg-gray-900;
+  }
+
+  .rbc-off-range {
+    @apply text-slate-400;
+  }
 }
