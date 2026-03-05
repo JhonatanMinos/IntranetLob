@@ -11,6 +11,7 @@ import { NewsCard } from '@/pages/Dashboard/news-card';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { CalendarX } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -68,10 +69,10 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
   };
 
   const modifiersText = {
-    cumpleanos: 'text-pink-300',
-    festivo: 'text-green-300',
-    evento: 'text-blue-300',
-    lanzamiento: 'text-purple-300',
+    cumpleanos: 'text-pink-900 dark:text-pink-300',
+    festivo: 'text-green-900 dark:text-green-300',
+    evento: 'text-blue-900 dark:text-blue-300',
+    lanzamiento: 'text-purple-900 dark:text-purple-300',
   };
 
   return (
@@ -106,13 +107,13 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
               {events?.length > 0 ? (
                 events.map((event) => (
                   <div key={event.id} className="flex flex-col pt-2">
-                    <div
-                      className={`group cursor-pointer rounded-lg border-l-4 ${modifiersBorder[event.type]} bg-[#2a2a2a] p-4 transition-colors hover:bg-[#333333]`}
+                    <Card
+                      className={`group cursor-pointer rounded-lg border-l-4 ${modifiersBorder[event.type]} bg-sidebar p-2 transition-colors`}
                     >
-                      <p className="mb-1 text-xs font-medium text-gray-400 group-hover:text-gray-300">
+                      <p className="text-xs font-medium text-gray-400 group-hover:text-gray-300">
                         10:00 AM
                       </p>
-                      <h3 className="mb-2 text-base font-medium text-white">{event.title}</h3>
+                      <h3 className="text-base font-medium">{event.title}</h3>
                       <div className="flex items-center gap-2 text-xs">
                         <span
                           className={`h-2 w-2 rounded-full ${modifiersClassNames[event.type]}`}
@@ -123,11 +124,11 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
                           {event.type}
                         </span>
                       </div>
-                    </div>
+                    </Card>
                   </div>
                 ))
               ) : (
-                <div className="flex flex-col h-44 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed">
+                <div className="flex h-44 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed">
                   <CalendarX className="text-muted" />
                   <p className="text-sm text-muted">No hay eventos programados.</p>
                 </div>
