@@ -27,9 +27,9 @@ export function TableUser({ data, roles, handleChange }: UsersTableProps) {
           <CardHeader className="flex justify-center">
             <Avatar className="h-30 w-30 overflow-hidden rounded-full">
               <AvatarImage
-                src={`/storage/${user.avatar_path}`}
+                src={`/storage/${user?.avatarPath}`}
                 alt={user.name}
-                className="object-contain"
+                className="object-center object-cover"
               />
               <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
             </Avatar>

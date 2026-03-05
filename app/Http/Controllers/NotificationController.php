@@ -25,7 +25,7 @@ class NotificationController extends Controller
         $searchInput = $request->search;
         $notifications = $this->notificationService->searchNotifications($searchInput);
         return Inertia::render('notifications', [
-            'data' => $notifications,
+            'data' => NotificationResource::collection($notifications),
         ]);
     }
 

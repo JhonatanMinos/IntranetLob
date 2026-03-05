@@ -13,7 +13,7 @@ class EventService
     /**
      * Search events by year
      */
-    public function searchEventsByYear(?string $search = null, ?int $year = null, int $page = 1): LengthAwarePaginator
+    public function searchEventsByYear(?string $search = null, ?int $year = null): LengthAwarePaginator
     {
         $year ??= Carbon::now()->year;
 
@@ -24,9 +24,7 @@ class EventService
         ->whereYear('start_date', $year)
         ->orderBy('start_date');
 
-        return $query->paginate(10, ['*'], 'page', $page)
-            ->through(fn($event) => EventDTO::fromModel($event)->toArray())
-            ->withQueryString();
+        return $query->paginate(10)->withQueryString();
     }
 
     /**

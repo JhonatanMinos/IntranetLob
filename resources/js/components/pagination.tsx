@@ -5,7 +5,9 @@ import {
     PaginationContent,
     PaginationItem,
 } from '@/components/ui/pagination';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationLink {
     url: string | null;
@@ -14,39 +16,82 @@ interface PaginationLink {
 }
 
 interface PaginationProps {
-    links: PaginationLink[];
+    links: {
+        first: string;
+        last: string;
+        prev: string;
+        next: string;
+    };
+    meta: {
+        current_page: number;
+        from: number;
+        last_page: number;
+        links: PaginationLink[]; // Laravel suele duplicar los links aquí en meta
+        path: string;
+        per_page: number;
+        to: number;
+        total: number;
+    };
 }
 
-export default function PaginationGeneric({ links }: PaginationProps) {
+export default function PaginationGeneric({ meta, links }: PaginationProps) {
+    const { current_page, last_page } = meta;
+
     return (
-        <Pagination className="mt-4 justify-center">
-            <PaginationContent>
-                {links.map((link) => (
-                    <PaginationItem key={link.label}>
-                        {link.url ? (
+        <Pagination className="pt-4">
+            <PaginationContent className="flex w-full flex-row justify-between">
+                <div>
+                    <Badge>total: {meta.total}</Badge>
+                </div>
+                <div>
+                    <span>
+                        Pagina {current_page}/{last_page}
+                    </span>
+                </div>
+                <div className="flex flex-row gap-2">
+                    <PaginationItem>
+                        {links.prev ? (
                             <Link
-                                href={link.url}
+                                href={links.prev}
                                 className={cn(
-                                    buttonVariants({
-                                        variant: link.active
-                                            ? 'outline'
-                                            : 'ghost',
-                                        size: 'icon',
-                                    }),
+                                    buttonVariants({ variant: 'outline' }),
                                 )}
                             >
-                                <span
-                                    // biome-ignore lint/security/noDangerouslySetInnerHtml: La paginación de Laravel usa entidades HTML para las flechas (<< y >>)
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
+                                <ChevronLeft /> Prev
                             </Link>
                         ) : (
-                            <span className="px-3 py-2">....</span>
+                            <span
+                                className={cn(
+                                    buttonVariants({ variant: 'outline' }),
+                                    'cursor-not-allowed opacity-50',
+                                )}
+                            >
+                                <ChevronLeft /> Prev
+                            </span>
                         )}
                     </PaginationItem>
-                ))}
+                    <PaginationItem>
+                        {links.next ? (
+                            <Link
+                                href={links.next}
+                                className={cn(
+                                    buttonVariants({ variant: 'outline' }),
+                                )}
+                            >
+                                Next <ChevronRight />
+                            </Link>
+                        ) : (
+                            <span
+                                className={cn(
+                                    buttonVariants({ variant: 'outline' }),
+                                    'cursor-not-allowed opacity-50',
+                                )}
+                            >
+                                Next <ChevronRight />
+                            </span>
+                        )}
+                    </PaginationItem>
+                </div>
             </PaginationContent>
         </Pagination>
     );

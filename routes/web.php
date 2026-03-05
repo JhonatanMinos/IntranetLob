@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProcessController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -17,14 +18,13 @@ Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['aut
 
 Route::resource('events', EventController::class)->middleware(['auth', 'verified']);
 Route::resource('notifications', NotificationController::class)->middleware(['auth', 'verified']);
+Route::resource('processes', ProcessController::class)->middleware(['auth','verified']);
 
 Route::get('/services', function () {
     return Inertia::render('services');
 })->name('services');
 
-Route::get('/processes', function () {
-    return Inertia::render('processes');
-})->name('processes');
+
 
 
 require __DIR__ . '/settings.php';

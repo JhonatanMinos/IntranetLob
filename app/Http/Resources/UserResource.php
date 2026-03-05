@@ -30,6 +30,7 @@ class UserResource extends JsonResource
             'storeId' => $this->store_id,
             'storeName' => $this->store?->name,
             'roles' => $this->roles,
+            'avatarPath' => $this->avatar_path,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
             'can' => [

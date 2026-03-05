@@ -10,7 +10,7 @@ import { destroy, edit, index as notifications } from '@/routes/notifications';
 import type {
     BreadcrumbItem,
     NotificationItem,
-    paginatedResponse,
+    PaginatedResponse,
 } from '@/types';
 import { toast } from 'sonner';
 
@@ -22,7 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface NotificationProps {
-    data: paginatedResponse<NotificationItem>;
+    data: PaginatedResponse<NotificationItem>;
 }
 
 export default function Notification({ data }: NotificationProps) {
@@ -60,7 +60,7 @@ export default function Notification({ data }: NotificationProps) {
             <Head title="Notificaciones" />
             <NotificationLayout>
                 <TableGeneric table={table} />
-                <PaginationGeneric links={data.links} />
+                <PaginationGeneric links={data.links} meta={data.meta} />
             </NotificationLayout>
         </AppLayout>
     );

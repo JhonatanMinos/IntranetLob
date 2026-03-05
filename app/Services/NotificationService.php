@@ -43,9 +43,7 @@ class NotificationService
         }
 
         return $query->latest('published_at')
-            ->paginate(10)
-            ->through(fn($notification) => NotificationDTO::fromModel($notification)->toArray())
-            ->withQueryString();
+            ->paginate(10)->withQueryString();
     }
 
     /**

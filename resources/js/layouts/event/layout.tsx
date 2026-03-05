@@ -27,11 +27,8 @@ export default function EventLayout({ children }: EventLayoutProps) {
                         }).toUpperCase()}
                     </h2>
                 </div>
-                <Button
-                    className="shrink-0 bg-blue-500 text-white"
-                    onClick={() => setOpenModal(true)}
-                >
-                    <Plus size={16} /> agregar Evento
+                <Button className="shrink-0" onClick={() => setOpenModal(true)}>
+                    <Plus size={16} /> Agregar evento
                 </Button>
             </div>
             <main>{children}</main>

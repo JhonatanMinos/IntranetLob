@@ -14,8 +14,11 @@ interface BirthDays {
     birthday: string;
 }
 
-export function BirthDays({ birthdays }: BirthDays[]) {
-    console.log(birthdays);
+interface Props {
+    birthdays: BirthDays[];
+}
+
+export function BirthDays({ birthdays }: Props) {
     const getInitials = useInitials();
     return (
         <Card>
@@ -61,7 +64,7 @@ export function BirthDays({ birthdays }: BirthDays[]) {
                                         ),
                                         'dd MMMM',
                                         { locale: es },
-                                    )}{' '}
+                                    )}
                                 </Badge>
                             </div>
                         </div>

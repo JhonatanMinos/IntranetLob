@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Brand extends Model
 {
     /** @use HasFactory<\Database\Factories\BrandFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
         'slug',
-        'description'
+        'description',
     ];
 
     public function store(): HasMany

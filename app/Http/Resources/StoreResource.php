@@ -25,7 +25,7 @@ class StoreResource extends JsonResource
             'postalCode' => $this->postal_code,
             'state' => $this->state,
             'brandId' => $this->brand_id,
-            'brandName' => $this->brands?->name,
+            'brandName' => $this->brand?->name,
             'phone' => $this->phone,
             'email' => $this->email,
             'lat' => $this->lat,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Services\EventService;
 use Inertia\Inertia;
@@ -24,8 +25,7 @@ class EventController extends Controller
         $result = $this->eventService->searchEventsByYear($search, $year);
 
         return inertia::render('events', [
-            'search' => $search,
-            'results' => $result,
+            'results' => EventResource::collection($result),
         ]);
     }
 

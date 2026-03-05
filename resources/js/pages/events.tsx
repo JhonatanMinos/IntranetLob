@@ -14,7 +14,7 @@ import AppLayout from '@/layouts/app-layout';
 import EventLayout from '@/layouts/event/layout';
 import { CreateEvent } from '@/pages/Events/create-event';
 import { destroy, index as events } from '@/routes/events';
-import type { BreadcrumbItem, EventItem, paginatedResponse } from '@/types';
+import type { BreadcrumbItem, EventItem, PaginatedResponse } from '@/types';
 import { getEventColumns } from './Events/columns-events';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,14 +25,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface EventsProps {
-    results: paginatedResponse<EventItem>;
+    results: PaginatedResponse<EventItem>;
 }
 
 export default function Events({ results }: EventsProps) {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
-
-    console.log(results);
 
     const handleEditOpen = (event: EventItem) => {
         setEditingEvent(event);
@@ -80,7 +78,7 @@ export default function Events({ results }: EventsProps) {
             <Head title="Eventos" />
             <EventLayout>
                 <TableGeneric table={table} />
-                <PaginationGeneric links={results.links} />
+                <PaginationGeneric meta={results.meta} links={results.links} />
             </EventLayout>
             <Dialog
                 open={openEditModal}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -29,11 +30,11 @@ class ProfileController extends Controller
 
     public function assignsRoles(Request $request)
     {
-        return Inertia::render('settings/assignroles', [
-            'users' => User::with('roles')
+        $users = User::with('roles')
                 ->select('id', 'name', 'position', 'avatar_path')
-                ->paginate(12),
-
+                ->paginate(12);
+        return Inertia::render('settings/assignroles', [
+            'data' => UserResource::collection($users),
             'roles' => Role::select('id', 'name')->get(),
         ]);
     }

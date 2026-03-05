@@ -57,7 +57,6 @@ export default function DirectoryLayout({
     company,
     can,
 }: DirectoryLayoutProps) {
-    console.log(can);
     const { isCurrentUrl } = useCurrentUrl();
     const activeItem = barNavItems.find((item) => isCurrentUrl(item.href));
     const [open, setOpen] = useState(false);
@@ -91,7 +90,7 @@ export default function DirectoryLayout({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
-                                    className="shrink-0 bg-blue-50 text-blue-700 hover:bg-blue-500 hover:text-blue-100 dark:bg-blue-950 dark:text-blue-300"
+                                    className="shrink-0"
                                     onClick={() => setOpen(true)}
                                 >
                                     <Plus />
@@ -114,7 +113,7 @@ export default function DirectoryLayout({
                 className={cn(
                     'min-h-0 w-full flex-1',
                     aside
-                        ? 'grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]'
+                        ? 'grid grid-cols-1 gap-6 lg:grid-cols-[1fr_2fr]'
                         : 'mx-auto flex w-full max-w-5xl flex-col',
                 )}
             >

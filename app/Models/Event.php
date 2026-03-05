@@ -9,14 +9,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Event extends Model
 {
     /** @use HasFactory<\Database\Factories\EventFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
+        'id',
         'title',
         'type',
         'start_date',
         'end_date',
-        'all_day'
+        'all_day',
     ];
 
     public const TYPE_CUMPLE = 'cumpleanos';
@@ -39,4 +41,3 @@ class Event extends Model
         ];
     }
 }
-

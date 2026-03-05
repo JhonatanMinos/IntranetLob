@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { CloudDownload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 type Payroll = {
   period: string;
@@ -24,11 +25,7 @@ export function getPayrollColumns(): ColumnDef<Payroll>[] {
       accessorKey: 'reference',
       cell: ({ getValue }) => {
         const reference = getValue<string>();
-        return (
-          <span className="rounded-full border border-slate-800 bg-slate-500/50 px-3 py-1 text-xs text-slate-300">
-            {reference}
-          </span>
-        );
+        return <Badge variant="secondary">{reference}</Badge>;
       },
     },
     {

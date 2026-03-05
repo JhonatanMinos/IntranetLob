@@ -5,30 +5,15 @@ import { useDeleteUser } from '@/hooks/use-delete-user';
 import AppLayout from '@/layouts/app-layout';
 import DirectoryLayout from '@/layouts/directory/layout';
 import { index as users } from '@/routes/users';
-import type { BreadcrumbItem, SimpleModel, Store, User } from '@/types';
+import type {
+    BreadcrumbItem,
+    PaginatedResponse,
+    SimpleModel,
+    Store,
+    User,
+} from '@/types';
 import { EditUserDialog } from './components/edit-user-dialog';
 import { UserCard } from './components/user-card';
-
-export interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
-}
-
-export interface PaginatedResponse<T> {
-    data: T[];
-    links: PaginationLink[];
-    meta: {
-        current_page: number;
-        from: number;
-        last_page: number;
-        links: PaginationLink[]; // Laravel suele duplicar los links aquí en meta
-        path: string;
-        per_page: number;
-        to: number;
-        total: number;
-    };
-}
 
 interface UsersDirectoryProps {
     data: PaginatedResponse<User>;
@@ -73,7 +58,9 @@ export default function Users({
                 departments={departments}
                 stores={stores}
                 company={company}
-                pagination={<PaginationGeneric links={data.meta.links} />}
+                pagination={
+                    <PaginationGeneric meta={data.meta} links={data.links} />
+                }
                 can={can}
             >
                 <div className="grid grid-cols-1 gap-4 p-5">
