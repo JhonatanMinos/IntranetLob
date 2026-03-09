@@ -22,12 +22,12 @@ class NotificationResource extends JsonResource
             'imagenPath' => $this->imagenPath,
             'priority' => $this->priority,
             'type' => $this->type,
-            'createdBy' => $this->createdBy,
-            'creatorName' => $this->creatorName,
-            'publishedAt' => $this->publishedAt,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
-            'deletedAt' => $this->deletedAt,
+            'createdBy' => $this->created_by,
+            'creatorName' => $this->creator->name,
+            'publishedAt' => $this->published_at,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
+            'deletedAt' => $this->deleted_at,
         ];
     }
 }

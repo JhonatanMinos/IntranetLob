@@ -29,7 +29,7 @@ export function BirthDays({ birthdays }: Props) {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <ScrollArea className="space-y-6 sm:h-[150px] md:h-[300px]">
+                <ScrollArea className="space-y-3 sm:h-[150px] md:h-[300px]">
                     {birthdays?.map(({ id, name, position, birthday }) => (
                         <div
                             key={id}

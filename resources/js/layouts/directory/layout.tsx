@@ -17,6 +17,7 @@ import {
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { FormUser } from '@/pages/directory/form-user';
+import { FormStore } from '@/pages/directory/form-store';
 import { index as shops } from '@/routes/shops';
 import { index as users } from '@/routes/users';
 import type { NavItem, SimpleModel, Store } from '@/types';
@@ -44,7 +45,7 @@ interface DirectoryLayoutProps {
     stores?: Store[];
     company?: SimpleModel[];
     can: {
-        create: boolean;
+        create: boolean;  
     };
 }
 
@@ -57,6 +58,7 @@ export default function DirectoryLayout({
     company,
     can,
 }: DirectoryLayoutProps) {
+    console.log(can);
     const { isCurrentUrl } = useCurrentUrl();
     const activeItem = barNavItems.find((item) => isCurrentUrl(item.href));
     const [open, setOpen] = useState(false);
@@ -131,14 +133,14 @@ export default function DirectoryLayout({
                 </main>
                 {/* ASIDE */}
                 {aside && (
-                    <aside className="min-h-0 overflow-y-auto border-l pl-4">
+                    <aside className="min-h-0 overflow-y-auto border-l pl-4 z-10">
                         {aside}
                     </aside>
                 )}
                 <Toaster richColors />
             </div>
 
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={setOpen} className="z-100">
                 <DialogContent className="sm:max-w-[700px]">
                     <DialogHeader>
                         <DialogTitle>
@@ -153,6 +155,9 @@ export default function DirectoryLayout({
                             stores={stores}
                             company={company}
                         />
+                    )}
+                    {activeItem?.title === 'Tiendas' && (
+                        <FormStore onSuccess={() => setOpen(false)} />
                     )}
                 </DialogContent>
             </Dialog>

@@ -33,7 +33,7 @@ class StorePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('sa');
+        return $user->hasPermissionTo("create shop");
     }
 
     /**

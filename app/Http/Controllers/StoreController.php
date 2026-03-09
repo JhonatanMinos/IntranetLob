@@ -24,6 +24,7 @@ class StoreController extends Controller
         $search = $request->search;
         $shops = $this->storeService->searchStores($search);
 
+
         return Inertia::render('directory/shops', [
             'data' => StoreResource::collection($shops),
             'can' => [

@@ -26,6 +26,7 @@ interface NotificationProps {
 }
 
 export default function Notification({ data }: NotificationProps) {
+    console.log(data);
     const handleEditOpen = (notification: NotificationItem) => {
         router.get(edit(notification.id).url);
     };

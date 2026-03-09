@@ -72,13 +72,9 @@ export function getNotificationColumns({
                 const dateValue = row.getValue('publishedAt');
                 return (
                     <div className="whitespace-nowrap">
-                        {format(
-                            new Date(dateValue as string),
-                            'dd MMM yyyy HH:mm:ss',
-                            {
-                                locale: es,
-                            },
-                        )}
+                        {format(new Date(dateValue as string), 'dd MMM yyyy', {
+                            locale: es,
+                        })}
                     </div>
                 );
             },

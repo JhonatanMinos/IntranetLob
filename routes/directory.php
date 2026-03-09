@@ -15,4 +15,6 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('directory/shops', [StoreController::class, 'index'])->name('shops.index');
+    Route::post('directory/shops', [StoreController::class, 'store'])->name('shops.store');
+    Route::put('directory/shops/{shops}', [StoreController::class, 'update'])->name('shops.update');
 });

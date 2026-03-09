@@ -26,9 +26,7 @@ class Notification extends Model
         'created_by',
     ];
 
-    protected $casts = [
-        'published_at' => 'datetime',
-    ];
+
 
     public function toSearchableArray()
     {

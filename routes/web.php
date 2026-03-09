@@ -9,9 +9,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return redirect()->route('login');
 })->name('home');
 
 Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -23,9 +21,6 @@ Route::resource('processes', ProcessController::class)->middleware(['auth','veri
 Route::get('/services', function () {
     return Inertia::render('services');
 })->name('services');
-
-
-
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/directory.php';
