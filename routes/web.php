@@ -6,13 +6,16 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProcessController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
 Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::patch('notifications/{id}/read', function (string $id) {
+    auth()->user()->notifications()->findOrFail($id)->markAsRead();
+    return back();
+})->middleware('auth')->name('notifications.read');
 
 Route::resource('events', EventController::class)->middleware(['auth', 'verified']);
 Route::resource('notifications', NotificationController::class)->middleware(['auth', 'verified']);

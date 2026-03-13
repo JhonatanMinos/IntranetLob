@@ -48,7 +48,6 @@ function FileIcon({ ext }: { ext?: string }) {
 }
 
 export default function Processes({ folders }: Props) {
-    console.log(folders);
     const [path, setPath] = useState<number[]>([]);
 
     const levels: FolderNode[][] = [];

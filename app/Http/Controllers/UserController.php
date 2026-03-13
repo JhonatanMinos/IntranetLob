@@ -37,7 +37,24 @@ class UserController extends Controller
             'can' => [
                 'create' => $request->user()->can('create', User::class),
             ],
+        ]);
+    }
 
+    public function corpo(Request $request)
+    {
+        $this->authorize('viewAny', User::class);
+
+        $searchInput = $request->search;
+        $users = $this->userService->searchUsers($searchInput);
+
+        return Inertia::render('directory/corporate', [
+            'data' => UserResource::collection($users),
+            'departments' => $this->departmentService->getAllDepartments(),
+            'stores' => $this->storeService->getAllStores(),
+            'company' => Company::all(),
+            'can' => [
+                'create' => $request->user()->can('create', User::class),
+            ],
         ]);
     }
 

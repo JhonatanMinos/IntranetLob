@@ -3,6 +3,7 @@ import {
   BookOpen,
   Briefcase,
   CalendarCog,
+  FileUser,
   Flag,
   Folder,
   FolderSymlink,
@@ -28,6 +29,7 @@ import { index as events } from '@/routes/events';
 import { index as notifications } from '@/routes/notifications';
 import { index as processes } from '@/routes/processes';
 import { index as users } from '@/routes/users';
+import { index as files } from '@/routes/employeeFiles';
 import type { NavItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
 
@@ -62,6 +64,12 @@ const mainNavItems: NavItem[] = [
     href: events(),
     icon: CalendarCog,
     can: 'view Event',
+  },
+  {
+    title: 'Expedientes',
+    href: files(),
+    icon: FileUser,
+    can: 'view Files',
   },
 ];
 

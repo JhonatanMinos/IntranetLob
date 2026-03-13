@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeFileController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -11,10 +12,22 @@ use Inertia\Inertia;
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', '/settings/profile');
+    Route::get('employee-files', [EmployeeFileController::class,'index'])->name('employeeFiles.index');
+    Route::get('employee-files/{employeeFile}', [EmployeeFileController::class, 'show'])->name('employeeFiles.show');
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('settings/payroll', [ProfileController::class, 'payroll'])->name('profile.payroll');
+    Route::prefix('settings/employee-files')->group(function () {
+        Route::get('/', [EmployeeFileController::class, 'edit'])
+            ->name('employeeFiles.edit');
+        Route::get('{employeeFile}/document/{type}', [EmployeeFileController::class, 'download'])
+            ->name('employeeFiles.download');
+        Route::put('{employeeFile}/document', [EmployeeFileController::class, 'updateDocument'])
+            ->name('employeeFiles.updateDocument');
+        Route::put('{employeeFile}/status', [EmployeeFileController::class, 'updateStatus'])
+            ->name('employeeFiles.updateStatus');
+    });
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

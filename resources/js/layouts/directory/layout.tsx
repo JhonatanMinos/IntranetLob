@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { FormUser } from '@/pages/directory/form-user';
 import { FormStore } from '@/pages/directory/form-store';
 import { index as shops } from '@/routes/shops';
-import { index as users } from '@/routes/users';
+import { index as users, corpo } from '@/routes/users';
 import type { NavItem, SimpleModel, Store } from '@/types';
 
 const barNavItems: NavItem[] = [
@@ -35,6 +35,12 @@ const barNavItems: NavItem[] = [
         icon: null,
         can: '',
     },
+    {
+        title: 'Corporativo',
+        href: corpo().url,
+        icon: null,
+        can: '',
+    },
 ];
 
 interface DirectoryLayoutProps {
@@ -45,7 +51,7 @@ interface DirectoryLayoutProps {
     stores?: Store[];
     company?: SimpleModel[];
     can: {
-        create: boolean;  
+        create: boolean;
     };
 }
 
@@ -58,7 +64,6 @@ export default function DirectoryLayout({
     company,
     can,
 }: DirectoryLayoutProps) {
-    console.log(can);
     const { isCurrentUrl } = useCurrentUrl();
     const activeItem = barNavItems.find((item) => isCurrentUrl(item.href));
     const [open, setOpen] = useState(false);
@@ -69,7 +74,7 @@ export default function DirectoryLayout({
         <div className="flex h-full flex-col px-3 py-5">
             <div className="md:fex-row md:items-between flex flex-col justify-between gap-4 border-b pb-4">
                 <nav className="-mb-px flex justify-between gap-6">
-                    <div>
+                    <div className="m-4 flex gap-1 rounded-xl bg-muted p-1">
                         {barNavItems.map((barNavItem) => {
                             const active = isCurrentUrl(barNavItem.href);
                             return (
@@ -77,9 +82,9 @@ export default function DirectoryLayout({
                                     key={barNavItem.href}
                                     href={barNavItem.href}
                                     className={cn(
-                                        'border-b-2 px-1 pb-2 text-sm font-medium whitespace-nowrap transition-colors',
+                                        'rounded-md border p-1 text-sm font-medium whitespace-nowrap transition-colors',
                                         active
-                                            ? 'border-primary text-primary'
+                                            ? 'border-ring text-primary'
                                             : 'border-transparent text-muted-foreground hover:border-muted hover:text-foreground',
                                     )}
                                 >
@@ -133,7 +138,7 @@ export default function DirectoryLayout({
                 </main>
                 {/* ASIDE */}
                 {aside && (
-                    <aside className="min-h-0 overflow-y-auto border-l pl-4 z-10">
+                    <aside className="z-10 min-h-0 overflow-y-auto border-l pl-4">
                         {aside}
                     </aside>
                 )}

@@ -20,31 +20,26 @@ const data = [
         period: '2026-01',
         date: '2026-01-05',
         reference: 'INV-001',
-        amount: 1500.0,
     },
     {
         period: '2026-01',
         date: '2026-01-12',
         reference: 'INV-002',
-        amount: 2750.5,
     },
     {
         period: '2026-02',
         date: '2026-02-03',
         reference: 'INV-003',
-        amount: 980.75,
     },
     {
         period: '2026-02',
         date: '2026-02-18',
         reference: 'INV-004',
-        amount: 3200.0,
     },
     {
         period: '2026-03',
         date: '2026-03-01',
         reference: 'INV-005',
-        amount: 450.25,
     },
 ];
 export default function Payroll() {

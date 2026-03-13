@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import PaginationGeneric from '@/components/pagination';
 import { useDeleteUser } from '@/hooks/use-delete-user';
@@ -8,6 +8,7 @@ import { index as users } from '@/routes/users';
 import type {
     BreadcrumbItem,
     PaginatedResponse,
+    SharedData,
     SimpleModel,
     Store,
     User,
@@ -15,7 +16,7 @@ import type {
 import { EditUserDialog } from './components/edit-user-dialog';
 import { UserCard } from './components/user-card';
 
-interface UsersDirectoryProps {
+interface UsersDirectoryProps extends SharedData {
     data: PaginatedResponse<User>;
     departments: SimpleModel[];
     stores: Store[];
@@ -30,13 +31,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Usuarios', href: users().url },
 ];
 
-export default function Users({
-    data,
-    departments,
-    stores,
-    company,
-    can,
-}: UsersDirectoryProps) {
+export default function Users() {
+    const { data, departments, stores, company, can } =
+        usePage<UsersDirectoryProps>().props;
     const [open, setOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const handleDelete = useDeleteUser();

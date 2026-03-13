@@ -18,7 +18,9 @@ class NotificationDTO
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
         public ?string $deletedAt = null,
-    ) {}
+    ) {
+        //
+    }
 
     /**
      * Create DTO from a Notification model
@@ -35,10 +37,10 @@ class NotificationDTO
             type: $notification->type,
             createdBy: $notification->created_by,
             creatorName: $notification->creator?->name,
-            publishedAt: $notification->published_at?->toIso8601String(),
-            createdAt: $notification->created_at?->toIso8601String(),
-            updatedAt: $notification->updated_at?->toIso8601String(),
-            deletedAt: $notification->deleted_at?->toIso8601String(),
+            publishedAt: $notification->published_at,
+            createdAt: $notification->created_at,
+            updatedAt: $notification->updated_at,
+            deletedAt: $notification->deleted_at,
         );
     }
 

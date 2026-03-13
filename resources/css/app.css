@@ -176,6 +176,10 @@
         border-width: 0px !important;
     }
 
+    .rbc-month-view {
+        border-radius: 0.75rem !important;
+    }
+
     /* Hover en días del mes */
     .rbc-day-bg:hover {
         background-color: rgb(243 244 246 / 0.8) !important; /* gray-100 */

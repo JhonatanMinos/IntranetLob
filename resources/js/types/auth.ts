@@ -7,8 +7,9 @@ export type User = {
     phone?: string | null;
     birthday?: string | null; // Y-m-d format
     dateEntry?: string | null; // Y-m-d format
-    avatar_path?: string;
-    email_verified_at: string | null;
+    avatarPath?: string;
+    emailVerifiedAt: string | null;
+    curp: string | null;
     two_factor_enabled?: boolean;
     roles?: string;
     created_at: string;

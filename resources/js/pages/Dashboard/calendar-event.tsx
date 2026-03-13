@@ -30,7 +30,7 @@ const localizer = dateFnsLocalizer({
 });
 
 export function CalendarEvent({ events }: CalendarAgendaProps) {
-  const [view, setView] = useState(Views.MOUNTH);
+  const [view, setView] = useState(Views.MONTH);
   const [date, setDate] = useState(new Date());
   const parsedEvents = useMemo(
     () =>
@@ -69,8 +69,8 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
   };
 
   const CustomToolbar = (toolbar: any) => {
-    const goToBack = () => toolbar.onNavigate('Prev');
-    const goToNext = () => toolbar.onNavigate('Next');
+    const goToBack = () => toolbar.onNavigate('PREV');
+    const goToNext = () => toolbar.onNavigate('NEXT');
     const goToToday = () => toolbar.onNavigate('TODAY');
 
     return (
@@ -106,7 +106,7 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
   };
 
   return (
-    <div className="h-[700px] w-full">
+    <div className="h-full w-full">
       <BigCalendar
         localizer={localizer}
         culture="es"
@@ -117,14 +117,14 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
         onView={setView}
         date={date}
         onNavigate={setDate}
-        Views={['month', 'week', 'day', 'agenda']}
+        views={['month', 'week', 'day', 'agenda']}
         components={{ toolbar: CustomToolbar }}
         eventPropGetter={eventStyleGetter}
         messages={{
           today: 'hoy',
           previous: 'Anterior',
           next: 'Siguiente',
-          mounth: 'Mes',
+          month: 'Mes',
           week: 'Semana',
           day: 'Dia',
           agenda: 'Agenda',
@@ -133,7 +133,7 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
           event: 'Evento',
           noEventsInRange: 'No hay eventos en este rango',
         }}
-        className="overflow-y-auto rounded-xl"
+        className="overflow-y-auto"
       />
     </div>
   );
