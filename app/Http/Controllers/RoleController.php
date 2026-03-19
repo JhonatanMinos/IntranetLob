@@ -26,14 +26,14 @@ class RoleController extends Controller
             'name' => $request->name,
         ]);
 
-        return back();
+        return back()->with('success', 'Se creo con exito el rol');
     }
 
     public function update(Request $request, Role $role)
     {
         $role->permissions()->sync($request->permissions);
 
-        return back()->with('success', 'Permissions updated');
+        return back()->with('success', 'Permisos actualizados');
     }
 
     public function destroy(Role $role)

@@ -70,7 +70,7 @@ class UserController extends Controller
 
         $this->userService->createUser($request->validated());
 
-        return redirect()->route('users.index');
+        return redirect()->route('users.index')->with('success', 'Se creo con exito la tienda');
     }
 
     public function show()

@@ -83,7 +83,7 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="h-screem flex flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
                     <div className="rounded bg-background lg:col-span-2">
                         <CarouselLob />
@@ -96,15 +96,18 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
                 </div>
             </div>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="h-[80vh] w-full max-w-5xl overflow-hidden rounded-lg shadow-lg md:h-[70vh] md:w-[90vw] md:max-w-none">
-                    <DialogHeader>
+                <DialogContent className="flex max-w-5xl flex-col gap-0 overflow-hidden rounded-lg p-0 shadow-lg md:h-[90vh] md:w-[90vw] md:max-w-none">
+                    <DialogHeader className="shrink-0 px-6 pt-6 pb-4">
                         <DialogTitle>Calendario</DialogTitle>
                     </DialogHeader>
-                    <div className="flex h-full flex-row gap-6">
-                        <div className="flex flex-1">
+
+                    <div className="flex min-h-0 flex-1 flex-row gap-6 px-6 pb-6">
+                        {/* Calendario: min-h-0 es clave para que flex no lo desborde */}
+                        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                             <CalendarEvent events={events} />
                         </div>
-                        <aside className="flex h-full w-full shrink-0 flex-col overflow-y-auto p-6 lg:w-[300px]">
+
+                        <aside className="flex h-full w-full shrink-0 flex-col overflow-y-auto lg:w-[300px]">
                             <div className="mb-6">
                                 <h2 className="mb-1 text-xl font-medium text-white">
                                     Eventos del dia
@@ -113,6 +116,7 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
                                     {format(today, 'dd MMM yyyy')}
                                 </p>
                             </div>
+
                             {events?.length > 0 ? (
                                 events.map((event) => (
                                     <div
@@ -131,9 +135,9 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
                                             <div className="flex items-center gap-2 text-xs">
                                                 <span
                                                     className={`h-2 w-2 rounded-full ${modifiersClassNames[event.type]}`}
-                                                ></span>
+                                                />
                                                 <span
-                                                    className={`group-hover:text-oragen-200 ${modifiersText[event.type]} `}
+                                                    className={`${modifiersText[event.type]} group-hover:text-orange-200`}
                                                 >
                                                     {event.type}
                                                 </span>
@@ -152,7 +156,7 @@ export default function Dashboard({ events, news, birthday }: DashboardProps) {
                         </aside>
                     </div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>{' '}
         </AppLayout>
     );
 }

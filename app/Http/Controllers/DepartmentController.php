@@ -4,16 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
+use App\Http\Resources\DepartmentResource;
 use App\Models\Department;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DepartmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $search = $request->search;
+        $userAll = User::count();
+        $query = Department::with('users')
+            ->when($search, function ($q) use ($search) {
+                return Department::search($search)
+                ->query(fn($q) => $q->with('users'));
+            });
+
+        $data = $query->orderBy('name')->paginate(10)->withQueryString();
+        return Inertia::render('rrhh/departments', [
+            'data' => DepartmentResource::collection($data),
+            'userAll' => $userAll,
+        ]);
     }
 
     /**
@@ -29,7 +45,13 @@ class DepartmentController extends Controller
      */
     public function store(StoreDepartmentRequest $request)
     {
-        //
+        $this->authorize('create', Department::class);
+
+        $department = Department::create([
+            'name' => $request->name,
+        ]);
+
+        return back()->with('success', 'Departamento creado correctamente.');
     }
 
     /**
@@ -53,7 +75,13 @@ class DepartmentController extends Controller
      */
     public function update(UpdateDepartmentRequest $request, Department $department)
     {
-        //
+        $this->authorize('update', $department);
+
+        $department->update([
+            'name' => $request->name,
+        ]);
+
+        return back()->with('success', 'Departamento actualizado correctamente.');
     }
 
     /**
@@ -61,6 +89,8 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        //
+        $this->authorize('delete', $department);
+        $department->delete();
+        return back()->with('success', 'Departamento eliminado correctamente.');
     }
 }

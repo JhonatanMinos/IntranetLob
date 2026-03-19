@@ -106,7 +106,7 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
   };
 
   return (
-    <div className="h-full w-full">
+    <div className="h-screen w-full">
       <BigCalendar
         localizer={localizer}
         culture="es"

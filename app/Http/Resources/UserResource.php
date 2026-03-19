@@ -31,8 +31,8 @@ class UserResource extends JsonResource
             'storeName' => $this->store?->name,
             'roles' => $this->roles,
             'avatarPath' => $this->avatar_path,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
             'can' => [
                 'update' => $request->user()->can('update', $this->resource),
                 'delete' => $request->user()->can('delete', $this->resource),

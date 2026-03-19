@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem, SharedData } from '@/types';
 import { Head, usePage, router } from '@inertiajs/react';
-import { edit } from '@/routes/employeeFiles';
+import { edit, update } from '@/routes/employeeFiles';
 import SettingsLayout from '@/layouts/settings/layout';
 import Heading from '@/components/heading';
 import {
@@ -26,6 +26,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import DocumentRow from '@/components/DocumentRow';
+import { useState } from 'react';
+import { useFlash } from '@/hooks/use-flash';
 
 type DocumentStatus = 'pending' | 'approved' | 'rejected' | null;
 
@@ -138,6 +140,21 @@ export default function EmployeeFiles() {
         .props;
     const getInitials = useInitials();
 
+    const [emergencyContactName, setEmergencyContactName] = useState<string>(
+        employeeFile.emergency_contact_name ?? '',
+    );
+    const [emergencyContactPhone, setEmergencyContactPhone] = useState<string>(
+        employeeFile.emergency_contact_phone ?? '',
+    );
+
+    const updateEmergencyContact = () => {
+        router.put(update({ employeeFile: employeeFile.id }).url, {
+            emergency_contact_name: emergencyContactName,
+            emergency_contact_phone: emergencyContactPhone,
+        });
+    };
+
+    useFlash();
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Documentos" />
@@ -253,8 +270,11 @@ export default function EmployeeFiles() {
                                     <Input
                                         id="emergency_contact_name"
                                         className="mt-1 block w-full"
-                                        defaultValue={
-                                            employeeFile.emergency_contact_name
+                                        value={emergencyContactName}
+                                        onChange={(e) =>
+                                            setEmergencyContactName(
+                                                e.target.value,
+                                            )
                                         }
                                         name="emergency_contact_name"
                                         required
@@ -269,8 +289,11 @@ export default function EmployeeFiles() {
                                     <Input
                                         id="emergency_contact_phone"
                                         className="mt-1 block w-full"
-                                        defaultValue={
-                                            employeeFile.emergency_contact_phone
+                                        value={emergencyContactPhone}
+                                        onChange={(e) =>
+                                            setEmergencyContactPhone(
+                                                e.target.value,
+                                            )
                                         }
                                         name="emergency_contact_phone"
                                         required
@@ -278,7 +301,12 @@ export default function EmployeeFiles() {
                                         placeholder="Telefono de contacto de emergencia"
                                     />
                                 </div>
-                                <Button>Agregar</Button>
+                                <Button
+                                    type="button"
+                                    onClick={updateEmergencyContact}
+                                >
+                                    Guardar
+                                </Button>
                             </form>
                         </CardContent>
                     </Card>

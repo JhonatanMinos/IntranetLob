@@ -13,7 +13,7 @@ class EmployeeFilePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
     /**
@@ -21,7 +21,7 @@ class EmployeeFilePolicy
      */
     public function view(User $user, EmployeeFile $employeeFile): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class EmployeeFilePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('sa') || $user->hasRole('rh') || $user->hasRole('user');
     }
 
     /**
@@ -37,7 +37,12 @@ class EmployeeFilePolicy
      */
     public function update(User $user, EmployeeFile $employeeFile): bool
     {
-        return false;
+
+        if ($user->hasRole('sa') || $user->hasRole('rh')) {
+            return true;
+        }
+
+        return $user->id === $employeeFile->user_id;
     }
 
     /**

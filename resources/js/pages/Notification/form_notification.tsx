@@ -100,9 +100,17 @@ export default function FormNotification({
     const onSubmit = async (data: Notification) => {
         try {
             if (isEdit && notification?.id) {
-                await router.put(update(notification.id).url, data);
+                await router.put(update(notification.id).url, data, {
+                    onSuccess: () => {
+                        router.visit(notifications().url);
+                    },
+                });
             } else {
-                await router.post(store().url, data);
+                await router.post(store().url, data, {
+                    onSuccess: () => {
+                        router.visit(notifications().url);
+                    },
+                });
             }
         } catch (error) {
             console.error(error);

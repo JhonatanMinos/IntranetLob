@@ -91,7 +91,7 @@ function DocumentRow({
                         ref={inputRef}
                         type="file"
                         name="document"
-                        accept=".pdf,.jpg,.jpeg,.png,.docx"
+                        accept=".pdf,.jpg,.docx"
                         className="hidden"
                         disabled={uploading}
                         onChange={handleChange}

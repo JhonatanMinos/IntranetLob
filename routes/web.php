@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProcessController;
+use App\Http\Controllers\RrhhController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,3 +28,4 @@ Route::get('/services', function () {
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/directory.php';
+require __DIR__ . '/rrhh.php';

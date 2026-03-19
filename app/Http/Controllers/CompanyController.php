@@ -4,18 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
+use App\Http\Resources\CompanyResource;
 use App\Models\Company;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $search = $request->search;
 
+        if ($search) {
+            $data = Company::search($search)
+                ->query(fn($q) => $q->with('user'))
+                ->orderBy('name')
+                ->paginate(10);
+            $data->appends(request()->query());
+        } else {
+            $data = Company::with('user')
+                ->orderBy('name')
+                ->paginate(10)
+                ->withQueryString();
+        }
+
+        return Inertia::render('rrhh/company', [
+            'data'   => CompanyResource::collection($data),
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -29,7 +48,13 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
-        //
+        $this->authorize('create', Company::class);
+
+        $query = Company::create([
+            'name' => $request->name,
+        ]);
+
+        return back()->with('success', 'Compania creada con exito');
     }
 
     /**
@@ -53,7 +78,13 @@ class CompanyController extends Controller
      */
     public function update(UpdateCompanyRequest $request, Company $company)
     {
-        //
+        $this->authorize('update', $company);
+
+        $company->update([
+            'name' => $request->name,
+        ]);
+
+        return back()->with('success', 'Compañía actualizada correctamente.');
     }
 
     /**
@@ -61,6 +92,8 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        //
+        $this->authorize('delete', $company);
+        $company->delete();
+        return back()->with('success', 'Compania elimidada correctamente');
     }
 }

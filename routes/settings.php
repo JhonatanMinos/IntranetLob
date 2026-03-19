@@ -21,6 +21,8 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('settings/employee-files')->group(function () {
         Route::get('/', [EmployeeFileController::class, 'edit'])
             ->name('employeeFiles.edit');
+        Route::put('{employeeFile}', [EmployeeFileController::class, 'update'])
+            ->name('employeeFiles.update');
         Route::get('{employeeFile}/document/{type}', [EmployeeFileController::class, 'download'])
             ->name('employeeFiles.download');
         Route::put('{employeeFile}/document', [EmployeeFileController::class, 'updateDocument'])

@@ -23,6 +23,7 @@ import {
 import { store, update } from '@/routes/shops'; // Asumiendo que existen estas rutas
 import { createStoreSchema, updateStoreSchema } from '@/schemas/storeSchema';
 import type { Store } from '@/types';
+import { useFlash } from '@/hooks/use-flash';
 
 interface CreateStoreProps {
     store?: Store;
@@ -51,33 +52,21 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
         if (isEdit && store?.id) {
             await router.put(update(store.id).url, data, {
                 onSuccess: () => {
-                    toast.success('Tienda actualizada', {
-                        position: 'bottom-right',
-                    });
                     onSuccess?.();
                 },
-                onError: () => {
-                    toast.error('Error al actualizar la tienda', {
-                        position: 'bottom-right',
-                    });
-                },
+                onError: () => {},
             });
         } else {
             await router.post(store().url, data, {
                 onSuccess: () => {
-                    toast.success('Tienda creada', {
-                        position: 'bottom-right',
-                    });
                     onSuccess?.();
                 },
-                onError: () => {
-                    toast.error('Error al crear la tienda', {
-                        position: 'bottom-right',
-                    });
-                },
+                onError: () => {},
             });
         }
     };
+
+    useFlash();
 
     return (
         <Form {...form}>
@@ -99,7 +88,10 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
                             <FormItem>
                                 <FormLabel>Nombre</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Nombre de la tienda" {...field} />
+                                    <Input
+                                        placeholder="Nombre de la tienda"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -112,7 +104,10 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
                             <FormItem>
                                 <FormLabel>Código</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Código de la tienda" {...field} />
+                                    <Input
+                                        placeholder="Código de la tienda"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -124,16 +119,25 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Tipo</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Selecciona un tipo" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="tienda">Tienda</SelectItem>
-                                        <SelectItem value="bodega">Bodega</SelectItem>
-                                        <SelectItem value="oficina">Oficina</SelectItem>
+                                        <SelectItem value="tienda">
+                                            Tienda
+                                        </SelectItem>
+                                        <SelectItem value="bodega">
+                                            Bodega
+                                        </SelectItem>
+                                        <SelectItem value="oficina">
+                                            Oficina
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -186,7 +190,10 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
                             <FormItem>
                                 <FormLabel>Código Postal</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Código Postal" {...field} />
+                                    <Input
+                                        placeholder="Código Postal"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -195,7 +202,9 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
                 </div>
                 <div className="flex justify-end">
                     <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isSubmitting && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
                         {isEdit ? 'Actualizar Tienda' : 'Crear Tienda'}
                     </Button>
                 </div>
@@ -203,3 +212,4 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
         </Form>
     );
 }
+

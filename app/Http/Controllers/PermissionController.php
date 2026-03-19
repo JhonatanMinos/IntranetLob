@@ -13,7 +13,7 @@ class PermissionController extends Controller
             'name' => $request->name,
         ]);
 
-        return back();
+        return back()->with('success', 'Se creo el permiso');
     }
 
     public function destroy(Permission $permission)
