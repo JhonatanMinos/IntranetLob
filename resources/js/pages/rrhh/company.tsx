@@ -11,9 +11,17 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { useMemo } from 'react';
 import { getCompanyColumns } from './components/columns-company';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import TableGeneric from '@/components/table';
 import PaginationGeneric from '@/components/pagination';
 import { useFlash } from '@/hooks/use-flash';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Building2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'capital humando', href: '/rrhh' },
@@ -26,6 +34,7 @@ interface CompanyProps extends PageProps {
 
 export default function Company() {
     const { data } = usePage<CompanyProps>().props;
+    console.log(data);
 
     const handleDelete = (company: SimpleModel) => {
         router.delete(destroy(company.id), {
@@ -51,8 +60,27 @@ export default function Company() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Capital Humano" />
             <RrhhLayout>
-                <TableGeneric table={table} />
-                <PaginationGeneric links={data.links} meta={data.meta} />
+                <div className="grid grid-cols-3 gap-4">
+                    {data.data.map((companys) => (
+                        <Card key={companys.id}>
+                            <CardHeader className="flex justify-center">
+                                <Avatar className="h-20 w-20 overflow-hidden rounded-full">
+                                    <AvatarFallback>
+                                        <Building2 className="h-10 w-10" />
+                                    </AvatarFallback>
+                                </Avatar>
+                            </CardHeader>
+                            <CardContent className="flex flex-col items-center justify-center gap-4">
+                                <p>{companys.name}</p>
+                            </CardContent>
+                            <Separator />
+                            <CardFooter></CardFooter>
+                        </Card>
+                    ))}
+                </div>
+                {data.meta.total >= 10 && (
+                    <PaginationGeneric links={data.links} meta={data.meta} />
+                )}
             </RrhhLayout>
         </AppLayout>
     );
