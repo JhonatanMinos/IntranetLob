@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\DTOs\NotificationDTO;
 use App\Models\Notification;
+use App\Models\User;
+use App\Notifications\DocumentRejected;
 use App\Notifications\NuevaNotificacion;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
@@ -23,10 +25,10 @@ class NotificationService
                 ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'bg-red-500'],
             ],
             'types' => [
-                ['value' => 'aviso', 'label' => 'Aviso'],
-                ['value' => 'noticia', 'label' => 'Noticia'],
-                ['value' => 'articulo', 'label' => 'Articulo'],
-                ['value' => 'mensaje', 'label' => 'Mensaje'],
+                ['value' => 'adn', 'label' => 'ADN'],
+                ['value' => 'beneficios', 'label' => 'Beneficios'],
+                ['value' => 'colaboradores', 'label' => 'Colaboradores'],
+                ['value' => 'avisos', 'label' => 'Aviso'],
             ],
         ];
     }
@@ -85,6 +87,10 @@ class NotificationService
 
         $user = auth()->user();
         $user->notify(new NuevaNotificacion($notification));
+        $message = $data['title'];
+        $note = $data['subject'];
+        $user->notify(new DocumentRejected($notifiType = 'comunication', $message, $note));
+
 
         return NotificationDTO::fromModel($notification);
     }
@@ -144,6 +150,12 @@ class NotificationService
     {
         $notification->update(['published_at' => now()]);
         $notification->load('creator');
+
+        // Enviar notificación por mail a todos los usuarios
+        $allUsers = User::all();
+        foreach ($allUsers as $user) {
+            $user->notify(new NuevaNotificacion($notification));
+        }
 
         return NotificationDTO::fromModel($notification);
     }

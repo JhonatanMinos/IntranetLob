@@ -25,7 +25,7 @@ class UpdateNotificationRequest extends FormRequest
             'title' => 'required|string|max: 255',
             'content' => 'required|string',
             'priority' => 'required|string|in:normal,importante,urgente',
-            'type' => 'required|string|in:aviso,noticia,articulo,mensaje',
+            'type' => 'required|string|in:adn,beneficios,colaboradores,avisos',
             'published_at' => 'required|date',
         ];
     }

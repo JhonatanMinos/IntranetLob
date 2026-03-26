@@ -36,10 +36,10 @@ class NuevaNotificacion extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
-            ->subject($this->notification['title'])
-            ->line($this->notification['content'])
-            ->line($this->notification['imagePath'])
-            ->line('Gracias.');
+            ->subject($this->notification->title)
+            ->view('emails.notification', [
+                'data' => $this->notification,
+            ]);
     }
 
     /**

@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router } from '@inertiajs/react';
 import {
-    Bell,
     CloudCheck,
+    Dna,
     Loader2,
-    Mail,
-    MessageSquare,
-    Newspaper,
+    Megaphone,
     Rocket,
+    Sparkles,
+    UsersRound,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -32,24 +32,80 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import {
     create,
+    edit,
     index as notifications,
     store,
     update,
 } from '@/routes/notifications';
 import { notificationSchema } from '@/schemas/notificationSchema';
 import type { BreadcrumbItem, Notification } from '@/types';
+import { Children, useCallback, useRef, useState } from 'react';
+import {
+    Select,
+    SelectContent,
+    SelectTrigger,
+    SelectItem,
+    SelectValue,
+} from '@/components/ui/select';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const TYPE_ICONS: Record<string, React.ReactNode> = {
+    adn: <Dna className="h-6 w-6" color="#80ff00" />,
+    beneficios: <Sparkles color="#0a33f5" className="h-6 w-6" />,
+    colaboradores: <UsersRound color="#ff8000" className="h-6 w-6" />,
+    avisos: <Megaphone color="#ff0000" className="h-6 w-6" />,
+};
+
+const SUBJECT_OPTIONS = [
     {
-        title: 'Notificaciones',
-        href: notifications().url,
+        type: 'ADN',
+        children: [
+            { value: 'procesos_proyectos', label: 'Procesos y proyectos' },
+            { value: 'nuestros_logros', label: 'Nuestros Logros' },
+            { value: 'reconocimientos', label: 'Reconocimientos' },
+            { value: 'calendario_comercial', label: 'Calendario comercial' },
+            { value: 'adn_organizacional', label: 'ADN organizacional' },
+            {
+                value: 'valores_organizacionales',
+                label: 'Valores Organizacionales',
+            },
+            { value: 'conmemoracion', label: 'Conmemoración' },
+            { value: 'efemerides', label: 'Efemérides' },
+        ],
     },
     {
-        title: 'Formulario de notificacion',
-        href: create().url,
+        type: 'Beneficios',
+        children: [
+            { value: 'cumpleanos', label: 'Cumpleaños' },
+            {
+                value: 'beneficios_colaboradores',
+                label: 'Beneficios a Colaboradores',
+            },
+            { value: 'eventos', label: 'Eventos' },
+            { value: 'servicios', label: 'Servicios' },
+            { value: 'escucharte', label: 'Queremos Escucharte' },
+            {
+                value: 'salud_seguridad_higiene',
+                label: 'Salud, Seguridad e Higiene',
+            },
+        ],
+    },
+    {
+        type: 'Colaboradores',
+        children: [
+            { value: 'oportunidad', label: 'Oportunidad' },
+            { value: 'comunidad', label: 'Comunidad' },
+            { value: 'solidaridad', label: 'Solidaridad' },
+            { value: 'participa', label: 'Participa' },
+            { value: 'induccion', label: 'Inducción' },
+            { value: 'bienvenidos', label: 'Bienvenidos' },
+            { value: 'capacitacion', label: 'Capacitación' },
+        ],
+    },
+    {
+        type: 'Avisos',
+        children: [], // listo para usar
     },
 ];
-
 interface priority {
     value: string;
     label: string;
@@ -73,6 +129,15 @@ export default function FormNotification({
     notification,
 }: Props) {
     const isEdit = !!notification;
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Notificaciones', href: notifications().url },
+        {
+            title: isEdit ? 'Editar notificación' : 'Crear notificación',
+            href: isEdit ? edit(notification.id).url : create().url,
+        },
+    ];
 
     const form = useForm({
         resolver: zodResolver(notificationSchema),
@@ -86,38 +151,44 @@ export default function FormNotification({
             published_at: notification?.publishedAt ?? '',
         },
     });
-    const {
-        formState: { isSubmitting },
-    } = form;
 
-    const typeIcons: Record<string, React.ReactNode> = {
-        aviso: <Mail className="h-6 w-6" />,
-        noticia: <Bell className="h-6 w-6" />,
-        articulo: <Newspaper className="h-6 w-6" />,
-        mensaje: <MessageSquare className="h-6 w-6" />,
-    };
+    const selectedType = form.watch('type');
 
-    const onSubmit = async (data: Notification) => {
-        try {
+    const subjectOptions =
+        SUBJECT_OPTIONS.find(
+            (group) => group.type.toLowerCase() === selectedType?.toLowerCase(),
+        )?.children ?? [];
+
+    const formRef = useRef(form);
+    formRef.current = form;
+
+    const onSubmit = useCallback(
+        (data: Notification) => {
+            console.log(data);
+            setIsSubmitting(true);
+
+            const options = {
+                preserveScroll: true,
+                forceFormData: true,
+                onSuccess: () => router.visit(notifications().url),
+                onError: (errors: Record<string, string>) => {
+                    Object.entries(errors).forEach(([field, message]) => {
+                        formRef.current.setError(field as keyof typeof data, {
+                            message,
+                        });
+                    });
+                },
+                onFinish: () => setIsSubmitting(false),
+            };
+
             if (isEdit && notification?.id) {
-                await router.put(update(notification.id).url, data, {
-                    onSuccess: () => {
-                        router.visit(notifications().url);
-                    },
-                });
+                router.put(update(notification.id).url, data, options);
             } else {
-                await router.post(store().url, data, {
-                    onSuccess: () => {
-                        router.visit(notifications().url);
-                    },
-                });
+                router.post(store().url, data, options);
             }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-        }
-    };
+        },
+        [isEdit, notification?.id, form],
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -126,13 +197,7 @@ export default function FormNotification({
                 <h1 className="mb-4 text-xl font-bold">
                     {isEdit ? 'Editar Notificación' : 'Crear Notificación'}
                 </h1>
-                <Form
-                    {...form}
-                    options={{
-                        preserveScroll: true,
-                        forceFormData: true,
-                    }}
-                >
+                <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-6 p-4 sm:p-6"
@@ -158,6 +223,7 @@ export default function FormNotification({
                                                         {...field}
                                                     />
                                                 </FormControl>
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -167,12 +233,53 @@ export default function FormNotification({
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Asunto</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Breve resumen del contenido"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <Select
+                                                    onValueChange={
+                                                        field.onChange
+                                                    }
+                                                    value={field.value}
+                                                    // Reset subject cuando cambia type
+                                                    key={selectedType}
+                                                    disabled={
+                                                        !selectedType ||
+                                                        subjectOptions.length ===
+                                                            0
+                                                    }
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue
+                                                                placeholder={
+                                                                    !selectedType
+                                                                        ? 'Primero selecciona un tipo'
+                                                                        : subjectOptions.length ===
+                                                                            0
+                                                                          ? 'Sin opciones disponibles'
+                                                                          : 'Selecciona un asunto'
+                                                                }
+                                                            />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {subjectOptions.map(
+                                                            (option) => (
+                                                                <SelectItem
+                                                                    key={
+                                                                        option.value
+                                                                    }
+                                                                    value={
+                                                                        option.value
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        option.label
+                                                                    }
+                                                                </SelectItem>
+                                                            ),
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>{' '}
+                                                <FormMessage /> <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -190,6 +297,7 @@ export default function FormNotification({
                                                         rows={6}
                                                     />
                                                 </FormControl>
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -251,6 +359,7 @@ export default function FormNotification({
                                                                                 para
                                                                                 subir
                                                                             </span>
+                                                                            <br />
                                                                             o
                                                                             arrastra
                                                                             y
@@ -427,11 +536,9 @@ export default function FormNotification({
                                                                         aria-label="type-notification"
                                                                         className="sr-only"
                                                                     />
-
-                                                                    {/* ICONO DINÁMICO */}
                                                                     <div className="text-muted-foreground">
                                                                         {
-                                                                            typeIcons[
+                                                                            TYPE_ICONS[
                                                                                 types
                                                                                     .value
                                                                             ]
@@ -456,7 +563,7 @@ export default function FormNotification({
                                 <CardHeader>
                                     <CardTitle>Publicacion</CardTitle>
                                     <CardDescription>
-                                        Fecha y hora de publicacion
+                                        Fecha publicacion
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -467,7 +574,7 @@ export default function FormNotification({
                                             const formattedValue = field.value
                                                 ? new Date(field.value)
                                                       .toISOString()
-                                                      .slice(0, 16)
+                                                      .slice(0, 10)
                                                 : '';
 
                                             return (
@@ -475,7 +582,7 @@ export default function FormNotification({
                                                     <FormLabel>Fecha</FormLabel>
                                                     <FormControl>
                                                         <Input
-                                                            type="datetime-local"
+                                                            type="date"
                                                             {...field}
                                                             value={
                                                                 formattedValue
@@ -493,11 +600,11 @@ export default function FormNotification({
                     </form>
                 </Form>
             </div>
-            <div className="sticky bottom-0 flex w-full flex-row items-center justify-between bg-sidebar p-4">
+            <div className="sticky bottom-0 flex w-full items-center justify-between bg-sidebar p-4">
                 <div className="text-md flex items-center">
                     <CloudCheck className="m-2 rounded-full bg-muted-foreground p-1" />
                     <span className="text-muted-foreground">
-                        publicar notificacion
+                        Publicar notificación
                     </span>
                 </div>
                 <Button
@@ -505,7 +612,7 @@ export default function FormNotification({
                     disabled={isSubmitting}
                     form="FormNotification"
                 >
-                    {isSubmitting ? 'Publicando...' : 'Publicar notificacion'}
+                    {isSubmitting ? 'Publicando...' : 'Publicar notificación'}
                     {isSubmitting ? (
                         <Loader2 className="animate-spin" />
                     ) : (

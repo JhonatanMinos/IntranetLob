@@ -12,7 +12,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Scout\Searchable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -23,7 +22,6 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use SoftDeletes;
     use HasRoles;
-    use Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -70,16 +68,6 @@ class User extends Authenticatable
             'date_entry' => 'date',
         ];
     }
-
-    public function toSearchableArray()
-    {
-        return [
-            'name' => $this->name,
-            'email' => $this->email,
-            'position' => $this->position,
-        ];
-    }
-
     // Mutator para encriptar la contraseña automáticamente
     public function setPasswordAttribute($value)
     {

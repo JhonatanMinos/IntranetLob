@@ -14,15 +14,21 @@ class UserService
      */
     public function searchUsers(?string $search = null): LengthAwarePaginator
     {
-        $query = User::with('department', 'company', 'store')
-            ->when($search, function ($q) use ($search) {
-                return User::search($search)
-                    ->query(fn($q) => $q->with('department', 'company', 'store'));
+        return User::with('department', 'company', 'store')
+        ->when($search, function ($q) use ($search) {
+            $q->where(function ($q) use ($search) {
+                // Busca en campos del usuario
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('employee_number', 'like', "%{$search}%")
+                  ->orWhereHas('department', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
             });
-
-        return $query->orderBy('department_id')
-            ->paginate(10)
-            ->withQueryString();
+        })
+        ->orderBy('department_id')
+        ->paginate(10)
+        ->withQueryString();
     }
 
     /**

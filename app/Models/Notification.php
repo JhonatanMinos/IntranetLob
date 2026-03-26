@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Scout\Searchable;
 
 class Notification extends Model
@@ -14,6 +15,7 @@ class Notification extends Model
     use HasFactory;
     use SoftDeletes;
     use Searchable;
+    use Notifiable;
 
     protected $fillable = [
         'title',
@@ -42,10 +44,11 @@ class Notification extends Model
     public const PRIORITY_IMPORTANT = 'importante';
     public const PRIORITY_URGENT = 'urgente';
 
+    public const TYPE_ADN = 'adn';
+    public const TYPE_BENEFICIOS = 'beneficios';
+    public const TYPE_COLABORADORES = 'colaboradores';
     public const TYPE_AVISO = 'aviso';
-    public const TYPE_NOTICIA = 'noticia';
-    public const TYPE_ARTICULO = 'articulo';
-    public const TYPE_MENSAJE = 'mensaje';
+
 
     public function creator(): BelongsTo
     {
