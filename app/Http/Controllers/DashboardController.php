@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\NotificationDTO;
 use App\Services\EventService;
 use App\Services\NotificationService;
 use App\Services\UserService;
@@ -19,7 +20,7 @@ class DashboardController extends Controller
     {
         return Inertia::render('dashboard', [
             'events' => $this->eventService->getCurrentMonthEvents(),
-            'new' => $this->notificationService->getAllNotifications()->take(5),
+            'news' => $this->notificationService->getAllNotifications(),
             'birthday' => $this->getUsersBirthday(),
         ]);
     }
@@ -41,8 +42,8 @@ class DashboardController extends Controller
             $birthday = \Carbon\Carbon::parse($user->birthday);
             $birthdayThisYear = $birthday->setYear($now->year);
 
-            return $birthdayThisYear->month === $now->month &&
-                   $birthdayThisYear->day >= $now->day;
+            return $birthdayThisYear->month === $now->month
+                   && $birthdayThisYear->day >= $now->day;
         })
         ->sortBy(function ($user) {
             return \Carbon\Carbon::parse($user->birthday)->day;

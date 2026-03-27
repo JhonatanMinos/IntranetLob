@@ -20,9 +20,9 @@ class NotificationService
     {
         return [
             'priorities' => [
-                ['value' => 'normal', 'label' => 'Normal', 'color' => 'bg-green-500'],
-                ['value' => 'importante', 'label' => 'Importante', 'color' => 'bg-yellow-500'],
-                ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'bg-red-500'],
+                ['value' => 'normal', 'label' => 'Normal', 'color' => 'green-500'],
+                ['value' => 'importante', 'label' => 'Importante', 'color' => 'yellow-500'],
+                ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'red-500'],
             ],
             'types' => [
                 ['value' => 'adn', 'label' => 'ADN'],
@@ -51,11 +51,14 @@ class NotificationService
     /**
      * Get all notifications
      */
-    public function getAllNotifications(): \Illuminate\Database\Eloquent\Collection
+    public function getAllNotifications(): \Illuminate\Support\Collection
     {
+        //dd(Notification::with('creator')->latest('published_at')->get());
         return Notification::with('creator')
             ->latest('published_at')
-            ->get();
+            ->take(5)
+            ->get()
+             ->map(fn($notification) => NotificationDTO::fromModel($notification));
     }
 
     /**
@@ -77,7 +80,6 @@ class NotificationService
             $imagePath = $this->storeNotificationImage($data['imagen_path']);
             $data['imagen_path'] = $imagePath;
         } else {
-            // Si no hay imagen, remover la clave
             unset($data['imagen_path']);
         }
 
@@ -88,7 +90,7 @@ class NotificationService
         $user = auth()->user();
         $user->notify(new NuevaNotificacion($notification));
         $message = $data['title'];
-        $note = $data['subject'];
+        $note = $data['id'];
         $user->notify(new DocumentRejected($notifiType = 'comunication', $message, $note));
 
 

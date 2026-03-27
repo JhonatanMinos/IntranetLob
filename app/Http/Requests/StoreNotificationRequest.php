@@ -24,10 +24,11 @@ class StoreNotificationRequest extends FormRequest
         return [
             'title' => 'required|string|max: 255',
             'subject' => 'required|string',
-            'content' => 'required|string',
+            'content' => 'nullable|string',
             'priority' => 'required|string|in:normal,importante,urgente',
             'type' => 'required|string|in:adn,beneficios,colaboradores,avisos',
             'published_at' => 'required|date',
+            'imagen_path' => 'nullable|image|mimes:jpg,jpeg,png,webp',
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\NotificationDTO;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
 use App\Http\Resources\NotificationResource;
@@ -10,6 +11,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class NotificationController extends Controller
 {
@@ -59,9 +61,12 @@ class NotificationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Notification $notification)
+    public function show(Notification $notification): Response
     {
-        abort(404);
+        return Inertia::render('Notification/notification', [
+            'notification' => NotificationDTO::fromModel($notification),
+            ...$this->notificationService->getFormData(),
+        ]);
     }
 
     /**
