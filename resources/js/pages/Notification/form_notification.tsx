@@ -410,11 +410,11 @@ export default function FormNotification({ priorities, types, notification }: Pr
             </form>
           </Form>
         </div>
-        <div className="shrink-0 border-t bg-sidebar">
+        <div className="inset-shadow-xl shrink-0 border-t">
           <div className="mx-auto flex w-full max-w-7xl items-center justify-between p-4">
-            <div className="text-md flex items-center">
-              <CloudCheck className="m-2 rounded-full bg-muted-foreground p-1" />
-              <span className="text-muted-foreground">Publicar notificación</span>
+            <div className="text-md flex items-center gap-4">
+              <CloudCheck className="h-6 w-6" />
+              <span className="text-foreground">Publicar notificación</span>
             </div>
             <Button type="submit" disabled={isSubmitting} form="FormNotification">
               {isSubmitting ? 'Publicando...' : 'Publicar notificación'}

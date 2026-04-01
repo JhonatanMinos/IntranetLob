@@ -58,3 +58,11 @@ export const SUBJECT_OPTIONS = [
         children: [{ value: 'obituario', label: 'Obituario' }], // listo para usar
     },
 ];
+
+export const EVENT_BADGE: Record<string, string> = {
+    festivo: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
+    evento: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    cumpleanos: 'bg-pink-50 text-pink-700 dark:bg-pink-950 dark:text-pink-300',
+    lanzamiento:
+        'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300',
+};

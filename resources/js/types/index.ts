@@ -185,6 +185,7 @@ export interface priority {
 export interface types {
     value: string;
     label: string;
+    subtitle: string;
 }
 
 // Legacy aliases for backwards compatibility

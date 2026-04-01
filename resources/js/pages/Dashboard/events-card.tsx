@@ -1,6 +1,6 @@
 import { format, getDaysInMonth, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CalendarDays, Calendars } from 'lucide-react';
+import { CalendarDays, Calendars, CalendarX } from 'lucide-react';
 import {
   Label,
   PolarAngleAxis,
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // ajusta la ruta según tu estructura
 import { type ChartConfig, ChartContainer } from '@/components/ui/chart';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { EVENT_BADGE } from '@/lib/arrays';
 
 const today = new Date();
 const dayOfMonth = today.getDate();
@@ -26,11 +27,9 @@ const chartData = [
   },
 ];
 
-const chartConfig: ChartConfig = {
-  visitors: {
-    label: 'Progreso',
-  },
-};
+const chartConfig = {
+  visitors: { label: 'Día', color: 'hsl(var(--chart-1))' },
+} satisfies ChartConfig;
 
 type CalendarEvent = {
   id: string;
@@ -47,7 +46,7 @@ interface CalendarAgendaProps {
 
 export function EventsCard({ setOpen, events }: CalendarAgendaProps) {
   return (
-    <Card className="flex flex-col">
+    <Card className="flex-1">
       <CardHeader className="flex flex-row items-center gap-2">
         <Calendars className="h-5 w-5 text-primary" />
         <CardTitle className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
@@ -55,9 +54,9 @@ export function EventsCard({ setOpen, events }: CalendarAgendaProps) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-1 pb-0">
-        <div className="relative mx-auto aspect-square max-h-[250px]">
-          <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
+      <CardContent className="pb-0">
+        <div className="relative">
+          <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[220px]">
             <RadialBarChart
               width={220}
               height={220}
@@ -120,7 +119,7 @@ export function EventsCard({ setOpen, events }: CalendarAgendaProps) {
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute top-21 right-20 rounded-full shadow"
+                className="absolute top-4 right-4 rounded-full"
                 onClick={() => setOpen(true)}
               >
                 <CalendarDays />
@@ -132,22 +131,33 @@ export function EventsCard({ setOpen, events }: CalendarAgendaProps) {
           </Tooltip>
         </div>
         <div className="w-full space-y-3">
-          {events?.map(({ id, title, type, start_date }) => (
-            <div key={id} className="flex items-center gap-3 rounded-lg bg-muted/40 p-3">
-              <div className="text-center">
-                <p className="text-sm font-bold text-primary">
-                  {format(parseISO(start_date), 'dd')}
-                </p>
-                <p className="text-sm font-semibold text-muted-foreground">
-                  {format(parseISO(start_date), 'MMM')}
-                </p>
+          {events?.length > 0 ? (
+            events?.map(({ id, title, type, start_date }) => (
+              <div key={id} className="flex items-center gap-3 rounded-lg bg-muted/40 p-3">
+                <div className="text-center">
+                  <p className="text-sm font-bold text-primary">
+                    {format(parseISO(start_date), 'dd')}
+                  </p>
+                  <p className="text-sm font-semibold text-muted-foreground">
+                    {format(parseISO(start_date), 'MMM')}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">{title}</p>
+                  <span
+                    className={`rounded px-1.5 py-0.5 text-[10px] font-medium capitalize ${EVENT_BADGE[type] ?? 'bg-muted text-muted-foreground'}`}
+                  >
+                    {type}
+                  </span>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold">{title}</p>
-                <CardDescription className="text-xs">{type}</CardDescription>
-              </div>
+            ))
+          ) : (
+            <div className="flex flex-col items-center gap-2 py-4">
+              <CalendarX className="h-5 w-5 text-muted-foreground/40" />
+              <p className="text-xs text-muted-foreground">Sin eventos este mes</p>
             </div>
-          ))}
+          )}
         </div>
       </CardContent>
     </Card>

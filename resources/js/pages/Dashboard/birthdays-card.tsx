@@ -31,7 +31,7 @@ export function BirthDays({ birthdays }: Props) {
     };
 
     return (
-        <Card>
+        <Card className="flex-1">
             <CardHeader className="flex flex-row items-center gap-2">
                 <Cake className="h-5 w-5 text-primary" />
                 <CardTitle className="text-xs font-medium text-muted-foreground uppercase">

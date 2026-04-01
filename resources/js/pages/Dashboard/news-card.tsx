@@ -42,7 +42,7 @@ export function NewsCard({ news }: NewsCardProps) {
         );
     return (
         <div>
-            <h2 className="mb-10 text-2xl">Noticias y Articulos</h2>
+            <h2 className="mb-10 text-2xl">Noticias y Artículos</h2>
             <div className="grid grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
                 {news.map(
                     ({ publishedAt, title, content, imagenPath, type, id }) => (
@@ -67,7 +67,7 @@ export function NewsCard({ news }: NewsCardProps) {
                                         {placeholderIcon[type] ?? '📋'}
                                     </span>
                                 </div>
-                            )}{' '}
+                            )}
                             <CardHeader className="flex-1">
                                 <CardAction>
                                     <Badge
