@@ -24,7 +24,7 @@ class StoreNotificationRequest extends FormRequest
         return [
             'title' => 'required|string|max: 255',
             'subject' => 'required|string',
-            'content' => 'nullable|string',
+            'content' => 'nullable|string|max:4294967295',
             'priority' => 'required|string|in:normal,importante,urgente',
             'type' => 'required|string|in:adn,beneficios,colaboradores,avisos',
             'published_at' => 'required|date',

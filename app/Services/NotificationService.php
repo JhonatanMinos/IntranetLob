@@ -20,15 +20,15 @@ class NotificationService
     {
         return [
             'priorities' => [
-                ['value' => 'normal', 'label' => 'Normal', 'color' => 'green-500'],
-                ['value' => 'importante', 'label' => 'Importante', 'color' => 'yellow-500'],
-                ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'red-500'],
+                ['value' => 'normal', 'label' => 'Normal', 'color' => 'bg-green-500', 'bg' => 'bg-green-500/20'],
+                ['value' => 'importante', 'label' => 'Importante', 'color' => 'bg-yellow-500', 'bg' => 'bg-yellow-500/20'],
+                ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'bg-red-500', 'bg' => 'bg-red-500/20'],
             ],
             'types' => [
-                ['value' => 'adn', 'label' => 'ADN'],
-                ['value' => 'beneficios', 'label' => 'Beneficios'],
-                ['value' => 'colaboradores', 'label' => 'Colaboradores'],
-                ['value' => 'avisos', 'label' => 'Aviso'],
+                ['value' => 'adn', 'label' => 'ADN', 'subtitle' => 'Cultura & Identidad'],
+                ['value' => 'beneficios', 'label' => 'Beneficios', 'subtitle' => 'Recursos & Servicios'],
+                ['value' => 'colaboradores', 'label' => 'Colaboradores', 'subtitle' => 'Coumidad & Binestar'],
+                ['value' => 'avisos', 'label' => 'Aviso', 'subtitle' => 'Urgencias'],
             ],
         ];
     }
@@ -90,7 +90,7 @@ class NotificationService
         $user = auth()->user();
         $user->notify(new NuevaNotificacion($notification));
         $message = $data['title'];
-        $note = $data['id'];
+        $note = $data['subject'];
         $user->notify(new DocumentRejected($notifiType = 'comunication', $message, $note));
 
 

@@ -15,8 +15,8 @@ export const notificationSchema = z.object({
         .string()
         .refine(
             (val) =>
-                ['adn', 'beneficios', 'colaboradores', 'aviso'].includes(val),
+                ['adn', 'beneficios', 'colaboradores', 'avisos'].includes(val),
             'Selecciona un tipo',
         ),
-    published_at: z.string().min(1, 'La fecha de publicacion es obligatorio'),
+    published_at: z.string().optional(),
 });

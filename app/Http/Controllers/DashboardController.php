@@ -20,7 +20,7 @@ class DashboardController extends Controller
     {
         return Inertia::render('dashboard', [
             'events' => $this->eventService->getCurrentMonthEvents(),
-            'news' => $this->notificationService->getAllNotifications(),
+            'news' => $this->notificationService->getAllNotifications()->take(3),
             'birthday' => $this->getUsersBirthday(),
         ]);
     }
