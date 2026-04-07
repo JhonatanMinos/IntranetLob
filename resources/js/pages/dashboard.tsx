@@ -1,6 +1,10 @@
+import type { PageProps } from '@inertiajs/core';
 import { Head, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
+import { CalendarX } from 'lucide-react';
 import { useState } from 'react';
+import { DashboardSkeleton } from '@/components/skeletons/dashboard-skeleton';
+import { Card } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -14,10 +18,7 @@ import { CarouselLob } from '@/pages/Dashboard/carousel-lob';
 import { EventsCard } from '@/pages/Dashboard/events-card';
 import { NewsCard } from '@/pages/Dashboard/news-card';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem, Notification } from '@/types';
-import { CalendarX } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { DashboardSkeleton } from '@/components/skeletons/dashboard-skeleton';
+import type { BreadcrumbItem, Event, Notification } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,14 +27,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface Event {
-    id: number;
-    title: string;
-    type: 'event' | 'holiday' | 'birthday';
-    start_date: string; // ISO string
-    end_date: string;
-}
-
 interface birthday {
     id: number;
     name: string;
@@ -41,7 +34,7 @@ interface birthday {
     birthday: string;
 }
 
-interface DashboardProps {
+interface DashboardProps extends PageProps {
     events: Event[];
     news: Notification[];
     birthday: birthday[];

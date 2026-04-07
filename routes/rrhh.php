@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\BrandController;
-use App\Models\Company;
+use App\Http\Controllers\PayRollController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\CompanyController;
@@ -17,6 +17,11 @@ Route::middleware('auth')->group(
             Route::get('company', [CompanyController::class, 'index'])->name('company.index');
             Route::post('company', [CompanyController::class, 'store'])->name('company.store');
             Route::delete('company/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
+            Route::resource('payroll', PayRollController::class)->except(['edit', 'update']);
+            Route::post('payroll/{payrollUpload}/retry', [PayRollController::class, 'retry'])
+                ->name('payroll.retry');
+            Route::get('payroll/{payrollUpload}/status', [PayRollController::class, 'status'])
+                    ->name('payroll.status');
         });
     }
 );

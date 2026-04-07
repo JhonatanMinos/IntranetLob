@@ -15,7 +15,6 @@ class ProcessService
 
         $items = [];
 
-
         foreach (scandir($path) as $entry) {
             if ($entry === '.' || $entry === '..') {
                 continue;
@@ -26,16 +25,18 @@ class ProcessService
             if (is_dir($fullPath)) {
                 $items[] = [
                     'label'    => $label,
+                    'path'      => $fullPath,
                     'children' => $this->buildTree($fullPath),
                 ];
             } else {
                 $items[] = [
-                    'label'    => $label,
-                    'file'     => $entry,
-                    'ext'      => pathinfo($entry, PATHINFO_EXTENSION),
-                    'size'     => $this->formatSize(filesize($fullPath)),
-                    'modified' => date('Y-m-d H:i', filemtime($fullPath)),
-                    'url'      => asset('storage/sistemas-de-calidad/'
+                    'label'     => $label,
+                    'path'      => $fullPath,
+                    'file'      => $entry,
+                    'ext'       => pathinfo($entry, PATHINFO_EXTENSION),
+                    'size'      => $this->formatSize(filesize($fullPath)),
+                    'modified'  => date('Y-m-d H:i', filemtime($fullPath)),
+                    'url'       => asset('storage/sistemas-de-calidad/'
                                     . $this->relativePath($fullPath)),
                 ];
             }

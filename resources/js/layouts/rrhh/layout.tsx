@@ -1,16 +1,7 @@
-import { NavItem } from '@/types';
-import {
-    index as department,
-    store as storeDepartment,
-} from '@/routes/departament';
-import { index as company, store as storeCompany } from '@/routes/company';
-import { ReactNode, useEffect, useState } from 'react';
-import { useCurrentUrl } from '@/hooks/use-current-url';
 import { Link, router } from '@inertiajs/react';
-import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/sonner';
-import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { type ReactNode, useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -21,6 +12,16 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Toaster } from '@/components/ui/sonner';
+import { useCurrentUrl } from '@/hooks/use-current-url';
+import { cn } from '@/lib/utils';
+import { index as company, store as storeCompany } from '@/routes/company';
+import {
+    index as department,
+    store as storeDepartment,
+} from '@/routes/departament';
+import { create, index as payroll } from '@/routes/payroll';
+import type { NavItem } from '@/types';
 
 const barNavItems: NavItem[] = [
     {
@@ -32,6 +33,12 @@ const barNavItems: NavItem[] = [
     {
         title: 'Companias',
         href: company().url,
+        icon: null,
+        can: '',
+    },
+    {
+        title: 'Nominas',
+        href: payroll().url,
         icon: null,
         can: '',
     },
@@ -51,6 +58,11 @@ const itemConfig: Record<
         label: 'Nombre de la empresa',
         placeholder: 'Ej. LOB',
     },
+    Nominas: {
+        title: 'Subir nómina',
+        label: '',
+        placeholder: '',
+    },
 };
 
 interface RrhhLayoutProps {
@@ -64,6 +76,7 @@ export default function RrhhLayout({ children }: RrhhLayoutProps) {
 
     const activeItem = barNavItems.find((item) => isCurrentUrl(item.href));
     const config = activeItem ? itemConfig[activeItem.title] : null;
+    const isPayRoll = activeItem?.title === 'Nominas';
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -136,7 +149,16 @@ export default function RrhhLayout({ children }: RrhhLayoutProps) {
                         </div>
                     </nav>
                 </div>
-                <Button className="shrink-0" onClick={() => setOpen(true)}>
+                <Button
+                    className="shrink-0"
+                    onClick={() => {
+                        if (isPayRoll) {
+                            router.get(create().url);
+                        } else {
+                            setOpen(true);
+                        }
+                    }}
+                >
                     <Plus size={16} />
                     {config?.title ?? 'Agregar'}
                 </Button>

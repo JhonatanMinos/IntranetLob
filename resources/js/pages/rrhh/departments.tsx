@@ -1,19 +1,22 @@
-import PaginationGeneric from '@/components/pagination';
-import AppLayout from '@/layouts/app-layout';
-import RrhhLayout from '@/layouts/rrhh/layout';
-import { index as departament } from '@/routes/departament';
-import type { BreadcrumbItem, Department, PaginatedResponse } from '@/types';
-import { PageProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { getDeparmentColumns } from './components/columns-deparments';
 import { useMemo } from 'react';
+import PaginationGeneric from '@/components/pagination';
 import TableGeneric from '@/components/table';
-import { destroy } from '@/routes/departament';
 import { useFlash } from '@/hooks/use-flash';
+import AppLayout from '@/layouts/app-layout';
+import RrhhLayout from '@/layouts/rrhh/layout';
+import { index as departament, destroy } from '@/routes/departament';
+import type {
+    BreadcrumbItem,
+    Department,
+    PageProps,
+    PaginatedResponse,
+} from '@/types';
+import { getDeparmentColumns } from './components/columns-deparments';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'capital humando', href: '/rrhh' },
+    { title: 'Capital Humano', href: '/rrhh' },
     { title: 'Departamentos', href: departament().url },
 ];
 

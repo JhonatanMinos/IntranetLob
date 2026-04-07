@@ -1,12 +1,26 @@
-import AppLayout from '@/layouts/app-layout';
-import { index as processes } from '@/routes/processes';
-import type { BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { useState } from 'react';
+import type { PageProps } from '@inertiajs/core';
+import { Head, usePage } from '@inertiajs/react';
+import {
+    ChevronRight,
+    File,
+    FileSpreadsheet,
+    FileText,
+    Plus,
+    Trash2,
+} from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
+import {
+    createFolder,
+    deleteItem,
+    getCurrentFolder,
+    getItemsAtPath,
+} from '@/lib/processHelper';
 import { cn } from '@/lib/utils';
-import { ChevronRight, FileText, FileSpreadsheet, File } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { index as processes } from '@/routes/processes';
+import type { BreadcrumbItem, FolderNode } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,31 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface FolderNode {
-    label: string;
-    children?: FolderNode[];
-    file?: string;
-    ext?: string;
-    size?: string;
-    modified?: string;
-    url?: string;
-}
-
-interface Props {
-    folders: FolderNode[];
-}
-
-function getItemsAtPath(tree: FolderNode[], path: number[]): FolderNode[] {
-    let current = tree;
-    for (const index of path) {
-        const node = current[index];
-        if (!node?.children || !Array.isArray(node.children)) return [];
-        current = node.children;
-    }
-    return current;
-}
-
-function FileIcon({ ext }: { ext?: string }) {
+export function FileIcon({ ext }: { ext?: string }) {
     const base = 'h-4 w-4 shrink-0';
     if (ext === 'pdf') return <FileText className={cn(base, 'text-red-400')} />;
     if (['xlsx', 'xls'].includes(ext ?? ''))
@@ -47,26 +37,37 @@ function FileIcon({ ext }: { ext?: string }) {
     return <File className={cn(base, 'text-blue-400')} />;
 }
 
-export default function Processes({ folders }: Props) {
-    const [path, setPath] = useState<number[]>([]);
+interface Props extends PageProps {
+    folders: FolderNode[];
+}
 
-    const levels: FolderNode[][] = [];
-    for (let i = 0; i <= path.length; i++) {
-        levels.push(getItemsAtPath(folders, path.slice(0, i)));
-    }
+export default function Processes() {
+    const { folders } = usePage<Props>().props;
+    const [path, setPath] = useState<number[]>([]);
+    const currentFolder = getCurrentFolder(folders, path);
+
+    const levels = useMemo(() => {
+        const result: FolderNode[][] = [];
+        for (let i = 0; i <= path.length; i++) {
+            result.push(getItemsAtPath(folders, path.slice(0, i)));
+        }
+        return result;
+    }, [folders, path]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Procesos" />
-            <div className="h-screem flex flex-col overflow-hidden font-sans">
+            <div className="flex h-screen flex-col overflow-hidden font-sans">
                 <div className="flex gap-2 overflow-x-auto p-4">
                     {levels.map((items, levelIndex) => {
+                        console.log(items);
                         const parentIndex = path[levelIndex - 1];
                         const parentItems = levels[levelIndex - 1];
                         const parentLabel =
                             levelIndex === 0
                                 ? 'Gestion de Calidad'
                                 : (parentItems?.[parentIndex]?.label ?? '—');
-
+                        console.log(parentLabel);
                         return (
                             <Card
                                 key={levelIndex}
@@ -83,12 +84,14 @@ export default function Processes({ folders }: Props) {
                                     const isSelected =
                                         path[levelIndex] === itemIndex;
                                     return (
-                                        <>
+                                        <div key={item.label}>
                                             {itemIsFile ? (
                                                 <a
                                                     key={item.label}
                                                     href={item.url}
                                                     download={item.label}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
                                                     className={cn(
                                                         'flex items-center justify-between gap-2 rounded-md p-2 transition-colors hover:bg-muted',
                                                     )}
@@ -101,10 +104,22 @@ export default function Processes({ folders }: Props) {
                                                         </span>
 
                                                         <span className="block text-[10px] text-muted-foreground">
-                                                            {item.ext?.toUpperCase()}{' '}
+                                                            {item.ext?.toUpperCase()}
                                                             · {item.size}
                                                         </span>
                                                     </div>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        onClick={() =>
+                                                            deleteItem(
+                                                                item.path,
+                                                                'file',
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 />
+                                                    </Button>
                                                 </a>
                                             ) : (
                                                 <button
@@ -140,9 +155,18 @@ export default function Processes({ folders }: Props) {
                                                     />
                                                 </button>
                                             )}
-                                        </>
+                                        </div>
                                     );
                                 })}
+                                <Button
+                                    size="lg"
+                                    variant="ghost"
+                                    onClick={() =>
+                                        createFolder(currentFolder?.path ?? '')
+                                    }
+                                >
+                                    <Plus />
+                                </Button>
                             </Card>
                         );
                     })}

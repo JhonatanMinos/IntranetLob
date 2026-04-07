@@ -149,6 +149,32 @@ export interface Role {
     permissions?: Permission[];
 }
 
+export interface FolderNode {
+    label: string;
+    path: string;
+    children?: FolderNode[];
+    file?: string;
+    ext?: string;
+    size?: string;
+    modified?: string;
+    url?: string;
+}
+
+export interface PayrollUpload {
+    id: number;
+    period_start: string; // formato: dd/mm/yyyy
+    period_end: string; // formato: dd/mm/yyyy
+    period_type: string;
+    zip_original_name: string;
+    status: string;
+    progress: number;
+    total_files: number;
+    processed_files: number;
+    error_message: string | null;
+    uploader: string;
+    created_at: string; // formato: dd/mm/yyyy HH:mm
+}
+
 export interface PaginationLink {
     url: string | null;
     label: string;
