@@ -160,4 +160,10 @@ class User extends Authenticatable
             ->whereNull('read_at')
             ->orderBy('created_at', 'desc');
     }
+
+    /** @return HasMany<App\Models\PayRollFiles, self>*/
+    public function payRollFiles(): HasMany
+    {
+        return $this->hasMany(PayRollFiles::class);
+    }
 }

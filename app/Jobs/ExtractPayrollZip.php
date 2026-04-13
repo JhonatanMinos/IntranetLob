@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Models\PayRoll;
 use App\Models\PayRollFiles;
 use App\Models\User;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -145,7 +144,7 @@ class ExtractPayrollZip implements ShouldQueue
             $employee   = $this->matchEmployee($file->getFilename());
             $storedPath = $this->storeFile($file);
 
-            PayrollFile::create([
+            PayRollFiles::create([
                 'payroll_upload_id' => $this->upload->id,
                 'employee_id'       => $employee?->id,
                 'file_path'         => $storedPath,
@@ -154,14 +153,13 @@ class ExtractPayrollZip implements ShouldQueue
                 'file_size'         => $file->getSize(),
                 'status'            => $employee ? 'matched' : 'unmatched',
             ]);
-
         } catch (Throwable $e) {
             // Un archivo fallido no detiene el resto
             Log::warning("PayrollUpload [{$this->upload->id}] archivo fallido: {$file->getFilename()}", [
                 'error' => $e->getMessage(),
             ]);
 
-            PayrollFile::create([
+            PayRollFiles::create([
                 'payroll_upload_id' => $this->upload->id,
                 'employee_id'       => null,
                 'file_path'         => '',

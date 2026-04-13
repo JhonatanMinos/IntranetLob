@@ -21,12 +21,15 @@ export interface AssignRolesProps {
 }
 
 export default function AssignRoles({ data, roles }: AssignRolesProps) {
-    const handleRoleChange = async (userId: string, roleId: string) => {
+    const handleRoleChange = (userId: number, roleId: string) => {
         try {
             router.put(
                 assignRol({ user: userId }).url,
                 { role_id: Number(roleId) },
                 {
+                    preserveState: true,
+                    preserveScroll: true,
+                    only: ['users', 'flash'],
                     onSuccess: () => {
                         toast.success('Rol asignado correctamente', {
                             position: 'bottom-right',
@@ -37,10 +40,6 @@ export default function AssignRoles({ data, roles }: AssignRolesProps) {
                             position: 'bottom-right',
                         });
                     },
-                },
-                {
-                    preserveState: true,
-                    preserveScroll: true,
                 },
             );
         } catch (error) {

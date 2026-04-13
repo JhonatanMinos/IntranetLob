@@ -1,43 +1,46 @@
-import { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { CloudDownload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
-type Payroll = {
-    period: string;
-    date: string;
-    reference: string;
-    amount: number;
-};
+interface PayrollUser {
+    id: number;
+    file_path: string;
+    original_name: string;
+    mime_type: string;
+    file_size: number;
+    user_id: number | null;
+    name: string;
+    processed: number;
+    error_message: string | null;
+    created_at: string;
+    updated_at: string;
+}
 
-export function getPayrollColumns(): ColumnDef<Payroll>[] {
+interface PayrollPros {
+    onDownload: (item: PayrollUser) => void;
+}
+
+export function getPayrollColumns({
+    onDownload,
+}: PayrollPros): ColumnDef<PayrollUser>[] {
     return [
         {
-            header: 'Periodo',
-            accessorKey: 'period',
-        },
-        {
-            header: 'Fecha',
-            accessorKey: 'date',
-        },
-        {
-            header: 'referencia',
-            accessorKey: 'reference',
-            cell: ({ getValue }) => {
-                const reference = getValue<string>();
-                return <Badge variant="secondary">{reference}</Badge>;
-            },
+            header: 'Archivo',
+            accessorKey: 'original_name',
         },
         {
             header: '',
             id: 'actions',
-            cell: ({ row }) => (
-                <div className="flex justify-center gap-2">
-                    <Button>
-                        Descarga <CloudDownload />
-                    </Button>
-                </div>
-            ),
+            cell: ({ row }) => {
+                const payroll = row.original;
+                return (
+                    <div className="flex justify-center gap-2">
+                        <Button onClick={() => onDownload(payroll)}>
+                            <CloudDownload />
+                        </Button>
+                    </div>
+                );
+            },
         },
     ];
 }

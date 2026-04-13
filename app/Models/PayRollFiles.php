@@ -34,25 +34,26 @@ class PayRollFiles extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'payroll_id',
+        'user_id',
         'file_path',
         'original_name',
         'mime_type',
         'file_size',
-        'employee_id',
-        'status',
+        'processed',
         'error_message',
     ];
+
+    protected $table = 'payroll_files';
 
     /**
      * Obtiene el registro de nómina al que pertenece este archivo.
      *
      * @return BelongsTo<\App\Models\PayRoll, self>
      */
-    public function upload(): BelongsTo
+    /*public function upload(): BelongsTo
     {
         return $this->belongsTo(PayRoll::class, 'payroll_id');
-    }
+    }*/
 
 
     /**
@@ -62,6 +63,6 @@ class PayRollFiles extends Model
      */
     public function employee(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'employee_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

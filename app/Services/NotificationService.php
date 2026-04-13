@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendBulkNotifications;
 use App\DTOs\NotificationDTO;
 use App\Models\Notification;
 use App\Models\User;
@@ -20,15 +21,15 @@ class NotificationService
     {
         return [
             'priorities' => [
-                ['value' => 'normal', 'label' => 'Normal', 'color' => 'bg-green-500', 'bg' => 'bg-green-500/20'],
-                ['value' => 'importante', 'label' => 'Importante', 'color' => 'bg-yellow-500', 'bg' => 'bg-yellow-500/20'],
-                ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'bg-red-500', 'bg' => 'bg-red-500/20'],
+                ['value' => 'normal', 'label' => 'Normal', 'color' => 'bg-green-500'],
+                ['value' => 'importante', 'label' => 'Importante', 'color' => 'bg-yellow-500'],
+                ['value' => 'urgente', 'label' => 'Urgente', 'color' => 'bg-red-500'],
             ],
             'types' => [
-                ['value' => 'adn', 'label' => 'ADN', 'subtitle' => 'Cultura & Identidad'],
-                ['value' => 'beneficios', 'label' => 'Beneficios', 'subtitle' => 'Recursos & Servicios'],
-                ['value' => 'colaboradores', 'label' => 'Colaboradores', 'subtitle' => 'Coumidad & Binestar'],
-                ['value' => 'avisos', 'label' => 'Aviso', 'subtitle' => 'Urgencias'],
+                ['value' => 'adn', 'label' => 'ADN'],
+                ['value' => 'beneficios', 'label' => 'Beneficios'],
+                ['value' => 'colaboradores', 'label' => 'Colaboradores'],
+                ['value' => 'avisos', 'label' => 'Aviso'],
             ],
         ];
     }
@@ -51,14 +52,11 @@ class NotificationService
     /**
      * Get all notifications
      */
-    public function getAllNotifications(): \Illuminate\Support\Collection
+    public function getAllNotifications(): \Illuminate\Database\Eloquent\Collection
     {
-        //dd(Notification::with('creator')->latest('published_at')->get());
         return Notification::with('creator')
             ->latest('published_at')
-            ->take(5)
-            ->get()
-             ->map(fn($notification) => NotificationDTO::fromModel($notification));
+            ->get();
     }
 
     /**
@@ -80,19 +78,13 @@ class NotificationService
             $imagePath = $this->storeNotificationImage($data['imagen_path']);
             $data['imagen_path'] = $imagePath;
         } else {
+            // Si no hay imagen, remover la clave
             unset($data['imagen_path']);
         }
 
         $data['created_by'] = $createdBy;
         $notification = Notification::create($data);
         $notification->load('creator');
-
-        $user = auth()->user();
-        $user->notify(new NuevaNotificacion($notification));
-        $message = $data['title'];
-        $note = $data['subject'];
-        $user->notify(new DocumentRejected($notifiType = 'comunication', $message, $note));
-
 
         return NotificationDTO::fromModel($notification);
     }
@@ -153,11 +145,8 @@ class NotificationService
         $notification->update(['published_at' => now()]);
         $notification->load('creator');
 
-        // Enviar notificación por mail a todos los usuarios
-        $allUsers = User::all();
-        foreach ($allUsers as $user) {
-            $user->notify(new NuevaNotificacion($notification));
-        }
+        // Enviar notificación por mail a todos los usuarios usando job en background
+        SendBulkNotifications::dispatch($notification);
 
         return NotificationDTO::fromModel($notification);
     }

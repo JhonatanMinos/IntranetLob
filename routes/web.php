@@ -3,7 +3,6 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PayRollController;
 use App\Http\Controllers\ProcessController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;

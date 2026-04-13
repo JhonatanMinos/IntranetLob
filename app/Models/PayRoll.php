@@ -41,4 +41,9 @@ class PayRoll extends Model
     {
         return $this->hasMany(PayRollFiles::class);
     }
+
+    public function hasFailed(): bool
+    {
+        return $this->status === 'failed';
+    }
 }

@@ -1,3 +1,4 @@
+import { SquarePen, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Progress } from '@/components/ui/progress';
@@ -6,8 +7,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Department } from '@/types';
-import { SquarePen, Trash2Icon } from 'lucide-react';
+import type { Department } from '@/types';
 
 interface DeparmentProps {
     userAll: number;

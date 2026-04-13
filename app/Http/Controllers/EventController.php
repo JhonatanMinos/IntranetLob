@@ -49,7 +49,7 @@ class EventController extends Controller
 
         $this->eventService->createEvent($request->validated());
 
-        return redirect()->route('events.index')->with('success', 'Evento creado correctamente');
+        return back()->with('success', 'Evento creado correctamente');
     }
 
     /**

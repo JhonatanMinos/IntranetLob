@@ -3,15 +3,15 @@ import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Toaster } from '@/components/ui/sonner';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
+import { edit as employeeFiles } from '@/routes/employeeFiles';
 import { assign, edit, payroll } from '@/routes/profile';
 import { index as roles } from '@/routes/roles';
 import { show } from '@/routes/two-factor';
-import { edit as employeeFiles } from '@/routes/employeeFiles';
 import { edit as editPassword } from '@/routes/user-password';
 import type { NavItem } from '@/types';
-import { Toaster } from '@/components/ui/sonner';
 
 const sidebarNavItems: NavItem[] = [
     {
@@ -21,13 +21,13 @@ const sidebarNavItems: NavItem[] = [
         can: '',
     },
     {
-        title: 'Expediente',
+        title: 'Mi expediente',
         href: employeeFiles(),
         icon: null,
         can: '',
     },
     {
-        title: 'Nominas',
+        title: 'Mi nomina',
         href: payroll(),
         icon: null,
         can: '',

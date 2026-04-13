@@ -1,6 +1,6 @@
 import { Head, router } from '@inertiajs/react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { useMemo, Suspense, lazy } from 'react';
 import PaginationGeneric from '@/components/pagination';
 import TableGeneric from '@/components/table';
 import AppLayout from '@/layouts/app-layout';
@@ -13,6 +13,10 @@ import type {
     PaginatedResponse,
 } from '@/types';
 import { toast } from 'sonner';
+
+// Lazy load heavy components
+const LazyTableGeneric = lazy(() => import('@/components/table'));
+const LazyPaginationGeneric = lazy(() => import('@/components/pagination'));
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -60,8 +64,10 @@ export default function Notification({ data }: NotificationProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Notificaciones" />
             <NotificationLayout>
-                <TableGeneric table={table} />
-                <PaginationGeneric links={data.links} meta={data.meta} />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <LazyTableGeneric table={table} />
+                    <LazyPaginationGeneric links={data.links} meta={data.meta} />
+                </Suspense>
             </NotificationLayout>
         </AppLayout>
     );

@@ -21,9 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useFlash } from '@/hooks/use-flash';
 import { store, update } from '@/routes/events';
 import type { EventItem } from '@/types';
-import { useFlash } from '@/hooks/use-flash';
 
 const eventSchema = z.object({
   title: z.string().min(1, 'El título es requerido'),
@@ -65,11 +65,12 @@ export function CreateEvent({ event, onSuccess }: CreateEventProps) {
 
     if (isEditing && event) {
       router.put(update(event.id).url, data, {
+        preserveScroll: true,
+        preserveState: true,
         onSuccess: () => {
           setLoading(false);
           form.reset();
           onSuccess?.();
-          router.reload({ only: ['data'] });
         },
         onError: () => {
           setLoading(false);
@@ -77,11 +78,12 @@ export function CreateEvent({ event, onSuccess }: CreateEventProps) {
       });
     } else {
       router.post(store().url, data, {
+        preserveScroll: true,
+        preserveState: true,
         onSuccess: () => {
           setLoading(false);
           form.reset();
           onSuccess?.();
-          router.reload({ only: ['data'] });
         },
         onError: () => {
           setLoading(false);

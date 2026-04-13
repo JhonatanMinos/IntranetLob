@@ -19,7 +19,9 @@ class UserController extends Controller
         private UserService $userService,
         private DepartmentService $departmentService,
         private StoreService $storeService,
-    ) {}
+    ) {
+        //
+    }
 
     public function index(Request $request)
     {
@@ -94,7 +96,7 @@ class UserController extends Controller
         $roleId = (int) $request->role_id;
         $this->userService->assignRole($user, $roleId);
 
-        return redirect()->route('profile.assign')->with('success', 'Rol asignado');
+        return back()->with('success', 'Rol asignado');
     }
 
     public function destroy(User $user)

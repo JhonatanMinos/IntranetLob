@@ -15,27 +15,26 @@ return new class extends Migration {
         Schema::create('payroll_files', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignIdFor(PayRoll::class)->constrained()->cascadeOnDelete();
+            //$table->foreignIdFor(PayRoll::class)->constrained()->cascadeOnDelete();
 
             // Datos del archivo extraído
             $table->string('file_path');
             $table->string('original_name');
             $table->string('mime_type');
             $table->unsignedBigInteger('file_size');  // bytes
-
-            // A qué empleado corresponde (nullable — puede no resolverse)
-            $table->foreignIdFor(User::class, 'employee_id')
+            $table->foreignIdFor(User::class)
                   ->nullable()
                   ->constrained('users')
                   ->nullOnDelete();
-
-            $table->string('status')->default('pending');
+            //$table->string('status')->default('pending');
+            $table->boolean('processed')->default(false);
 
             $table->text('error_message')->nullable();
             $table->timestamps();
 
-            $table->index(['payroll_id', 'status']);
-            $table->index('employee_id');
+            //$table->index(['payroll_id', 'status']);
+
+            $table->unique(['original_name']);
         });
     }
 

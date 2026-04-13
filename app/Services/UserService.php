@@ -4,39 +4,35 @@ namespace App\Services;
 
 use App\DTOs\UserDTO;
 use App\Models\User;
+use App\Repositories\UserRepository;
+use App\Services\CacheService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
     /**
      * Search users with optional filters
      */
     public function searchUsers(?string $search = null): LengthAwarePaginator
     {
-        return User::with('department', 'company', 'store')
-        ->when($search, function ($q) use ($search) {
-            $q->where(function ($q) use ($search) {
-                // Busca en campos del usuario
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('employee_number', 'like', "%{$search}%")
-                  ->orWhereHas('department', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
-            });
-        })
-        ->orderBy('department_id')
-        ->paginate(10)
-        ->withQueryString();
+        return $this->userRepository->search($search);
     }
 
     /**
-     * Get all users with relationships
+     * Get all users with relationships (cached)
      */
     public function getAllUsers(): \Illuminate\Database\Eloquent\Collection
     {
-        return User::with('department', 'company', 'store')->get();
+        return CacheService::rememberQuery('all_users_with_relations', function () {
+            return $this->userRepository->all();
+        });
     }
 
     /**
@@ -44,8 +40,7 @@ class UserService
      */
     public function getUserById(int $userId): ?UserDTO
     {
-        $user = User::with('department', 'company', 'store')
-            ->find($userId);
+        $user = $this->userRepository->find($userId);
 
         return $user ? UserDTO::fromModel($user) : null;
     }

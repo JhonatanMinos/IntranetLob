@@ -18,10 +18,11 @@ Route::middleware('auth')->group(
             Route::post('company', [CompanyController::class, 'store'])->name('company.store');
             Route::delete('company/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
             Route::resource('payroll', PayRollController::class)->except(['edit', 'update']);
-            Route::post('payroll/{payrollUpload}/retry', [PayRollController::class, 'retry'])
+            Route::post('payroll/{payroll}/retry', [PayRollController::class, 'retry'])
                 ->name('payroll.retry');
-            Route::get('payroll/{payrollUpload}/status', [PayRollController::class, 'status'])
-                    ->name('payroll.status');
+            Route::get('payroll/{payroll}/status', [PayRollController::class, 'status'])
+                ->name('payroll.status');
+            Route::get('payroll/download/{id}', [PayRollController::class, 'download'])->name('payroll.download');
         });
     }
 );

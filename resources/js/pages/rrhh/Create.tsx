@@ -1,6 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Head } from '@inertiajs/react';
-import { CloudUpload, FolderArchive } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import {
+    CloudUpload,
+    FolderArchive,
+    FolderUp,
+    Loader2,
+    Rocket,
+} from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,11 +28,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import { create, index } from '@/routes/payroll';
+import { create, index, store } from '@/routes/payroll';
 import { payrollUploadSchema } from '@/schemas/payrollSchema';
 import type { BreadcrumbItem } from '@/types';
 
 export default function CreatePayRoll() {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Capital Humano', href: '/rrhh' },
         { title: 'Nomina', href: index().url },
@@ -43,8 +52,24 @@ export default function CreatePayRoll() {
     });
 
     const onSubmit = (data: any) => {
-        router.post(store().url, data, {
+        const formData = new FormData();
+
+        formData.append('zip_file', data.zip_file);
+        formData.append('period_start', data.period_start.toISOString());
+        formData.append('period_end', data.period_end.toISOString());
+        formData.append('period_type', data.period_type);
+
+        console.log(data);
+        router.post(store().url, formData, {
             forceFormData: true, // 🔥 necesario para archivos
+            onError: (errors) => {
+                Object.entries(errors).forEach(([field, message]) => {
+                    form.setError(field as keyof PayrollUploadForm, {
+                        message,
+                    });
+                });
+            },
+            onFinish: () => setIsSubmitting(false),
         });
     };
 
@@ -56,7 +81,7 @@ export default function CreatePayRoll() {
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-9 p-4 sm:p-6"
+                            className="mx-auto max-w-6xl space-y-9 p-4 sm:p-6"
                             id="CreatePayRoll"
                         >
                             <div>
@@ -90,50 +115,74 @@ export default function CreatePayRoll() {
                                                                 e.preventDefault();
                                                                 e.stopPropagation();
                                                             }}
+                                                            onDrop={(e) => {
+                                                                e.preventDefault();
+                                                                const file =
+                                                                    e
+                                                                        .dataTransfer
+                                                                        .files?.[0];
+                                                                if (
+                                                                    file?.name.endsWith(
+                                                                        '.zip',
+                                                                    )
+                                                                )
+                                                                    onChange(
+                                                                        file,
+                                                                    );
+                                                            }}
                                                         >
                                                             <label
                                                                 htmlFor="dropzone-file"
                                                                 className={`flex h-44 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all ${value ? 'border-blue-500 bg-blue-50/10' : 'border-muted-foreground/25 bg-sidebar hover:bg-muted/50'} `}
                                                             >
-                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                                                                     {value ? (
-                                                                        <div className="group relative">
-                                                                            <img
-                                                                                src={
-                                                                                    typeof value ===
-                                                                                    'string'
-                                                                                        ? value
-                                                                                        : URL.createObjectURL(
-                                                                                              value,
-                                                                                          )
+                                                                        <>
+                                                                            <FolderArchive className="h-14 w-14 text-blue-500" />
+                                                                            <p className="text-sm font-medium text-foreground">
+                                                                                {
+                                                                                    value.name
                                                                                 }
-                                                                                className="h-30 w-30 rounded-2xl object-cover shadow-md"
-                                                                                alt="Preview"
-                                                                            />
-                                                                            <div className="mt-2 text-center text-xs text-muted-foreground">
-                                                                                {value instanceof
-                                                                                File
-                                                                                    ? value.name
-                                                                                    : 'Imagen actual'}
-                                                                            </div>
-                                                                        </div>
+                                                                            </p>
+                                                                            <p className="text-xs text-muted-foreground">
+                                                                                {(
+                                                                                    value.size /
+                                                                                    1024 /
+                                                                                    1024
+                                                                                ).toFixed(
+                                                                                    2,
+                                                                                )}
+                                                                                MB
+                                                                            </p>
+                                                                        </>
                                                                     ) : (
                                                                         <>
-                                                                            <div className="mb-3 rounded-full p-4">
-                                                                                <FolderArchive className="h-8 w-8" />
-                                                                            </div>
-                                                                            <p className="mb-2 text-sm text-muted-foreground">
+                                                                            <FolderArchive className="h-14 w-14 text-muted-foreground" />
+                                                                            <p className="text-sm text-muted-foreground">
                                                                                 <span className="font-semibold text-foreground">
-                                                                                    Haz
-                                                                                    clic
-                                                                                    para
-                                                                                    subir
+                                                                                    Seleccione
+                                                                                    un
+                                                                                    archivo
+                                                                                    ZIP.
                                                                                 </span>
                                                                                 <br />
-                                                                                o
-                                                                                arrastra
+                                                                                Arrastre
                                                                                 y
                                                                                 suelta
+                                                                                el
+                                                                                archivo
+                                                                                de
+                                                                                nominas
+                                                                                compatado
+                                                                                aqui
+                                                                            </p>
+                                                                            <br />
+                                                                            <p className="text-xs text-muted-foreground">
+                                                                                Solo
+                                                                                .zip
+                                                                                —
+                                                                                Máx.
+                                                                                50MB
                                                                             </p>
                                                                         </>
                                                                     )}
@@ -201,6 +250,7 @@ export default function CreatePayRoll() {
                                                                 {...field}
                                                             />
                                                         </FormControl>
+                                                        <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
@@ -259,6 +309,28 @@ export default function CreatePayRoll() {
                             </div>
                         </form>
                     </Form>
+                </div>
+                <div className="inset-shadow-xl shrink-0 border-t">
+                    <div className="mx-auto flex w-full max-w-7xl items-center justify-between p-4">
+                        <div className="text-md flex items-center gap-4">
+                            <FolderArchive className="h-6 w-6" />
+                            <span className="text-foreground">
+                                Subir archivo
+                            </span>
+                        </div>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            form="CreatePayRoll"
+                        >
+                            {isSubmitting ? 'Subiendo...' : 'Subir archivo'}
+                            {isSubmitting ? (
+                                <Loader2 className="animate-spin" />
+                            ) : (
+                                <FolderUp />
+                            )}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </AppLayout>

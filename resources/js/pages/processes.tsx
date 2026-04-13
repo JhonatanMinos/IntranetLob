@@ -60,7 +60,6 @@ export default function Processes() {
             <div className="flex h-screen flex-col overflow-hidden font-sans">
                 <div className="flex gap-2 overflow-x-auto p-4">
                     {levels.map((items, levelIndex) => {
-                        console.log(items);
                         const parentIndex = path[levelIndex - 1];
                         const parentItems = levels[levelIndex - 1];
                         const parentLabel =
