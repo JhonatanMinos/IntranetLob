@@ -1,34 +1,19 @@
 import { z } from 'zod';
 
-export const payrollUploadSchema = z
-    .object({
-        zip_file: z
-            .instanceof(File, { message: 'El archivo ZIP es requerido.' })
-            .refine(
-                (file) =>
-                    file.type === 'application/zip' ||
-                    file.name.endsWith('.zip'),
-                {
-                    message: 'Solo se permiten archivos .zip.',
-                },
-            )
-            .refine((file) => file.size <= 50 * 1024 * 1024, {
-                message: 'El archivo no debe superar 50MB.',
-            }),
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB en bytes
+const ACCEPTED_PDF_TYPES = 'application/pdf';
 
-        period_start: z.coerce.date({
-            message: 'La fecha de inicio es requerida.',
+export const payrollUploadSchema = z.object({
+    file: z
+        .instanceof(File)
+        .refine((file) => file.size <= MAX_FILE_SIZE, {
+            message: 'El archivo no debe superar 100MB',
+        })
+        .refine((file) => file.type === ACCEPTED_PDF_TYPES, {
+            message: 'El archivo debe ser PDF',
+        })
+        .refine((file) => file.name.endsWith('.pdf'), {
+            message: 'El archivo debe tener extensión .pdf',
         }),
-
-        period_end: z.coerce.date({
-            message: 'La fecha de fin es requerida.',
-        }),
-
-        period_type: z.enum(['semanal', 'quincenal', 'mensual'], {
-            message: 'El tipo de periodo no es válido.',
-        }),
-    })
-    .refine((data) => data.period_end >= data.period_start, {
-        message: 'La fecha de fin debe ser posterior al inicio.',
-        path: ['period_end'],
-    });
+    user_id: z.string().optional(),
+});

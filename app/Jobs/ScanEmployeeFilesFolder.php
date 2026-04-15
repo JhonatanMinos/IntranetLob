@@ -164,18 +164,31 @@ class ScanEmployeeFilesFolder implements ShouldQueue
 
     private function getLatestFolders(string $path, int $limit = 6): array
     {
+        $allFolders = [];
+        $fifteenDaysAgo = time() - (15 * 24 * 60 * 60);
         // Obtenemos todas las subcarpetas
-        $folders = array_filter(glob($path . DIRECTORY_SEPARATOR . '*'), 'is_dir');
+        $parentSubfolders = array_filter(glob($path . DIRECTORY_SEPARATOR . '*'), 'is_dir');
 
-        if (empty($folders)) {
+        foreach ($parentSubfolders as $subfolder) {
+            // 2. Entramos a buscar en el nivel 2
+            $deepFolders = array_filter(glob($subfolder . DIRECTORY_SEPARATOR . '*'), 'is_dir');
+
+            foreach ($deepFolders as $folder) {
+                // 3. Filtramos: ¿Se modificó en los últimos 15 días?
+                if (filemtime($folder) >= $fifteenDaysAgo) {
+                    $allFolders[] = $folder;
+                }
+            }
+        }
+        if (empty($allFolders)) {
             return [];
         }
 
         // Ordenar por fecha de modificación (mtime) descendente (más nueva primero)
-        usort($folders, fn($a, $b) => filemtime($b) - filemtime($a));
+        usort($allFolders, fn($a, $b) => filemtime($b) - filemtime($a));
 
         // Retornamos las últimas N carpetas (por defecto 6)
-        return array_slice($folders, 0, $limit);
+        return array_slice($allFolders, 0, $limit);
     }
 
     public function failed(Throwable $e): void

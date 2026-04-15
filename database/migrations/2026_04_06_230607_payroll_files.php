@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\PayRoll;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,17 +14,15 @@ return new class extends Migration {
         Schema::create('payroll_files', function (Blueprint $table) {
             $table->id();
 
-            //$table->foreignIdFor(PayRoll::class)->constrained()->cascadeOnDelete();
-
             // Datos del archivo extraído
             $table->string('file_path');
             $table->string('original_name');
             $table->string('mime_type');
             $table->unsignedBigInteger('file_size');  // bytes
             $table->foreignIdFor(User::class)
-                  ->nullable()
-                  ->constrained('users')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             //$table->string('status')->default('pending');
             $table->boolean('processed')->default(false);
 

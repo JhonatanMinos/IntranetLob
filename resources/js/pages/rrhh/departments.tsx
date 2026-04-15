@@ -1,3 +1,4 @@
+import type { PageProps } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
@@ -7,12 +8,7 @@ import { useFlash } from '@/hooks/use-flash';
 import AppLayout from '@/layouts/app-layout';
 import RrhhLayout from '@/layouts/rrhh/layout';
 import { index as departament, destroy } from '@/routes/departament';
-import type {
-    BreadcrumbItem,
-    Department,
-    PageProps,
-    PaginatedResponse,
-} from '@/types';
+import type { BreadcrumbItem, Department, PaginatedResponse } from '@/types';
 import { getDeparmentColumns } from './components/columns-deparments';
 
 const breadcrumbs: BreadcrumbItem[] = [

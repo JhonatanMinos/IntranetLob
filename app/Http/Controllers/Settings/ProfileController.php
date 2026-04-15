@@ -33,7 +33,7 @@ class ProfileController extends Controller
     public function assignsRoles(Request $request): Response
     {
         $users = User::with('roles')
-                ->select('id', 'name', 'position', 'avatar_path')
+            ->select('id', 'name', 'position', 'avatar_path')
             ->paginate(12)
             ->withQueryString();
         return Inertia::render('settings/assignroles', [
@@ -82,7 +82,7 @@ class ProfileController extends Controller
 
     public function payroll()
     {
-        $payRollall = PayRollFiles::with('employee:id,name')->latest()->paginate(15)->withQueryString();
+        $payRollall = PayRollFiles::with('employee:id,name')->where('user_id', auth()->id())->latest()->paginate(15)->withQueryString();
         return Inertia::render('settings/payroll', [
             'payrolls' => PayrollUserResource::collection($payRollall),
         ]);

@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePayrollRequest;
 use App\Http\Resources\PayrollResource;
+use App\Http\Resources\UserResource;
 use App\Jobs\ExtractPayrollZip;
-use App\Models\PayRoll;
 use App\Models\PayRollFiles;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 class PayRollController extends Controller
 {
@@ -19,23 +20,48 @@ class PayRollController extends Controller
      */
     public function index(): Response
     {
-        //Views all register Nominal in db only range
-        /*$uploads = PayRoll::with(['uploader:id,name'])
-            ->paginate(15)
-            ->withQueryString();
+        // Usuarios que TIENEN archivos PayRoll relacionados
+        $usersWithFiles = User::whereHas('payrollFiles')->count();
+
+        // Usuarios que NO TIENEN archivos
+        $usersWithoutFiles = User::whereDoesntHave('payrollFiles')->count();
+
+        // Total de usuarios (verificación)
+        $totalUsers = User::count();
+
+        // Obtener los uploads para la tabla
+        $usersWithoutPayroll = User::whereDoesntHave('payrollFiles')->get();
+
+        $currentPeriod = PayRollFiles::select(
+            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as period'),
+            'created_at'
+        )
+            ->distinct()
+            ->latest('created_at')
+            ->first();
+
+        $period = $currentPeriod?->period ?? now()->format('Y-m');
+
+
         return Inertia::render('rrhh/payrolls', [
-            'uploads' => PayrollResource::collection($uploads),
-        ]);*/
-        //
+            'users' => UserResource::collection($usersWithoutPayroll),
+            'stats' => [
+                'period' => $period,
+                'usersWithFiles' => $usersWithFiles,
+                'usersWithoutFiles' => $usersWithoutFiles,
+                'totalUsers' => $totalUsers,
+                'coverage' => $totalUsers > 0 ? round(($usersWithFiles / $totalUsers) * 100, 2) : 0,
+            ],
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(User $user)
     {
         // View a drops & drap for zip generer register
-        return Inertia::render('rrhh/Create');
+        return Inertia::render('rrhh/Create', ['user' => $user]);
     }
 
     /**
@@ -43,31 +69,37 @@ class PayRollController extends Controller
      */
     public function store(StorePayrollRequest $request)
     {
-        dd($request->all(), $request->file('zip_file'));
-        //Update more the one file in zip
         $data = $request->validated();
+        $file = $request->file('file');
 
-        $path = $request->file('zip_file')->store('payroll/' . $data['period_start'], 'local');
-        $data['zip_file'] = $path;
+        try {
+            $path = $file->store('payroll', 'local');
+            // Crear registro
+            PayRollFiles::create([
+                'file_path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getClientMimeType(),
+                'file_size' => $file->getSize(),
+                'user_id' => $data['user_id'],
+                'processed' => false,
+                'error_message' => null,
+            ]);
 
-        $upload = PayRoll::create([
-            'user_id'           => auth()->id(),
-            'period_start'      => $data['period_start'],
-            'period_end'        => $data['period_end'],
-            'period_type'       => $data['period_type'],
-            'zip_path'          => $path,
-            'zip_original_name' => $request->file('zip_file')->getClientOriginalName(),
-            'zip_size'          => $request->file('zip_file')->getSize(),
-            'status'            => 'pending',
-        ]);
+            return redirect()
+                ->route('payroll.index')
+                ->with('success', 'Nómina subida correctamente. Procesando...');
+        } catch (\Exception $e) {
+            \Log::error('Payroll upload failed', [
+                'user_id' => auth()->id(),
+                'target_user' => $data['user_id'],
+                'error' => $e->getMessage(),
+            ]);
 
-        ExtractPayrollZip::dispatch($upload)
-           ->onQueue('default')
-           ->delay(now()->addSeconds(2));
-
-        return redirect()->route('payroll.index')->with('succes', 'Zip subido correctamente. Procesando en segundo plano...');
+            return back()
+                ->withInput()
+                ->withErrors(['file' => 'Error al subir el archivo']);
+        }
     }
-
     /**
      * Display the specified resource.
      */

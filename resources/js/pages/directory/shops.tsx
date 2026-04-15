@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { AvatarFallback } from '@radix-ui/react-avatar';
 import {
     Mail,
     MapPin,
@@ -7,18 +8,17 @@ import {
     Store as StoreIcon,
     Trash2,
 } from 'lucide-react';
+import PaginationGeneric from '@/components/pagination';
+import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import DirectoryLayout from '@/layouts/directory/layout';
+import { stores } from '@/lib/stores';
 import { OpenStreetMapLazy } from '@/pages/directory/openStreetMapsLazy';
 import { index as shops } from '@/routes/shops';
 import type { BreadcrumbItem, PaginatedResponse, Store } from '@/types';
-import PaginationGeneric from '@/components/pagination';
-import { Avatar } from '@/components/ui/avatar';
-import { AvatarFallback } from '@radix-ui/react-avatar';
-import { stores } from '@/lib/stores';
 
 interface ShopsDirectoryProps {
     data: PaginatedResponse<Store>;

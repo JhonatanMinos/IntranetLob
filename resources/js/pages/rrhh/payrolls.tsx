@@ -1,13 +1,21 @@
+import type { PageProps } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
 import PaginationGeneric from '@/components/pagination';
 import TableGeneric from '@/components/table';
+import {
+    Card,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import RrhhLayout from '@/layouts/rrhh/layout';
 import { destroy, index, retry } from '@/routes/payroll';
 import type { BreadcrumbItem, PayrollUpload, paginatedResponse } from '@/types';
+import type { User } from '@/types/auth';
 import { getPayRollColumns } from './components/columns-payrolls';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -15,8 +23,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Nomina', href: index().url },
 ];
 
-interface PayRollsProps {
-    uploads: paginatedResponse<PayrollUpload>;
+interface PayRollsProps extends PageProps {
+    users: User;
+    stats: {
+        period: string;
+        usersWithFiles: string;
+        usersWithoutFiles: string;
+        totalUser: string;
+        coverage: string;
+    };
     flash: {
         success?: string;
         error?: string;
@@ -24,50 +39,12 @@ interface PayRollsProps {
 }
 
 export default function PayRolls() {
-    const { uploads } = usePage<PayRollsProps>().props;
+    const { users, stats } = usePage<PayRollsProps>().props;
 
-    const handleDelete = (payroll: PayrollUpload) => {
-        if (
-            confirm(
-                `¿Estás seguro de que deseas eliminar esta Nomina "${payroll.zip_original_name}"?`,
-            )
-        ) {
-            router.delete(destroy(payroll.id).url, {
-                onSuccess: () => {
-                    toast.success('Nomina elimanda correctamente', {
-                        position: 'bottom-right',
-                    });
-                },
-                onError: () => {
-                    toast.error('Error al elimnar la nomina', {
-                        position: 'bottom-right',
-                    });
-                },
-            });
-        }
-    };
-
-    const handleRefresh = (payroll: PayrollUpload) => {
-        router.post(retry(payroll.id).url, {
-            onSuccess: () => {
-                toast.success('Se refresco la carga de los archivos', {
-                    position: 'bottom-right',
-                });
-            },
-        });
-    };
-
-    const columns = useMemo(
-        () =>
-            getPayRollColumns({
-                onDelete: handleDelete,
-                onRefresh: handleRefresh,
-            }),
-        [],
-    );
+    const columns = useMemo(() => getPayRollColumns(), []);
 
     const table = useReactTable({
-        data: uploads.data ?? [],
+        data: users.data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
@@ -75,9 +52,40 @@ export default function PayRolls() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Nomina" />
+            <div className="grid grid-cols-4 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+                <Card className="@container/card">
+                    <CardHeader>
+                        <CardDescription>Completados</CardDescription>
+                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                            {stats.usersWithFiles}
+                        </CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card className="@container/card">
+                    <CardHeader>
+                        <CardDescription>Faltantes</CardDescription>
+                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                            {stats.usersWithoutFiles}
+                        </CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card className="@container/card">
+                    <CardHeader>
+                        <CardDescription>Total</CardDescription>
+                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                            {stats.totalUsers}
+                        </CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card className="@container/card">
+                    <CardDescription>Promedio</CardDescription>
+                    <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                        {stats.coverage} %
+                    </CardTitle>
+                </Card>
+            </div>
             <RrhhLayout>
                 <TableGeneric table={table} />
-                <PaginationGeneric links={uploads.links} meta={uploads.meta} />
             </RrhhLayout>
         </AppLayout>
     );

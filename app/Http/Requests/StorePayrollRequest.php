@@ -23,27 +23,19 @@ class StorePayrollRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'zip_file' => [
-                'required',
-                File::types(['zip'])->max(51200), // 50 MB en KB
-            ],
-            'period_start'  =>  'required|date',
-            'period_end'    =>  'required|date|after_or_equal:period_start',
-            'period_type'   =>  'required|in:semanal,quincenal,mensual',
+            'file' => 'required|file|mimes:pdf|max:102400',
+            'user_id' => 'required|exists:users,id',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'zip_file.required'        => 'El archivo ZIP es requerido.',
-            'zip_file.types'           => 'Solo se permiten archivos .zip.',
-            'zip_file.max'             => 'El archivo no debe superar 50MB.',
-            'period_start.required'    => 'La fecha de inicio es requerida.',
-            'period_end.required'      => 'La fecha de fin es requerida.',
-            'period_end.after_or_equal' => 'La fecha de fin debe ser posterior al inicio.',
-            'period_type.required'     => 'El tipo de periodo es requerido.',
-            'period_type.in'           => 'El tipo de periodo no es válido.',
+            'file.required' => 'El archivo PDF es obligatorio',
+            'file.mimes' => 'El archivo debe ser PDF',
+            'file.max' => 'El archivo no debe superar 100MB',
+            'user_id.required' => 'Debes seleccionar un usuario',
+            'user_id.exists' => 'El usuario no existe',
         ];
     }
 }
