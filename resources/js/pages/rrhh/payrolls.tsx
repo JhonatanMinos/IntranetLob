@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface PayRollsProps extends PageProps {
-    users: User;
+    users: User[];
     stats: {
         period: string;
         usersWithFiles: string;
@@ -78,10 +78,12 @@ export default function PayRolls() {
                     </CardHeader>
                 </Card>
                 <Card className="@container/card">
-                    <CardDescription>Promedio</CardDescription>
-                    <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                        {stats.coverage} %
-                    </CardTitle>
+                    <CardHeader>
+                        <CardDescription>Promedio</CardDescription>
+                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                            {stats.coverage} %
+                        </CardTitle>
+                    </CardHeader>
                 </Card>
             </div>
             <RrhhLayout>

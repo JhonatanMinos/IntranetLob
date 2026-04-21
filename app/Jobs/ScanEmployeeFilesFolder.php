@@ -47,6 +47,7 @@ class ScanEmployeeFilesFolder implements ShouldQueue
         $yearPath = rtrim($basePath, '/') . "/Recibos Procesados {$this->year}";
 
         Log::info("--- INICIANDO ESCANEO GLOBAL {$this->year} ---");
+        Log::info("--- Path Dentro {$yearPath} ---");
 
         if (!is_dir($yearPath)) {
             Log::error("ScanEmployeeFilesFolder: Carpeta del año no encontrada [{$yearPath}]");
@@ -164,31 +165,68 @@ class ScanEmployeeFilesFolder implements ShouldQueue
 
     private function getLatestFolders(string $path, int $limit = 6): array
     {
-        $allFolders = [];
         $fifteenDaysAgo = time() - (15 * 24 * 60 * 60);
-        // Obtenemos todas las subcarpetas
-        $parentSubfolders = array_filter(glob($path . DIRECTORY_SEPARATOR . '*'), 'is_dir');
 
-        foreach ($parentSubfolders as $subfolder) {
-            // 2. Entramos a buscar en el nivel 2
-            $deepFolders = array_filter(glob($subfolder . DIRECTORY_SEPARATOR . '*'), 'is_dir');
+        \Log::info("=== DEBUG getLatestFolders ===");
+        \Log::info("Path buscado: {$path}");
+        \Log::info("Path existe: " . (is_dir($path) ? 'SÍ' : 'NO'));
+        \Log::info("Permisos: " . decoct(fileperms($path)));
+        \Log::info("Fecha límite: " . date('Y-m-d H:i:s', $fifteenDaysAgo));
+        \Log::info("Hoy: " . date('Y-m-d H:i:s'));
 
-            foreach ($deepFolders as $folder) {
-                // 3. Filtramos: ¿Se modificó en los últimos 15 días?
-                if (filemtime($folder) >= $fifteenDaysAgo) {
-                    $allFolders[] = $folder;
-                }
+        if (!is_dir($path)) {
+            \Log::error("Path no es directorio: {$path}");
+            return [];
+        }
+
+        $items = @scandir($path);
+        \Log::info("Total items encontrados: " . count($items));
+
+        $allFolders = [];
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $fullPath = $path . DIRECTORY_SEPARATOR . $item;
+            $isDir = is_dir($fullPath);
+            $mtime = @filemtime($fullPath);
+            $mtimeDate = $mtime ? date('Y-m-d H:i:s', $mtime) : 'N/A';
+            $isRecent = $mtime && $mtime >= $fifteenDaysAgo;
+
+            \Log::info("Item: {$item}", [
+                'is_dir' => $isDir,
+                'mtime' => $mtimeDate,
+                'is_recent' => $isRecent,
+            ]);
+
+            if (!is_dir($fullPath)) {
+                continue;
+            }
+
+            $mtime = @filemtime($fullPath);
+            if ($mtime && $mtime >= $fifteenDaysAgo) {
+                $allFolders[] = [
+                    'path' => $fullPath,
+                    'mtime' => $mtime,
+                ];
             }
         }
+
+        \Log::info("Carpetas recientes encontradas: " . count($allFolders));
+
         if (empty($allFolders)) {
             return [];
         }
 
-        // Ordenar por fecha de modificación (mtime) descendente (más nueva primero)
-        usort($allFolders, fn($a, $b) => filemtime($b) - filemtime($a));
+        usort($allFolders, fn($a, $b) => $b['mtime'] - $a['mtime']);
 
-        // Retornamos las últimas N carpetas (por defecto 6)
-        return array_slice($allFolders, 0, $limit);
+        return array_slice(
+            array_map(fn($item) => $item['path'], $allFolders),
+            0,
+            $limit
+        );
     }
 
     public function failed(Throwable $e): void
