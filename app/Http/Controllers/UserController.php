@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Resources\UserResource;
 
+use OpenApi\Annotations as OA;
+
 /**
  * @OA\Tag(
  *     name="Usuarios",

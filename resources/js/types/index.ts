@@ -4,217 +4,198 @@ export type * from './ui';
 
 import type { Auth } from './auth';
 
+/**
+ * Datos compartidos a través de Inertia.js en todas las páginas
+ */
 export type SharedData = {
-    name: string;
-    auth: Auth;
-    permissions?: string[];
-    sidebarOpen: boolean;
-    [key: string]: unknown;
+  name: string;
+  auth: Auth;
+  permissions?: string[];
+  sidebarOpen: boolean;
+  [key: string]: unknown;
 };
 
-// ===================== User DTO =====================
+/**
+ * Datos del usuario autenticado
+ */
 export interface User {
-    id: number;
-    name: string;
-    email: string;
-    employeeNumber?: string | null;
-    position?: string | null;
-    phone?: string | null;
-    birthday?: string | null; // Y-m-d format
-    dateEntry?: string | null; // Y-m-d format
-    departmentId?: number | null;
-    departmentName?: string | null;
-    companyId?: number | null;
-    companyName?: string | null;
-    storeId?: number | null;
-    storeName?: string | null;
-    roles?: string[] | null;
-    avatarPath?: string;
-    curp?: string;
-    emailVerifiedAt?: string | null; // ISO 8601
-    createdAt?: string | null; // ISO 8601
-    updatedAt?: string | null; // ISO 8601
-    avatar_path?: string;
-    can: {
-        update: boolean;
-        delete: boolean;
-    };
+  id: number;
+  name: string;
+  email: string;
+  employeeNumber?: string | null;
+  position?: string | null;
+  phone?: string | null;
+  birthday?: string | null; // Y-m-d format
+  dateEntry?: string | null; // Y-m-d format
+  departmentId?: number | null;
+  departmentName?: string | null;
+  companyId?: number | null;
+  companyName?: string | null;
+  storeId?: number | null;
+  storeName?: string | null;
+  roles?: string[] | null;
+  emailVerifiedAt?: string | null; // ISO 8601
+  createdAt?: string | null; // ISO 8601
+  updatedAt?: string | null; // ISO 8601
+  can: {
+    update: boolean;
+    delete: boolean;
+  };
 }
 
-// ===================== Store DTO =====================
+/**
+ * Datos de sucursal/tienda
+ */
 export interface Store {
-    id: number;
-    name: string;
-    code: string;
-    type: string;
-    address: string;
-    neighborhood: string;
-    city: string;
-    postalCode: string;
-    state: string;
-    brandId?: number | null;
-    brandName?: string | null;
-    phone?: string | null;
-    email?: string | null;
-    lat?: number | null;
-    lng?: number | null;
-    createdAt?: string | null; // ISO 8601
-    updatedAt?: string | null; // ISO 8601
-    deletedAt?: string | null; // ISO 8601
-    can: {
-        update: boolean;
-        delete: boolean;
-    };
+  id: number;
+  name: string;
+  code: string;
+  type: string;
+  address: string;
+  neighborhood: string;
+  city: string;
+  postalCode: string;
+  state: string;
+  brandId?: number | null;
+  brandName?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  createdAt?: string | null; // ISO 8601
+  updatedAt?: string | null; // ISO 8601
+  deletedAt?: string | null; // ISO 8601
 }
 
-// ===================== Department DTO =====================
+/**
+ * Datos de departamento
+ */
 export interface Department {
-    id: number;
-    name: string;
-    createdAt?: string; // ISO 8601
-    updatedAt?: string; // ISO 8601
-    users?: User[];
+  id: number;
+  name: string;
+  description?: string | null;
+  createdAt?: string | null; // ISO 8601
+  updatedAt?: string | null; // ISO 8601
+  deletedAt?: string | null; // ISO 8601
 }
 
-// ===================== Brand DTO =====================
+/**
+ * Datos de marca
+ */
 export interface Brand {
-    id: number;
-    name: string;
-    slug: string;
-    description?: string | null;
-    createdAt?: string | null; // ISO 8601
-    updatedAt?: string | null; // ISO 8601
-    deletedAt?: string | null; // ISO 8601
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  createdAt?: string | null; // ISO 8601
+  updatedAt?: string | null; // ISO 8601
+  deletedAt?: string | null; // ISO 8601
 }
 
-// ===================== Company DTO =====================
+/**
+ * Datos de empresa
+ */
 export interface Company {
-    id: number;
-    name: string;
-    createdAt?: string | null; // ISO 8601
-    updatedAt?: string | null; // ISO 8601
-    deletedAt?: string | null; // ISO 8601
+  id: number;
+  name: string;
+  createdAt?: string | null; // ISO 8601
+  updatedAt?: string | null; // ISO 8601
+  deletedAt?: string | null; // ISO 8601
 }
 
-// ===================== Notification DTO =====================
+/**
+ * Notificación o comunicación a usuarios
+ */
 export interface Notification {
-    id: number;
-    title: string;
-    subject: string;
-    content: string;
-    imagenPath: string | null;
-    priority: 'normal' | 'importante' | 'urgente';
-    type: 'adn' | 'beneficios' | 'colaboradores' | 'aviso';
-    createdBy: number;
-    creatorName?: string | null;
-    publishedAt?: string | null; // ISO 8601
-    createdAt?: string | null; // ISO 8601
-    updatedAt?: string | null; // ISO 8601
-    deletedAt?: string | null; // ISO 8601
+  id: number;
+  title: string;
+  subject: string;
+  content: string;
+  imagenPath: string;
+  priority: 'normal' | 'importante' | 'urgente';
+  type: 'aviso' | 'noticia' | 'articulo' | 'mensaje';
+  createdBy: number;
+  creatorName?: string | null;
+  publishedAt?: string | null; // ISO 8601
+  createdAt?: string | null; // ISO 8601
+  updatedAt?: string | null; // ISO 8601
+  deletedAt?: string | null; // ISO 8601
 }
 
-// ===================== Event DTO =====================
+/**
+ * Evento del calendario
+ */
 export interface Event {
-    id: number;
-    title: string;
-    type: 'cumpleanos' | 'festivo' | 'campania' | 'lanzamiento' | 'evento';
-    startDate: string; // Y-m-d format
-    endDate?: string | null; // Y-m-d format
-    allDay: boolean;
-    createdAt?: string | null; // ISO 8601
-    updatedAt?: string | null; // ISO 8601
-    deletedAt?: string | null; // ISO 8601
+  id: number;
+  title: string;
+  type: 'cumpleanos' | 'festivo' | 'campania' | 'lanzamiento' | 'evento';
+  startDate: string; // Y-m-d format
+  endDate?: string | null; // Y-m-d format
+  allDay: boolean;
+  createdAt?: string | null; // ISO 8601
+  updatedAt?: string | null; // ISO 8601
+  deletedAt?: string | null; // ISO 8601
 }
 
-// ===================== Common Types =====================
+/**
+ * Tipos comunes compartidos
+ */
+
+/**
+ * Modelo simple con id y nombre
+ */
 export interface SimpleModel {
-    id?: number;
-    name: string;
+  id?: number;
+  name: string;
 }
 
+/**
+ * Permisos de acceso en la aplicación
+ */
 export interface Permission {
-    id: number;
-    name: string;
-    guard_name: string;
-    created_at: string;
-    updated_at: string;
+  id: number;
+  name: string;
+  guardName: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
+/**
+ * Roles y permisos asignados a usuarios
+ */
 export interface Role {
-    id: number;
-    name: string;
-    guard_name: string;
-    created_at: string;
-    updated_at: string;
-    permissions?: Permission[];
+  id: number;
+  name: string;
+  guardName: string;
+  createdAt: string;
+  updatedAt: string;
+  permissions?: Permission[];
 }
 
-export interface FolderNode {
-    label: string;
-    path: string;
-    children?: FolderNode[];
-    file?: string;
-    ext?: string;
-    size?: string;
-    modified?: string;
-    url?: string;
-}
-
-export interface PayrollUpload {
-    id: number;
-    period_start: string; // formato: dd/mm/yyyy
-    period_end: string; // formato: dd/mm/yyyy
-    period_type: string;
-    zip_original_name: string;
-    status: string;
-    progress: number;
-    total_files: number;
-    processed_files: number;
-    error_message: string | null;
-    uploader: string;
-    created_at: string; // formato: dd/mm/yyyy HH:mm
-}
-
+/**
+ * Enlace de paginación en respuestas
+ */
 export interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
+  url: string | null;
+  label: string;
+  active: boolean;
 }
 
+/**
+ * Respuesta paginada genérica del servidor
+ */
 export interface PaginatedResponse<T> {
-    data: T[];
-    links: {
-        first: string;
-        last: string;
-        prev: string | null;
-        next: string | null;
-    };
-    meta: {
-        current_page: number;
-        from: number;
-        last_page: number;
-        links: PaginationLink[]; // Laravel suele duplicar los links aquí en meta
-        path: string;
-        per_page: number;
-        to: number;
-        total: number;
-    };
+  current_page: number;
+  data: T[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  links: PaginationLink[];
+  next_page_url: string | null;
+  path: string;
+  per_page: number;
+  prev_page_url: string | null;
+  to: number;
+  total: number;
 }
-
-export interface priority {
-    value: string;
-    label: string;
-    color: string;
-    bg: string;
-}
-
-export interface types {
-    value: string;
-    label: string;
-    subtitle: string;
-}
-
-// Legacy aliases for backwards compatibility
-export type NotificationItem = Notification;
-export type EventItem = Event;
-export type paginatedResponse<T> = PaginatedResponse<T>;

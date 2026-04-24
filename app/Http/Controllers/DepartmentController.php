@@ -22,10 +22,17 @@ class DepartmentController extends Controller
         $query = Department::with('users')
             ->when($search, function ($q) use ($search) {
                 return Department::search($search)
-                ->query(fn($q) => $q->with('users'));
+                    ->query(fn($q) => $q->with('users'));
             });
 
         $data = $query->orderBy('name')->paginate(10)->withQueryString();
+
+        if ($request->wantsJson()) {
+            // 1. Usamos el Resource para que la estructura sea idéntica a la de React
+            // 2. Quitamos el 201 y dejamos el 200 por defecto
+            return DepartmentResource::collection($data);
+        }
+
         return Inertia::render('rrhh/departments', [
             'data' => DepartmentResource::collection($data),
             'userAll' => $userAll,
@@ -50,6 +57,12 @@ class DepartmentController extends Controller
         $department = Department::create([
             'name' => $request->name,
         ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'data' => $department
+            ], 201);
+        }
 
         return back()->with('success', 'Departamento creado correctamente.');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Notification;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNotificationRequest extends FormRequest
@@ -25,8 +26,17 @@ class StoreNotificationRequest extends FormRequest
             'title' => 'required|string|max: 255',
             'subject' => 'required|string',
             'content' => 'nullable|string|max:4294967295',
-            'priority' => 'required|string|in:normal,importante,urgente',
-            'type' => 'required|string|in:adn,beneficios,colaboradores,avisos',
+            'type'     => 'required|in:' . implode(',', [
+                Notification::TYPE_ADN,
+                Notification::TYPE_BENEFICIOS,
+                Notification::TYPE_COLABORADORES,
+                Notification::TYPE_AVISO
+            ]),
+            'priority' => 'required|in:' . implode(',', [
+                Notification::PRIORITY_NORMAL,
+                Notification::PRIORITY_IMPORTANT,
+                Notification::PRIORITY_URGENT
+            ]),
             'published_at' => 'required|date',
             'imagen_path' => 'nullable|image|mimes:jpg,jpeg,png,webp',
         ];

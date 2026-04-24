@@ -24,8 +24,14 @@ class EventController extends Controller
 
         $result = $this->eventService->searchEventsByYear($search, $year);
 
-        return inertia::render('events', [
-            'results' => EventResource::collection($result),
+        $resource = EventResource::collection($result);
+
+        if ($request->wantsJson()) {
+            return $resource->response()->getData(true);
+        }
+
+        return Inertia::render('events', [
+            'results' => $resource,
         ]);
     }
 
@@ -47,7 +53,14 @@ class EventController extends Controller
     {
         $this->authorize('create', Event::class);
 
-        $this->eventService->createEvent($request->validated());
+        $event = $this->eventService->createEvent($request->validated());
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'data' => $event,
+                'message' => 'Evento creado correctamente'
+            ], 201);
+        }
 
         return back()->with('success', 'Evento creado correctamente');
     }

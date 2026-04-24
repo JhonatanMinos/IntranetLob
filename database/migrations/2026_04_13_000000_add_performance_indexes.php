@@ -32,10 +32,11 @@ return new class extends Migration {
         });
 
         // Índices para pay_rolls
-        Schema::table('pay_rolls', function (Blueprint $table) {
-            $table->index(['user_id', 'period'], 'pay_rolls_user_period_index');
-            $table->index('processed_at');
-        });
+        if (Schema::hasTable('pay_rolls')) {
+            Schema::table('pay_rolls', function (Blueprint $table) {
+                $table->index(['user_id', 'period'], 'pay_rolls_user_period_index');
+            });
+        }
     }
 
     /**
@@ -67,4 +68,3 @@ return new class extends Migration {
         });
     }
 };
-

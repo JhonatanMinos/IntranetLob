@@ -45,3 +45,21 @@ function something()
 {
     // ..
 }
+
+function actingAsAuthenticatedUser($user = null)
+{
+    if (!$user) {
+        $user = \App\Models\User::factory()->create();
+    }
+
+    // Quitamos 'sanctum' para que use el guard por defecto
+    return test()->actingAs($user);
+}
+
+function createUserWithRole($role = 'sa')
+{
+    $user = \App\Models\User::factory()->create();
+    // Aquí podrías asignar roles si usas Spatie Permission
+    $user->assignRole($role);
+    return $user;
+}

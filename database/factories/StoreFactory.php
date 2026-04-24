@@ -17,7 +17,19 @@ class StoreFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name'         => fake()->company() . ' Store',
+            'code'         => fake()->unique()->bothify('####'),
+            'brand_id'     => \App\Models\Brand::factory(), // Crea la marca automáticamente
+            'type'         => fake()->randomElement(['Sucursal', 'Bodega', 'Oficina']),
+            'address'      => fake()->streetAddress(),
+            'neighborhood' => fake()->cityPrefix(), // O use 'suburb' si está disponible
+            'city'         => fake()->city(),
+            'postal_code'  => fake()->postcode(),
+            'state'        => fake()->state(),
+            'phone'        => fake()->phoneNumber(),
+            'email'        => fake()->unique()->safeEmail(),
+            'lat'          => fake()->latitude(),
+            'lng'          => fake()->longitude(),
         ];
     }
 }

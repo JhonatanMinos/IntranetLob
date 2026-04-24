@@ -32,6 +32,17 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+
+            'employeeNumber' => fake()->unique()->bothify('####'),
+            'position'       => fake()->jobTitle(),
+            'birthday'       => fake()->date('Y-m-d', '-40 years'),
+            'dateEntry'      => fake()->date(),
+            'phone'          => fake()->phoneNumber(),
+
+            // Relaciones (creará uno nuevo si no se especifica)
+            'department_id'  => \App\Models\Department::factory(),
+            'company_id'     => \App\Models\Company::factory(),
+            'store_id'       => \App\Models\Store::factory(),
         ];
     }
 
@@ -40,7 +51,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
@@ -50,7 +61,7 @@ class UserFactory extends Factory
      */
     public function withTwoFactor(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
