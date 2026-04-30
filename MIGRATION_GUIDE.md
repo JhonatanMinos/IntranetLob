@@ -562,7 +562,7 @@ class BrandController extends Controller
 
 ### 🔧 Tecnologías Utilizadas
 
-- **Backend:** Laravel 11, PHP 8.3
+- **Backend:** Laravel 11, PHP 8.2
 - **Frontend:** Inertia.js, React/Vue, Vite
 - **BD:** MySQL con migraciones versionadas
 - **Caching:** Redis via CacheService

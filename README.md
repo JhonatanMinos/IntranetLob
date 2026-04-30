@@ -1,12 +1,12 @@
 # 🏢 IntranetLOB - Intranet Empresarial Inteligente
 
 [![Laravel](https://img.shields.io/badge/Laravel-11-red?logo=laravel)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.3-blue?logo=php)](https://www.php.net)
-[![React](https://img.shields.io/badge/React-18-61dafb?logo=react)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org)
-[![Vite](https://img.shields.io/badge/Vite-5-646cff?logo=vite)](https://vitejs.dev)
+[![PHP](https://img.shields.io/badge/PHP-8.2-blue?logo=php)](https://www.php.net)
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-7-646cff?logo=vite)](https://vitejs.dev)
 
-Plataforma integral de intranet empresarial desarrollada con **Laravel 11**, **Inertia.js** y **React**, diseñada para centralizar la comunicación, información y gestión de recursos humanos en organizaciones con múltiples tiendas y departamentos.
+Plataforma integral de intranet empresarial desarrollada con **Laravel 11**, **Inertia.js** y **React 19**, diseñada para centralizar la comunicación, información y gestión de recursos humanos en organizaciones con múltiples tiendas y departamentos.
 
 ## 📋 Tabla de Contenidos
 
@@ -85,38 +85,37 @@ Plataforma integral de intranet empresarial desarrollada con **Laravel 11**, **I
 | Tecnología            | Versión | Propósito                |
 | --------------------- | ------- | ------------------------ |
 | **Laravel**           | 11      | Framework web full-stack |
-| **PHP**               | 8.3     | Lenguaje de programación |
+| **PHP**               | 8.2     | Lenguaje de programación |
 | **MySQL**             | 8.0+    | Base de datos relacional |
 | **Redis**             | 7.0+    | Caché y sesiones         |
-| **Laravel Fortify**   | —       | Autenticación y 2FA      |
-| **Spatie Permission** | —       | Roles y permisos         |
+| **Laravel Fortify**   | ^1.30   | Autenticación y 2FA      |
+| **Spatie Permission** | ^6.24   | Roles y permisos         |
 
 ### Frontend
 
 | Tecnología      | Versión | Propósito                     |
 | --------------- | ------- | ----------------------------- |
-| **React**       | 18      | Librería UI                   |
-| **TypeScript**  | 5       | Tipado estático               |
-| **Inertia.js**  | —       | Comunicación frontend-backend |
-| **Vite**        | 5       | Build tool                    |
-| **TailwindCSS** | —       | Estilos CSS                   |
+| **React**       | 19.2.5  | Librería UI                   |
+| **TypeScript**  | 5.9.3   | Tipado estático               |
+| **Inertia.js**  | ^2.0    | Comunicación frontend-backend |
+| **Vite**        | 7.3.2   | Build tool                    |
+| **TailwindCSS** | 4.2.4   | Estilos CSS                   |
 
 ### DevTools
 
-| Herramienta      | Propósito                   |
-| ---------------- | --------------------------- |
-| **Pest PHP**     | Testing en PHP              |
-| **Biome**        | Linting y formatting        |
-| **PHPStan**      | Análisis estático de código |
-| **Laravel Pint** | PHP style fixer             |
+| Herramienta      | Propósito            |
+| ---------------- | -------------------- |
+| **Pest PHP**     | Testing en PHP       |
+| **Biome**        | Linting y formatting |
+| **Laravel Pint** | PHP style fixer      |
 
 ---
 
 ## ⚙️ Requisitos
 
-- **PHP** ≥ 8.3
+- **PHP** ≥ 8.2
 - **Composer** ≥ 2.0
-- **Node.js** ≥ 18
+- **Node.js** ≥ 22
 - **npm** o **yarn** (para dependencias frontend)
 - **MySQL** ≥ 8.0 o compatible
 - **Redis** (para caché y sesiones)
