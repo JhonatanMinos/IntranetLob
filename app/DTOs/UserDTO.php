@@ -2,8 +2,6 @@
 
 namespace App\DTOs;
 
-use Carbon\Carbon;
-
 class UserDTO
 {
     public function __construct(

@@ -657,14 +657,14 @@ Response (JSON/Inertia)
 # Tests
 php artisan test
 
-# Análisis de código
-./vendor/bin/phpstan analyze
-
 # Formatting
 php artisan pint
 
 # Linting de JavaScript
 npm run lint
+
+# Verificación de tipos
+npm run types
 ```
 
 ---
@@ -705,10 +705,10 @@ npm run lint
 ```json
 {
     "laravel/framework": "^11.0",
-    "laravel/fortify": "^1.17",
-    "laravel/tinker": "^2.8",
-    "spatie/laravel-permission": "^6.0",
-    "inertiajs/inertia-laravel": "^0.6"
+    "laravel/fortify": "^1.30",
+    "laravel/tinker": "^2.10",
+    "spatie/laravel-permission": "^6.24",
+    "inertiajs/inertia-laravel": "^2.0"
 }
 ```
 
@@ -716,10 +716,10 @@ npm run lint
 
 ```json
 {
-    "react": "^18.2",
-    "typescript": "^5.0",
-    "vite": "^5.0",
-    "tailwindcss": "^3.3"
+    "react": "^19.2.5",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.2",
+    "tailwindcss": "^4.2.4"
 }
 ```
 
@@ -727,9 +727,9 @@ npm run lint
 
 ```json
 {
-    "pestphp/pest": "^2.0",
-    "laravel/pint": "^1.0",
-    "phpstan/phpstan": "^1.10"
+    "pestphp/pest": "^3.0",
+    "laravel/pint": "^1.24",
+    "biomejs/biome": "^2.4"
 }
 ```
 

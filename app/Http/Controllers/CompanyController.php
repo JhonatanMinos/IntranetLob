@@ -25,16 +25,14 @@ class CompanyController extends Controller
                 ->paginate(10);
             $data->appends(request()->query());
         } else {
-            $data = Company::with('user')
-                ->orderBy('name')
-                ->paginate(10)
-                ->withQueryString();
+            $data = Company::with('user')->orderBy('name')->paginate(10)->withQueryString();
         }
 
         return Inertia::render('rrhh/company', [
-            'data'   => CompanyResource::collection($data),
+            'data' => CompanyResource::collection($data),
         ]);
     }
+
     /**
      * Show the form for creating a new resource.
      */
