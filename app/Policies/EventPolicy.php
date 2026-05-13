@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Event;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class EventPolicy
 {
@@ -37,7 +36,6 @@ class EventPolicy
      */
     public function update(User $user, Event $event): bool
     {
-        logger('User roles', [$user->roles]);
         return $user->hasRole('sa') || $user->hasRole('rh');
     }
 
