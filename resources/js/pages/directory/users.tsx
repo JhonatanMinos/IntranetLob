@@ -34,6 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Users() {
     const { data, departments, stores, company, can } =
         usePage<UsersDirectoryProps>().props;
+
     const [open, setOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const handleDelete = useDeleteUser();

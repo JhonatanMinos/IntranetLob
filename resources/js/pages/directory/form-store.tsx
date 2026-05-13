@@ -20,10 +20,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useFlash } from '@/hooks/use-flash';
 import { store, update } from '@/routes/shops'; // Asumiendo que existen estas rutas
 import { createStoreSchema, updateStoreSchema } from '@/schemas/storeSchema';
 import type { Store } from '@/types';
-import { useFlash } from '@/hooks/use-flash';
 
 interface CreateStoreProps {
     store?: Store;
@@ -42,6 +42,11 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
             neighborhood: store?.neighborhood ?? '',
             city: store?.city ?? '',
             postalCode: store?.postalCode ?? '',
+            state: store?.state ?? '',
+            phone: store?.phone ?? '',
+            email: store?.email ?? '',
+            lat: store?.lat ?? '',
+            lng: store?.lng ?? '',
         },
     });
     const {
@@ -212,4 +217,3 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
         </Form>
     );
 }
-
