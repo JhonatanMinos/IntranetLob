@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Services\UserService;
+use App\Http\Resources\UserResource;
+use App\Models\Company;
+use App\Models\User;
 use App\Services\DepartmentService;
 use App\Services\StoreService;
-use App\Models\Company;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Resources\UserResource;
-
 use OpenApi\Annotations as OA;
 
 /**
@@ -69,7 +68,6 @@ class UserController extends Controller
         $searchInput = $request->search;
         $users = $this->userService->searchUsers($searchInput);
 
-
         return Inertia::render('directory/users', [
             'data' => UserResource::collection($users),
             'departments' => $this->departmentService->getAllDepartments(),
@@ -121,7 +119,6 @@ class UserController extends Controller
     public function create()
     {
         $this->authorize('create', User::class);
-        //
     }
 
     /**
