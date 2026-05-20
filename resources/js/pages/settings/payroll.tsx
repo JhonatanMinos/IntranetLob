@@ -39,7 +39,6 @@ interface PayrollsProps extends PageProps {
 
 export default function Payroll() {
     const { payrolls } = usePage<PayrollsProps>().props;
-    console.log(payrolls);
 
     const handleDownload = (item: PayrollUser) => {
         const url = download.url(item.id);
@@ -48,7 +47,7 @@ export default function Payroll() {
 
     const columns = useMemo(
         () => getPayrollColumns({ onDownload: handleDownload }),
-        [],
+        [handleDownload],
     );
 
     const table = useReactTable({

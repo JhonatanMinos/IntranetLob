@@ -17,7 +17,7 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { index as company, store as storeCompany } from '@/routes/company';
 import { index as department, store as storeDepartment } from '@/routes/departament';
-import { create, index as payroll } from '@/routes/payroll';
+import { index as payroll } from '@/routes/payroll';
 import type { NavItem } from '@/types';
 
 const barNavItems: NavItem[] = [

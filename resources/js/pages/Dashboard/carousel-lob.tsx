@@ -3,13 +3,7 @@ import banner1 from '@/assets/media/01banner.jpg';
 import banner2 from '@/assets/media/02banner.jpg';
 import banner from '@/assets/media/banner.jpg';
 import { Card } from '@/components/ui/card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 
 export function CarouselLob() {
   const slides = [

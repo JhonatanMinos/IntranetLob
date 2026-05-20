@@ -7,10 +7,10 @@ import { Toaster } from '@/components/ui/sonner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
-import { FormUser } from '@/pages/directory/form-user';
 import { FormStore } from '@/pages/directory/form-store';
+import { FormUser } from '@/pages/directory/form-user';
 import { index as shops } from '@/routes/shops';
-import { index as users, corpo } from '@/routes/users';
+import { corpo, index as users } from '@/routes/users';
 import type { NavItem, SimpleModel, Store } from '@/types';
 
 const barNavItems: NavItem[] = [

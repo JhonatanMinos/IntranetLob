@@ -1,10 +1,10 @@
-import { parseISO, format, getDay, startOfWeek } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { format, getDay, parseISO, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useMemo, useState } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 
 type CalendarEvent = {

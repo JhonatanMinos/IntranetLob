@@ -1,13 +1,12 @@
+import { router, usePage } from '@inertiajs/react';
+import { AvatarFallback } from '@radix-ui/react-avatar';
 import { Bell, File, Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { router, usePage } from '@inertiajs/react';
-import { Badge } from './ui/badge';
 import { edit } from '@/routes/employeeFiles';
 import { Avatar } from './ui/avatar';
-import { AvatarFallback } from '@radix-ui/react-avatar';
-import { show } from '@/routes/notifications';
+import { Badge } from './ui/badge';
 
 type Notification = {
   id: string;
