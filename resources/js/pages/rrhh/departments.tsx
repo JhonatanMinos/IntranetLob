@@ -1,7 +1,7 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import PaginationGeneric from '@/components/pagination';
 import TableGeneric from '@/components/table';
 import { useFlash } from '@/hooks/use-flash';
@@ -23,19 +23,20 @@ interface DepartmentsProps extends PageProps {
 
 export default function Departments() {
     const { data, userAll } = usePage<DepartmentsProps>().props;
-    const handleDelete = (departament: Department) => {
+
+    const handleDelete = useCallback((departament: Department) => {
         router.delete(destroy(departament?.id), {
             onSuccess: () => {
                 router.reload({ only: ['data'] });
             },
         });
-    };
+    }, []);
 
     useFlash();
 
     const columns = useMemo(
         () => getDeparmentColumns({ userAll, onDelete: handleDelete }),
-        [handleDelete],
+        [handleDelete, userAll],
     );
 
     const table = useReactTable({

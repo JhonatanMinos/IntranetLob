@@ -1,3 +1,4 @@
+import { dashboard } from 'processing@/routes';
 import type { PageProps } from '@inertiajs/core';
 import { Head, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
@@ -12,7 +13,6 @@ import { CalendarEvent } from '@/pages/Dashboard/calendar-event';
 import { CarouselLob } from '@/pages/Dashboard/carousel-lob';
 import { EventsCard } from '@/pages/Dashboard/events-card';
 import { NewsCard } from '@/pages/Dashboard/news-card';
-import { dashboard } from '@/routes';
 import type { BreadcrumbItem, Event, Notification } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [

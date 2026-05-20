@@ -10,7 +10,7 @@ import {
   RadialBarChart,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // ajusta la ruta según tu estructura
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // ajusta la ruta según tu estructura
 import { type ChartConfig, ChartContainer } from '@/components/ui/chart';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { EVENT_BADGE } from '@/lib/arrays';

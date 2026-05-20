@@ -17,6 +17,7 @@ class UserService
     {
         $this->userRepository = $userRepository;
     }
+
     /**
      * Search users with optional filters
      */
@@ -50,9 +51,8 @@ class UserService
      */
     public function createUser(array $data): UserDTO
     {
-        $data['password'] = Hash::make($data['password']);
-
         $user = User::create($data);
+        $user->assignRole('user');
         $user->load('department', 'company', 'store');
 
         return UserDTO::fromModel($user);

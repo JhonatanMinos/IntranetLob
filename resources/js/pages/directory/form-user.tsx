@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from '@inertiajs/react';
 import { BriefcaseBusiness, Loader2, User as UserIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -20,10 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useFlash } from '@/hooks/use-flash';
 import { store, update } from '@/routes/users';
 import { createUserSchema, updateUserSchema } from '@/schemas/registerSchema';
 import type { SimpleModel, Store, User } from '@/types';
-import { useFlash } from '@/hooks/use-flash';
 
 interface CreateUserProps {
   departments: SimpleModel[];

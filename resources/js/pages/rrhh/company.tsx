@@ -36,7 +36,7 @@ export default function Company() {
 
   const columns = useMemo(() => getCompanyColumns({ onDelete: handleDelete }), [handleDelete]);
 
-  const table = useReactTable({
+  const _table = useReactTable({
     data: data.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
