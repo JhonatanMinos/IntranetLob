@@ -10,7 +10,7 @@ export default function SearchForm() {
       <InputGroup className="max-w-xs">
         <InputGroupInput
           id="search"
-          placeholder="Search...."
+          placeholder="Buscar..."
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />

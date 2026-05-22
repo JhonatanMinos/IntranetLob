@@ -91,7 +91,7 @@ function TwoFactorSetupStep({
 
           <div className="relative flex w-full items-center justify-center">
             <div className="absolute inset-0 top-1/2 h-px w-full bg-border" />
-            <span className="relative bg-card px-2 py-1">or, enter the code manually</span>
+            <span className="relative bg-card px-2 py-1">o, ingresa el código manualmente</span>
           </div>
 
           <div className="flex w-full space-x-2">
@@ -177,14 +177,14 @@ function TwoFactorVerificationStep({
                 onClick={onBack}
                 disabled={processing}
               >
-                Back
+                Atrás
               </Button>
               <Button
                 type="submit"
                 className="flex-1"
                 disabled={processing || code.length < OTP_MAX_LENGTH}
               >
-                Confirm
+                Confirmar
               </Button>
             </div>
           </div>
@@ -226,26 +226,26 @@ export default function TwoFactorSetupModal({
   }>(() => {
     if (twoFactorEnabled) {
       return {
-        title: 'Two-Factor Authentication Enabled',
+        title: 'Autenticación de dos factores habilitada',
         description:
-          'Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.',
-        buttonText: 'Close',
+          'La autenticación de dos factores ahora está habilitada. Escanea el código QR o ingresa la clave de configuración en tu aplicación autenticadora.',
+        buttonText: 'Cerrar',
       };
     }
 
     if (showVerificationStep) {
       return {
-        title: 'Verify Authentication Code',
-        description: 'Enter the 6-digit code from your authenticator app',
-        buttonText: 'Continue',
+        title: 'Verificar código de autenticación',
+        description: 'Ingresa el código de 6 dígitos de tu aplicación autenticadora',
+        buttonText: 'Continuar',
       };
     }
 
     return {
-      title: 'Enable Two-Factor Authentication',
+      title: 'Habilitar autenticación de dos factores',
       description:
-        'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app',
-      buttonText: 'Continue',
+        'Para finalizar la configuración, escanea el código QR o ingresa la clave en tu aplicación autenticadora',
+      buttonText: 'Continuar',
     };
   }, [twoFactorEnabled, showVerificationStep]);
 

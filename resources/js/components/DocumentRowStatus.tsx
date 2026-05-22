@@ -72,11 +72,11 @@ export default function DocumentRowStatus({
           className="w-50 rounded-md border bg-background px-2 py-1 text-xs"
         >
           <SelectTrigger>
-            <SelectValue placeholder="Selecciona un status" />
+            <SelectValue placeholder="Selecciona un estado" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Status</SelectLabel>
+              <SelectLabel>Estado</SelectLabel>
               <SelectItem value="pending">Pendiente</SelectItem>
               <SelectItem value="approved">Aprobado</SelectItem>
               <SelectItem value="rejected">Rechazado</SelectItem>

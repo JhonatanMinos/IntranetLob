@@ -16,6 +16,7 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('view', Company::class);
         $search = $request->search;
 
         if ($search) {

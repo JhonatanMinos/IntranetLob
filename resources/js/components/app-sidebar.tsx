@@ -36,7 +36,7 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
   {
-    title: 'Dashboard',
+    title: 'Panel',
     href: dashboard(),
     icon: LayoutGrid,
     can: 'view Dashboard',
@@ -102,13 +102,13 @@ const secondNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
   {
-    title: 'Repository',
+    title: 'Repositorio',
     href: 'https://github.com/laravel/react-starter-kit',
     icon: Folder,
     can: '',
   },
   {
-    title: 'Documentation',
+    title: 'Documentación',
     href: 'https://laravel.com/docs/starter-kits#react',
     icon: BookOpen,
     can: '',
@@ -141,7 +141,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavFooter items={footerNavItems} className="mt-auto" />
+        
         <NavUser />
       </SidebarFooter>
     </Sidebar>
