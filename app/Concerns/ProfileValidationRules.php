@@ -22,6 +22,7 @@ trait ProfileValidationRules
             'position' => ['nullable', 'string', 'max:255'],
             'birthday' => ['nullable', 'date'],
             'dateEntry' => ['nullable', 'date'],
+            'phone' => ['nullable', 'integer'],
         ];
     }
 

@@ -13,7 +13,7 @@ import { getPayrollColumns } from './components/columns-payroll';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Payroll user',
+        title: 'Nominas',
         href: payroll().url,
     },
 ];

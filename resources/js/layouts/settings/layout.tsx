@@ -76,10 +76,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     return (
         <div className="flex h-full flex-col overflow-hidden px-4 py-6">
-            <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
-            />
+            <Heading title="Configuracion" description="" />
 
             <div className="flex flex-1 flex-col gap-6 overflow-hidden lg:flex-row lg:space-x-12">
                 <aside className="w-full shrink-0 lg:w-48">
