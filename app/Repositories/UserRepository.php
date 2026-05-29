@@ -4,8 +4,8 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Contracts\RepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository implements RepositoryInterface
 {
@@ -44,19 +44,41 @@ class UserRepository implements RepositoryInterface
 
     public function search(?string $search = null): LengthAwarePaginator
     {
-        return $this->model->with('department', 'company', 'store')
+        return $this->model
+            ->with('department', 'company', 'store')
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('employeeNumber', 'like', "%{$search}%")
-                      ->orWhereHas('department', function ($q) use ($search) {
-                          $q->where('name', 'like', "%{$search}%");
-                      });
+                    $q
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('employeeNumber', 'like', "%{$search}%")
+                        ->orWhereHas('department', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
                 });
             })
+            ->whereHas('store')
+            ->orderBy('department_id')
+            ->paginate(10);
+    }
+
+    public function corporate(?string $search = null): LengthAwarePaginator
+    {
+        return $this->model
+            ->with('department', 'company', 'store')
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($q) use ($search) {
+                    $q
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('employeeNumber', 'like', "%{$search}%")
+                        ->orWhereHas('department', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->whereDoesntHave('store')
             ->orderBy('department_id')
             ->paginate(10);
     }
 }
-

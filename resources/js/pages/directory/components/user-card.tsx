@@ -132,24 +132,19 @@ export function UserCard({ user, onEdit, onDelete }: UserCardProps) {
                         </div>
 
                         <div className="mt-2 flex items-center gap-3 text-xs text-gray-400">
-                            <div className="flex flex-wrap gap-2">
-                                <span className="text-xs font-normal uppercase">
-                                    Tiendas:
-                                </span>
-
-                                {user.storeId ? (
+                            {user.storeId && (
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="text-xs font-normal uppercase">
+                                        Tiendas:
+                                    </span>
                                     <Badge
                                         variant="outline"
                                         className="bg-gray-700 px-2 py-0.5 text-gray-300"
                                     >
                                         {user.storeName}
                                     </Badge>
-                                ) : (
-                                    <span className="text-gray-500">
-                                        Sin tiendas asignadas
-                                    </span>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </div>

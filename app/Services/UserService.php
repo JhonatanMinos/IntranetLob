@@ -27,6 +27,14 @@ class UserService
     }
 
     /**
+     * Search users in corporate with optional filters
+     */
+    public function searchUserCorporate(?string $search = null): LengthAwarePaginator
+    {
+        return $this->userRepository->corporate($search);
+    }
+
+    /**
      * Get all users with relationships (cached)
      */
     public function getAllUsers(): \Illuminate\Database\Eloquent\Collection

@@ -46,7 +46,7 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
 
         $searchInput = $request->search;
-        $users = $this->userService->searchUsers($searchInput);
+        $users = $this->userService->searchUserCorporate($searchInput);
 
         return Inertia::render('directory/corporate', [
             'data' => UserResource::collection($users),
