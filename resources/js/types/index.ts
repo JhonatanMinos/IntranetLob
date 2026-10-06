@@ -4,11 +4,14 @@ export type * from './ui';
 
 import type { Auth } from './auth';
 
+export type { PageProps } from '@inertiajs/core';
+
 /**
  * Datos compartidos a través de Inertia.js en todas las páginas
  */
 export type SharedData = {
   name: string;
+  flash?: { success?: string; error?: string };
   auth: Auth;
   permissions?: string[];
   sidebarOpen: boolean;
@@ -19,6 +22,13 @@ export type SharedData = {
  * Datos del usuario autenticado
  */
 export interface User {
+  avatarPath?: string | null;
+  avatar_path?: string | null;
+  curp?: string | null;
+  email_verified_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  two_factor_enabled?: boolean;
   id: number;
   name: string;
   email: string;
@@ -33,11 +43,11 @@ export interface User {
   companyName?: string | null;
   storeId?: number | null;
   storeName?: string | null;
-  roles?: string[] | null;
+  roles?: Role[];
   emailVerifiedAt?: string | null; // ISO 8601
   createdAt?: string | null; // ISO 8601
   updatedAt?: string | null; // ISO 8601
-  can: {
+  can?: {
     update: boolean;
     delete: boolean;
   };
@@ -47,6 +57,7 @@ export interface User {
  * Datos de sucursal/tienda
  */
 export interface Store {
+  can: { update: boolean; delete: boolean };
   id: number;
   name: string;
   code: string;
@@ -71,6 +82,7 @@ export interface Store {
  * Datos de departamento
  */
 export interface Department {
+  users: User[];
   id: number;
   name: string;
   description?: string | null;
@@ -113,7 +125,7 @@ export interface Notification {
   content: string;
   imagenPath: string;
   priority: 'normal' | 'importante' | 'urgente';
-  type: 'aviso' | 'noticia' | 'articulo' | 'mensaje';
+  type: 'adn' | 'beneficios' | 'colaboradores' | 'aviso';
   createdBy: number;
   creatorName?: string | null;
   publishedAt?: string | null; // ISO 8601
@@ -145,7 +157,7 @@ export interface Event {
  * Modelo simple con id y nombre
  */
 export interface SimpleModel {
-  id?: number;
+  id: number;
   name: string;
 }
 
@@ -184,18 +196,49 @@ export interface PaginationLink {
 /**
  * Respuesta paginada genérica del servidor
  */
-export interface PaginatedResponse<T> {
+export interface PaginationMeta {
   current_page: number;
-  data: T[];
-  first_page_url: string;
-  from: number;
+  from: number | null;
   last_page: number;
-  last_page_url: string;
   links: PaginationLink[];
-  next_page_url: string | null;
   path: string;
   per_page: number;
-  prev_page_url: string | null;
-  to: number;
+  to: number | null;
   total: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  links: { first: string | null; last: string | null; prev: string | null; next: string | null };
+  meta: PaginationMeta;
+}
+
+export type EventItem = Event;
+export type NotificationItem = Notification;
+export interface priority {
+  value: string;
+  label: string;
+  color: string;
+  bg?: string;
+}
+export interface types {
+  value: string;
+  label: string;
+  subtitle?: string;
+}
+export interface FolderNode {
+  label: string;
+  path: string;
+  file?: string;
+  url?: string;
+  ext?: string;
+  size?: string;
+  children?: FolderNode[];
+}
+export interface DashboardEvent {
+  id: number;
+  title: string;
+  start_date: string;
+  end_date: string;
+  type: Event['type'];
 }

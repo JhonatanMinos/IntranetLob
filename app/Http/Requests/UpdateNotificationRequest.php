@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateNotificationRequest extends FormRequest
@@ -17,15 +18,15 @@ class UpdateNotificationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max: 255',
-            'content' => 'required|string',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|max:100000',
             'priority' => 'required|string|in:normal,importante,urgente',
-            'type' => 'required|string|in:adn,beneficios,colaboradores,avisos',
+            'type' => 'required|string|in:adn,beneficios,colaboradores,aviso',
             'published_at' => 'required|date',
         ];
     }

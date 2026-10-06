@@ -38,12 +38,12 @@ interface RolesProps {
 export default function Roles({ roles = [], permissions = [] }: RolesProps) {
   const [openPermission, setOpenPermission] = useState(false);
   const [activeRole, setActiveRole] = useState<Role | null>(roles[0] || null);
-  const [selected, setSelected] = useState<string[]>(
+  const [selected, setSelected] = useState<number[]>(
     activeRole?.permissions?.map((p) => p.id) ?? []
   );
 
   // Formulario para nuevo permiso
-  const { data, setData, post, processing, reset, errors, isSubmitting } = useForm({
+  const { data, setData, post, processing, reset, errors } = useForm({
     name: '',
   });
 
@@ -63,12 +63,12 @@ export default function Roles({ roles = [], permissions = [] }: RolesProps) {
     }
   }, [activeRole]);
 
-  const togglePermission = (id: string) => {
+  const togglePermission = (id: number) => {
     setSelected((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
   };
 
   const handleUpdatePermissions = async () => {
-    if (!activeRole || isSubmitting) return; // previene doble click
+    if (!activeRole || processing) return; // previene doble click
 
     try {
       await router.put(
@@ -120,12 +120,12 @@ export default function Roles({ roles = [], permissions = [] }: RolesProps) {
         </header>
 
         <Tabs
-          value={activeRole.id}
-          onValueChange={(id) => setActiveRole(roles.find((r) => r.id === id) || null)}
+          value={activeRole.id.toString()}
+          onValueChange={(id) => setActiveRole(roles.find((r) => r.id === Number(id)) || null)}
         >
           <TabsList className="mb-4">
             {roles.map((role) => (
-              <TabsTrigger key={role.id} value={role.id}>
+              <TabsTrigger key={role.id} value={role.id.toString()}>
                 {roleMap[role.name]?.icon || <Shield className="mr-2 h-4 w-4" />}
                 {roleMap[role.name]?.label || role.name}
               </TabsTrigger>
@@ -160,9 +160,9 @@ export default function Roles({ roles = [], permissions = [] }: RolesProps) {
               </div>
             </CardContent>
             <CardFooter className="justify-end border-t px-6 py-4">
-              <Button disabled={isSubmitting} onClick={handleUpdatePermissions}>
-                {isSubmitting ? 'Guardado cambios...' : 'Guardar cambio'}
-                {isSubmitting && <Loader2 className="animate-spin" />}
+              <Button disabled={processing} onClick={handleUpdatePermissions}>
+                {processing ? 'Guardado cambios...' : 'Guardar cambio'}
+                {processing && <Loader2 className="animate-spin" />}
               </Button>
             </CardFooter>
           </Card>

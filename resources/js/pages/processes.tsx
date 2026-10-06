@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { createFolder, deleteItem, getCurrentFolder, getItemsAtPath } from '@/lib/processHelper';
+import { createFolder, deleteItem, getItemsAtPath } from '@/lib/processHelper';
 import { cn } from '@/lib/utils';
 import { index as processes } from '@/routes/processes';
 import type { BreadcrumbItem, FolderNode } from '@/types';
@@ -27,12 +27,12 @@ export function FileIcon({ ext }: { ext?: string }) {
 
 interface Props extends PageProps {
   folders: FolderNode[];
+  canManage: boolean;
 }
 
 export default function Processes() {
-  const { folders } = usePage<Props>().props;
+  const { folders, canManage } = usePage<Props>().props;
   const [path, setPath] = useState<number[]>([]);
-  const currentFolder = getCurrentFolder(folders, path);
 
   const levels = useMemo(() => {
     const result: FolderNode[][] = [];
@@ -85,13 +85,19 @@ export default function Processes() {
                               {item.ext?.toUpperCase()}· {item.size}
                             </span>
                           </div>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => deleteItem(item.path, 'file')}
-                          >
-                            <Trash2 />
-                          </Button>
+                          {canManage && (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                deleteItem(item.path, 'file');
+                              }}
+                            >
+                              <Trash2 />
+                            </Button>
+                          )}
                         </a>
                       ) : (
                         <button
@@ -121,13 +127,21 @@ export default function Processes() {
                     </div>
                   );
                 })}
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  onClick={() => createFolder(currentFolder?.path ?? '')}
-                >
-                  <Plus />
-                </Button>
+                {canManage && (
+                  <Button
+                    size="lg"
+                    variant="ghost"
+                    onClick={() =>
+                      createFolder(
+                        levelIndex === 0
+                          ? 'sistemas-de-calidad'
+                          : (parentItems?.[parentIndex]?.path ?? 'sistemas-de-calidad')
+                      )
+                    }
+                  >
+                    <Plus />
+                  </Button>
+                )}
               </Card>
             );
           })}

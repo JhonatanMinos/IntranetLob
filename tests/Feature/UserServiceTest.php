@@ -1,18 +1,15 @@
 <?php
 
-use App\Models\User;
 use App\Models\Department;
+use App\Models\User;
 use App\Services\UserService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 test('user service can search users', function () {
     $department = Department::factory()->create(['name' => 'IT']);
     $user = User::factory()->create([
         'name' => 'John Doe',
         'email' => 'john@example.com',
-        'department_id' => $department->id
+        'department_id' => $department->id,
     ]);
 
     $userService = app(UserService::class);

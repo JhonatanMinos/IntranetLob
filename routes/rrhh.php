@@ -17,9 +17,7 @@ Route::middleware('auth')->group(function () {
         Route::post('company', [CompanyController::class, 'store'])->name('company.store');
         Route::delete('company/{company}', [CompanyController::class, 'destroy'])->name('company.destroy');
         Route::get('payroll/create/{user}', [PayRollController::class, 'create'])->name('payroll.create');
-        Route::resource('payroll', PayRollController::class)->except(['create', 'edit', 'update']);
-        Route::post('payroll/{payroll}/retry', [PayRollController::class, 'retry'])->name('payroll.retry');
-        Route::get('payroll/{payroll}/status', [PayRollController::class, 'status'])->name('payroll.status');
+        Route::resource('payroll', PayRollController::class)->except(['create', 'edit', 'update', 'show']);
         Route::get('payroll/download/{id}', [PayRollController::class, 'download'])->name('payroll.download');
     });
 });

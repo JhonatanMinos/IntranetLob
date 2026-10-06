@@ -17,13 +17,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface PayRollsProps extends PageProps {
-  users: User[];
+  users: { data: User[] };
   stats: {
     period: string;
-    usersWithFiles: string;
-    usersWithoutFiles: string;
-    totalUser: string;
-    coverage: string;
+    usersWithFiles: number;
+    usersWithoutFiles: number;
+    totalUsers: number;
+    coverage: number;
   };
   flash: {
     success?: string;

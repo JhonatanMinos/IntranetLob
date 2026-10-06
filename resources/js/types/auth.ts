@@ -1,25 +1,11 @@
-export type User = {
-  id: number;
-  name: string;
-  email: string;
-  employeeNumber?: string | null;
-  position?: string | null;
-  phone?: string | null;
-  birthday?: string | null; // Y-m-d format
-  dateEntry?: string | null; // Y-m-d format
-  avatarPath?: string;
-  emailVerifiedAt: string | null;
-  curp: string | null;
-  two_factor_enabled?: boolean;
-  roles?: string;
-  created_at: string;
-  updated_at: string;
-  [key: string]: unknown;
-};
+import type { User } from './index';
+
+export type { User } from './index';
 
 export type Auth = {
   user: User;
-  avatar_url: string;
+  avatar_url: string | null;
+  roles?: string[];
 };
 
 export type TwoFactorSetupData = {

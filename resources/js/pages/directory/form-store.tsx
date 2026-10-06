@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useFlash } from '@/hooks/use-flash';
-import { update } from '@/routes/shops'; // Asumiendo que existen estas rutas
+import { store as storeRoute, update } from '@/routes/shops'; // Asumiendo que existen estas rutas
 import { createStoreSchema, updateStoreSchema } from '@/schemas/storeSchema';
 import type { Store } from '@/types';
 
@@ -47,7 +47,7 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: import('zod').infer<typeof createStoreSchema>) => {
     if (isEdit && store?.id) {
       await router.put(update(store.id).url, data, {
         onSuccess: () => {
@@ -56,7 +56,7 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
         onError: () => {},
       });
     } else {
-      await router.post(store().url, data, {
+      await router.post(storeRoute().url, data, {
         onSuccess: () => {
           onSuccess?.();
         },

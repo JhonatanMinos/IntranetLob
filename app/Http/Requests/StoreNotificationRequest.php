@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Notification;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNotificationRequest extends FormRequest
@@ -18,24 +19,24 @@ class StoreNotificationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max: 255',
+            'title' => 'required|string|max:255',
             'subject' => 'required|string',
-            'content' => 'nullable|string|max:4294967295',
-            'type'     => 'required|in:' . implode(',', [
+            'content' => 'nullable|string|max:100000',
+            'type' => 'required|in:'.implode(',', [
                 Notification::TYPE_ADN,
                 Notification::TYPE_BENEFICIOS,
                 Notification::TYPE_COLABORADORES,
-                Notification::TYPE_AVISO
+                Notification::TYPE_AVISO,
             ]),
-            'priority' => 'required|in:' . implode(',', [
+            'priority' => 'required|in:'.implode(',', [
                 Notification::PRIORITY_NORMAL,
                 Notification::PRIORITY_IMPORTANT,
-                Notification::PRIORITY_URGENT
+                Notification::PRIORITY_URGENT,
             ]),
             'published_at' => 'required|date',
             'imagen_path' => 'nullable|image|mimes:jpg,jpeg,png,webp',

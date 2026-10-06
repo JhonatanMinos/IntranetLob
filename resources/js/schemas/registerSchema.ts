@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { passwordSchema } from '@/schemas/passwordSchema';
 
 export const baseSchema = z.object({
-  employeeNumber: z.coerce.number().min(1, 'El número de empleado es obligatorio'),
+  employeeNumber: z.coerce.number<string | number>().min(1, 'El número de empleado es obligatorio'),
   name: z.string().min(1, 'El nombre es obligatorio'),
   email: z.string().email('Email inválido'),
   password: passwordSchema,

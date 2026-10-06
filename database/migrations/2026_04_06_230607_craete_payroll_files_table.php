@@ -11,6 +11,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::dropIfExists('payroll_files');
         Schema::create('payroll_files', function (Blueprint $table) {
             $table->id();
 
@@ -18,11 +19,8 @@ return new class extends Migration {
             $table->string('file_path');
             $table->string('original_name');
             $table->string('mime_type');
-            $table->unsignedBigInteger('file_size');  // bytes
-            $table->foreignIdFor(User::class)
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
+            $table->unsignedBigInteger('file_size'); // bytes
+            $table->foreignIdFor(User::class)->nullable()->constrained('users')->nullOnDelete();
             //$table->string('status')->default('pending');
             $table->boolean('processed')->default(false);
 

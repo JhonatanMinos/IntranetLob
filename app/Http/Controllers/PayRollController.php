@@ -3,190 +3,93 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePayrollRequest;
-use App\Http\Resources\PayrollResource;
 use App\Http\Resources\UserResource;
-use App\Jobs\ExtractPayrollZip;
 use App\Models\PayRollFiles;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 
 class PayRollController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): Response
     {
-        // Usuarios que TIENEN archivos PayRoll relacionados
-        $usersWithFiles = User::whereHas('payrollFiles')->count();
-
-        // Usuarios que NO TIENEN archivos
-        $usersWithoutFiles = User::whereDoesntHave('payrollFiles')->count();
-
-        // Total de usuarios (verificación)
+        $this->authorize('viewAny', PayRollFiles::class);
         $totalUsers = User::count();
-
-        // Obtener los uploads para la tabla
-        $usersWithoutPayroll = User::whereDoesntHave('payrollFiles')->get();
-
-        $currentPeriod = PayRollFiles::select(
-            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as period'),
-            'created_at'
-        )
-            ->distinct()
-            ->latest('created_at')
-            ->first();
-
-        $period = $currentPeriod?->period ?? now()->format('Y-m');
-
+        $usersWithFiles = User::whereHas('payrollFiles')->count();
+        $users = User::with(['department', 'company', 'store'])->whereDoesntHave('payrollFiles')->get();
 
         return Inertia::render('rrhh/payrolls', [
-            'users' => UserResource::collection($usersWithoutPayroll),
+            'users' => UserResource::collection($users),
             'stats' => [
-                'period' => $period,
+                'period' => PayRollFiles::latest()->first()?->created_at->format('Y-m') ?? now()->format('Y-m'),
                 'usersWithFiles' => $usersWithFiles,
-                'usersWithoutFiles' => $usersWithoutFiles,
+                'usersWithoutFiles' => $totalUsers - $usersWithFiles,
                 'totalUsers' => $totalUsers,
-                'coverage' => $totalUsers > 0 ? round(($usersWithFiles / $totalUsers) * 100, 2) : 0,
+                'coverage' => $totalUsers > 0 ? round($usersWithFiles / $totalUsers * 100, 2) : 0,
             ],
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(User $user)
+    public function create(User $user): Response
     {
-        // View a drops & drap for zip generer register
+        $this->authorize('create', PayRollFiles::class);
+
         return Inertia::render('rrhh/Create', ['user' => $user]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePayrollRequest $request)
     {
-        $data = $request->validated();
+        $this->authorize('create', PayRollFiles::class);
         $file = $request->file('file');
-
+        $path = $file->store('payroll', 'local');
+        abort_if(! $path, 500, 'No se pudo guardar la nómina.');
         try {
-            $path = $file->store('payroll', 'local');
-            // Crear registro
             PayRollFiles::create([
                 'file_path' => $path,
                 'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
+                'mime_type' => $file->getMimeType(),
                 'file_size' => $file->getSize(),
-                'user_id' => $data['user_id'],
-                'processed' => false,
+                'user_id' => $request->validated('user_id'),
+                'processed' => true,
                 'error_message' => null,
             ]);
+        } catch (\Throwable $e) {
+            Storage::disk('local')->delete($path);
+            Log::error('Payroll upload failed', ['user_id' => auth()->id(), 'error' => $e->getMessage()]);
 
-            return redirect()
-                ->route('payroll.index')
-                ->with('success', 'Nómina subida correctamente. Procesando...');
-        } catch (\Exception $e) {
-            \Log::error('Payroll upload failed', [
-                'user_id' => auth()->id(),
-                'target_user' => $data['user_id'],
-                'error' => $e->getMessage(),
-            ]);
-
-            return back()
-                ->withInput()
-                ->withErrors(['file' => 'Error al subir el archivo']);
+            return back()->withErrors(['file' => 'Error al guardar la nómina.']);
         }
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //view files relation with user for employeeNumber
+
+        return to_route('payroll.index')->with('success', 'Nómina guardada correctamente.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PayRoll $payroll)
+    public function destroy(PayRollFiles $payroll)
     {
-        if ($payroll->status === 'processing') {
-            return back()->with('error', 'No se puede eliminar un ZIP en proceso.');
+        $this->authorize('delete', $payroll);
+        // Los recibos importados pertenecen al sistema externo; solo se desvinculan.
+        if (! str_starts_with($payroll->file_path, '/')) {
+            abort_unless(Storage::disk('local')->delete($payroll->file_path), 500, 'No se pudo eliminar el archivo.');
         }
-
-        // Eliminar ZIP del storage
-        Storage::disk('local')->delete($payroll->zip_path);
-
-        // Eliminar archivos extraídos
-        foreach ($payroll->files as $file) {
-            Storage::disk('local')->delete($file->file_path);
-        }
-
         $payroll->delete();
 
-        return redirect()
-            ->route('payroll.index')
-            ->with('success', 'Registro eliminado correctamente.');
+        return to_route('payroll.index')->with('success', 'Nómina eliminada.');
     }
 
-    // ─────────────────────────────────────────
-    // POST /payroll-uploads/{payrollUpload}/retry
-    // Reintentar si falló
-    // ─────────────────────────────────────────
-    public function retry(Payroll $payroll): RedirectResponse
-    {
-        if (!$payroll->hasFailed()) {
-            return redirect()->route('payroll.index')->with('error', 'Solo se pueden reintentar uploads fallidos.');
-            ExtractPayrollZip::dispatch($payroll)->onQueue('default');
-        }
-
-
-        // Resetear contadores
-        $payroll->update([
-            'status'          => 'pending',
-            'error_message'   => null,
-            'processed_files' => 0,
-            'total_files'     => 0,
-        ]);
-
-        // Eliminar archivos anteriores para reprocesar limpio
-        $payroll->files()->delete();
-
-        ExtractPayrollZip::dispatch($payroll)->onQueue('default');
-
-        return back()->with('success', 'Reprocesando ZIP...');
-    }
-
-    // ─────────────────────────────────────────
-    // GET /payroll-uploads/{payrollUpload}/status
-    // Polling desde el frontend para actualizar progreso
-    // ─────────────────────────────────────────
-    public function status(Payroll $payroll): \Illuminate\Http\JsonResponse
-    {
-        return response()->json([
-            'status'          => $payroll->status,
-            'progress'        => $payroll->progress,
-            'total_files'     => $payroll->total_files,
-            'processed_files' => $payroll->processed_files,
-            'error_message'   => $payroll->error_message,
-        ]);
-    }
-
-    public function download($id)
+    public function download(string $id)
     {
         $file = PayRollFiles::findOrFail($id);
-        $fullPath = $file->file_path . '/' . $file->original_name;
-        if (!file_exists($fullPath)) {
-            abort(404, 'Archivo no encontrado físicamente.');
-        }
+        $this->authorize('view', $file);
+        if (str_starts_with($file->file_path, '/')) {
+            $root = realpath(config('payroll.scan_folder'));
+            $path = realpath($file->file_path.'/'.$file->original_name);
+            abort_unless($root && $path && str_starts_with($path, rtrim($root, '/').'/') && is_file($path), 404);
 
-        return response()->download($fullPath, $file->original_name);
+            return response()->download($path, $file->original_name);
+        }
+        abort_unless(Storage::disk('local')->exists($file->file_path), 404);
+
+        return Storage::disk('local')->download($file->file_path, $file->original_name);
     }
 }

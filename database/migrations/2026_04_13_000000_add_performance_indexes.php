@@ -11,25 +11,25 @@ return new class extends Migration {
     public function up(): void
     {
         // Índices para users
-        Schema::table('users', function (Blueprint $table) {
-            $table->index(['department_id', 'company_id', 'store_id'], 'users_relations_index');
-            $table->index('email');
-            $table->index('employee_number');
-            $table->index('birthday');
-        });
+        /*Schema::table('users', function (Blueprint $table) {
+         $table->index(['department_id', 'company_id', 'store_id'], 'users_relations_index');
+         $table->index('email');
+         $table->index('employee_number');
+         $table->index('birthday');
+         });*/
 
         // Índices para notifications
-        Schema::table('notifications', function (Blueprint $table) {
-            $table->index(['created_by', 'published_at'], 'notifications_creator_published_index');
-            $table->index('priority');
-            $table->index('type');
-        });
+        /*Schema::table('notifications', function (Blueprint $table) {
+         $table->index(['created_by', 'published_at'], 'notifications_creator_published_index');
+         $table->index('priority');
+         $table->index('type');
+         });*/
 
         // Índices para events
-        Schema::table('events', function (Blueprint $table) {
-            $table->index(['start_date', 'end_date'], 'events_date_range_index');
-            $table->index('created_by');
-        });
+        /*Schema::table('events', function (Blueprint $table) {
+         $table->index(['start_date', 'end_date'], 'events_date_range_index');
+         $table->index('created_by');
+         });*/
 
         // Índices para pay_rolls
         if (Schema::hasTable('pay_rolls')) {

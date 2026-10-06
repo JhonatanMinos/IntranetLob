@@ -53,7 +53,7 @@ export function FormUser({ departments, stores, company, user }: CreateUserProps
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: import('zod').output<typeof updateUserSchema>) => {
     if (isEdit && user?.id) {
       await router.put(update(user.id).url, data, {
         onSuccess: () => {
@@ -196,7 +196,6 @@ export function FormUser({ departments, stores, company, user }: CreateUserProps
                     <Select
                       value={field.value || ''} // controlado por RHF
                       onValueChange={field.onChange} // actualiza el formulario
-                      className="w-full rounded border px-3 py-2"
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona un departamento" />
@@ -224,7 +223,6 @@ export function FormUser({ departments, stores, company, user }: CreateUserProps
                     <Select
                       value={field.value || ''} // controlado por RHF
                       onValueChange={field.onChange} // actualiza el formulario
-                      className="w-full rounded border px-3 py-2"
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona una tienda" />
@@ -252,7 +250,6 @@ export function FormUser({ departments, stores, company, user }: CreateUserProps
                     <Select
                       value={field.value || ''} // controlado por RHF
                       onValueChange={field.onChange} // actualiza el formulario
-                      className="w-full rounded border px-3 py-2"
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona una compañia" />

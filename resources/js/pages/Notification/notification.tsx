@@ -1,3 +1,4 @@
+/* biome-ignore-all lint/security/noDangerouslySetInnerHtml: Notification sanitiza el contenido en el servidor al guardar y al leer avisos históricos. */
 import { Head, usePage } from '@inertiajs/react';
 import { Calendar } from 'lucide-react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,9 +18,9 @@ interface types {
 }
 
 export default function NotificationShow() {
-  const { notification, priorities, types } = usePage<{
+  const { notification, priorities } = usePage<{
     notification: Notification;
-    priorities: priority;
+    priorities: priority[];
     types: types;
   }>().props;
 
@@ -65,10 +66,8 @@ export default function NotificationShow() {
                 />
               )}
               <div
+                dangerouslySetInnerHTML={{ __html: notification.content }}
                 className="prose dark:prose-invert"
-                dangerouslySetInnerHTML={{
-                  __html: notification.content,
-                }}
               />
             </CardContent>
           </div>

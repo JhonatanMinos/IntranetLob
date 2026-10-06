@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router } from '@inertiajs/react';
 import { CloudCheck, Loader2, Rocket } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import TiptapEditor from '@/components/tiptapEditor';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,8 +73,8 @@ export default function FormNotification({ priorities, types, notification }: Pr
   const formRef = useRef(form);
   formRef.current = form;
 
-  const onSubmit: SubmitHandler = useCallback(
-    (data: Notification) => {
+  const onSubmit: SubmitHandler<import('zod').infer<typeof notificationSchema>> = useCallback(
+    (data) => {
       setIsSubmitting(true);
       const options = {
         preserveScroll: true,
@@ -82,9 +82,12 @@ export default function FormNotification({ priorities, types, notification }: Pr
         onSuccess: () => router.visit(notifications().url),
         onError: (errors: Record<string, string>) => {
           Object.entries(errors).forEach(([field, message]) => {
-            formRef.current.setError(field as keyof typeof data, {
-              message,
-            });
+            formRef.current.setError(
+              field as keyof import('zod').infer<typeof notificationSchema>,
+              {
+                message,
+              }
+            );
           });
         },
         onFinish: () => setIsSubmitting(false),
@@ -124,7 +127,7 @@ export default function FormNotification({ priorities, types, notification }: Pr
                         <RadioGroup
                           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
                           onValueChange={field.onChange}
-                          value={field.value}
+                          value={field.value ?? ''}
                         >
                           {types.map((types) => {
                             const isSelected = field.value === types.value;
@@ -200,7 +203,7 @@ export default function FormNotification({ priorities, types, notification }: Pr
                           <FormLabel>Asunto</FormLabel>
                           <Select
                             onValueChange={field.onChange}
-                            value={field.value}
+                            value={field.value ?? ''}
                             disabled={!selectedType || subjectOptions.length === 0}
                           >
                             <FormControl>
@@ -238,7 +241,7 @@ export default function FormNotification({ priorities, types, notification }: Pr
                           <FormControl>
                             <TiptapEditor
                               key={notification?.id ?? 'new'}
-                              content={field.value}
+                              content={field.value ?? ''}
                               onChange={field.onChange}
                             />
                           </FormControl>
@@ -253,14 +256,12 @@ export default function FormNotification({ priorities, types, notification }: Pr
                         <FormItem>
                           <FormLabel>Imagen</FormLabel>
                           <FormControl>
-                            <div
-                              className="relative flex w-full flex-col items-center justify-center"
-                              onDragOver={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }}
-                            >
+                            <div className="relative flex w-full flex-col items-center justify-center">
                               <label
+                                onDragOver={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
                                 htmlFor="dropzone-file"
                                 className={`flex h-44 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all ${value ? 'border-blue-500 bg-blue-50/10' : 'border-muted-foreground/25 bg-sidebar hover:bg-muted/50'} `}
                               >
@@ -347,7 +348,7 @@ export default function FormNotification({ priorities, types, notification }: Pr
                         <FormItem>
                           <RadioGroup
                             onValueChange={field.onChange}
-                            value={field.value}
+                            value={field.value ?? ''}
                             className="space-y-3"
                           >
                             {priorities.map((priority) => {

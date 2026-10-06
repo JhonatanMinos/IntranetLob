@@ -38,13 +38,13 @@ export function uploadFile(path: string, file: File) {
   formData.append('file', file);
   formData.append('path', path);
 
-  router.post('/upload', formData);
+  router.post('/processes/upload', formData);
 }
 
 export function deleteItem(path: string, type: 'file' | 'folder') {
   if (!confirm('¿Eliminar este elemento?')) return;
 
-  router.delete('/delete', {
+  router.delete('/processes/delete', {
     data: { path, type },
   });
 }

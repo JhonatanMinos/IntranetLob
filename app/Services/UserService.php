@@ -5,9 +5,10 @@ namespace App\Services;
 use App\DTOs\UserDTO;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use App\Services\CacheService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -37,7 +38,7 @@ class UserService
     /**
      * Get all users with relationships (cached)
      */
-    public function getAllUsers(): \Illuminate\Database\Eloquent\Collection
+    public function getAllUsers(): Collection
     {
         return CacheService::rememberQuery('all_users_with_relations', function () {
             return $this->userRepository->all();
@@ -98,7 +99,7 @@ class UserService
      */
     public function assignRole(User $user, int $roleId): void
     {
-        $role = \Spatie\Permission\Models\Role::find($roleId);
+        $role = Role::find($roleId);
         if ($role) {
             $user->syncRoles([$role]);
         }
@@ -107,8 +108,8 @@ class UserService
     /**
      * Convert users collection to DTOs
      */
-    public function toUserDTOs(\Illuminate\Database\Eloquent\Collection $users): array
+    public function toUserDTOs(Collection $users): array
     {
-        return $users->map(fn($user) => UserDTO::fromModel($user))->toArray();
+        return $users->map(fn ($user) => UserDTO::fromModel($user))->toArray();
     }
 }

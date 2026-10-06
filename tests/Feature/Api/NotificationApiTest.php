@@ -1,74 +1,39 @@
 <?php
 
 use App\Models\Notification;
+use Database\Seeders\RolesSeeder;
+use Illuminate\Support\Str;
+use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
-    // Evita que Vite busque archivos inexistentes
     $this->withoutVite();
-    Gate::before(fn() => true);
+    $this->seed(RolesSeeder::class);
 });
 
 it('can list notifications', function () {
-    actingAsAuthenticatedUser();
     Notification::factory()->count(3)->create();
-
-    $response = test()->getJson(route('notifications.index'));
-    $response->assertStatus(200)
-        ->assertJsonStructure([
-            'data' => [
-                '*' => [
-                    'id',
-                    'title',
-                    'subject',
-                    'content',
-                    'priority',
-                    'type',
-                    'createdBy',
-                    'publishedAt',
-                    'createdAt',
-                    'updatedAt'
-                ]
-            ],
-            'links',
-            'meta'
-        ]);
+    $this->actingAs(createUserWithRole('user'))->get(route('notifications.index'))->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('notifications')->has('data.data', 3));
 });
 
-it('can create notification', function () {
-    $notificationData = [
-        'title'    => 'Test',
-        'subject'  => 'Sub',
-        'content'  => 'Contenido',
-        'type'     => Notification::TYPE_AVISO,
-        'priority' => Notification::PRIORITY_IMPORTANT,
-        'published_at' => now()->toDateTimeString(),
-    ];
-
-    $response = actingAsAuthenticatedUser()
-        ->postJson(route('notifications.store'), $notificationData);
-
-    $response->assertStatus(201);
-    $response->assertJsonPath('data.title', 'Nueva política de trabajo');
-    // Y verificamos que los datos estén en la BD
-    $this->assertDatabaseHas('notifications', [
-        'title' => 'Nueva política de trabajo'
-    ]);
+it('can create a sanitized notification as HR', function () {
+    $data = ['title' => 'Nueva política', 'subject' => 'Aviso', 'content' => '<p>Contenido</p><script>alert(1)</script>',
+        'type' => 'aviso', 'priority' => 'importante', 'published_at' => now()->toDateTimeString()];
+    $this->actingAs(createUserWithRole('rh'))->post(route('notifications.store'), $data)->assertSessionHasNoErrors()
+        ->assertRedirect(route('notifications.index'));
+    $notification = Notification::where('title', 'Nueva política')->firstOrFail();
+    expect($notification->getRawOriginal('content'))->not->toContain('<script')->toContain('<p>Contenido</p>');
 });
 
-it('can publish notification', function () {
-    $notification = Notification::factory()->create(['published_at' => null]);
-
-    // Error 404 solucionado: la ruta es notifications.read y requiere el parámetro {id}
-    $response = actingAsAuthenticatedUser()
-        ->patchJson(route('notifications.read', ['id' => $notification->id]));
-
-    $response->assertStatus(200);
+it('marks only the users own system notification as read', function () {
+    $user = createUserWithRole('user');
+    $notice = $user->notifications()->create(['id' => (string) Str::uuid(), 'type' => 'test', 'data' => ['message' => 'Aviso']]);
+    $this->actingAs($user)->patch(route('notifications.read', $notice->id))->assertRedirect();
+    expect($notice->refresh()->read_at)->not->toBeNull();
+    $this->actingAs(createUserWithRole('user'))->patch(route('notifications.read', $notice->id))->assertNotFound();
 });
 
 it('validates required fields when creating notification', function () {
-    actingAsAuthenticatedUser();
-    $response = $this->postJson('/api/notifications', []);
-
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors(['title', 'content', 'type', 'priority']);
+    $this->actingAs(createUserWithRole('rh'))->postJson(route('notifications.store'), [])->assertUnprocessable()
+        ->assertJsonValidationErrors(['title', 'subject', 'type', 'priority', 'published_at']);
 });

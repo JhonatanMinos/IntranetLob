@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\EmployeeFile;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class EmployeeFilePolicy
 {
@@ -21,7 +20,7 @@ class EmployeeFilePolicy
      */
     public function view(User $user, EmployeeFile $employeeFile): bool
     {
-        return true;
+        return $user->hasAnyRole(['sa', 'rh']) || $user->id === $employeeFile->user_id;
     }
 
     /**
@@ -48,6 +47,11 @@ class EmployeeFilePolicy
     /**
      * Determine whether the user can delete the model.
      */
+    public function review(User $user, EmployeeFile $employeeFile): bool
+    {
+        return $user->hasAnyRole(['sa', 'rh']);
+    }
+
     public function delete(User $user, EmployeeFile $employeeFile): bool
     {
         return false;

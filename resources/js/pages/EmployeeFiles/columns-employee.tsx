@@ -1,15 +1,19 @@
+import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { SquarePen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Progress } from '@/components/ui/progress';
+import type { EmployeeFileItem } from '@/pages/employee-files';
 
 interface EmployeeColumnsProps {
   onEdit: (item: EmployeeFileItem) => void;
 }
 
-export function getEmployeeColumns({ onEdit }: EmployeeColumnsProps) {
+export function getEmployeeColumns({
+  onEdit,
+}: EmployeeColumnsProps): ColumnDef<EmployeeFileItem>[] {
   return [
     {
       accessorFn: (row) => row.user.name,
@@ -29,7 +33,7 @@ export function getEmployeeColumns({ onEdit }: EmployeeColumnsProps) {
         const completed = documents.filter((doc: any) => doc.status === 'approved').length;
         const total = documents.length;
 
-        const percent = Math.round((completed / total) * 100);
+        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
         return (
           <Field className="w-full max-w-sm">

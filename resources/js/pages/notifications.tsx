@@ -9,7 +9,14 @@ import { destroy, edit, index as notifications } from '@/routes/notifications';
 import type { BreadcrumbItem, NotificationItem, PaginatedResponse } from '@/types';
 
 // Lazy load heavy components
-const LazyTableGeneric = lazy(() => import('@/components/table'));
+const LazyTableGeneric = lazy(async () => {
+  const { default: TableGeneric } = await import('@/components/table');
+  return {
+    default: (props: { table: import('@tanstack/react-table').Table<NotificationItem> }) => (
+      <TableGeneric {...props} />
+    ),
+  };
+});
 const LazyPaginationGeneric = lazy(() => import('@/components/pagination'));
 
 const breadcrumbs: BreadcrumbItem[] = [

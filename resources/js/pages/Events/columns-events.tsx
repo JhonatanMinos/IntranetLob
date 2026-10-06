@@ -40,7 +40,11 @@ export function getEventColumns({ onEdit, onDelete }: EventcolumnsProps): Column
           lanzamiento: 'bg-purple-500/20 text-purple-950 dark:text-purple-300',
         };
         return (
-          <Badge className={`rounded-full border px-3 py-1 text-xs ${colors[type]}`}>{type}</Badge>
+          <Badge
+            className={`rounded-full border px-3 py-1 text-xs ${colors[type as keyof typeof colors]}`}
+          >
+            {type}
+          </Badge>
         );
       },
     },

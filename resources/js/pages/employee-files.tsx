@@ -7,6 +7,7 @@ import AppLayout from '@/layouts/app-layout';
 import EmployeeFilesLayout from '@/layouts/employeeFiles/layout';
 import { index as files, show } from '@/routes/employeeFiles';
 import type { BreadcrumbItem, PaginatedResponse, User } from '@/types';
+import type { DocumentStatus } from '@/types/employee-files';
 import { getEmployeeColumns } from './EmployeeFiles/columns-employee';
 
 const breadcrumbs: BreadcrumbItem[] = [

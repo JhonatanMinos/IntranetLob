@@ -11,7 +11,7 @@ export const notificationSchema = z.object({
   type: z
     .string()
     .refine(
-      (val) => ['adn', 'beneficios', 'colaboradores', 'avisos'].includes(val),
+      (val) => ['adn', 'beneficios', 'colaboradores', 'aviso'].includes(val),
       'Selecciona un tipo'
     ),
   published_at: z.string().optional(),

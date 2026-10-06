@@ -24,7 +24,7 @@ export function getNotificationColumns({
       header: 'prioridad',
       accessorKey: 'priority',
       cell: ({ row }) => {
-        const value = row.getValue('priority');
+        const value = row.getValue<NotificationItem['priority']>('priority');
 
         const colors = {
           normal: 'bg-green-500/20 dark: text-green-950 dark:text-green-300  ',
@@ -63,7 +63,7 @@ export function getNotificationColumns({
         const plainText = doc.body.textContent || '';
 
         return (
-          <div className="max-w-[250px] truncate text-muted-foreground italic text-center">
+          <div className="max-w-[250px] truncate text-center text-muted-foreground italic">
             {plainText}
           </div>
         );

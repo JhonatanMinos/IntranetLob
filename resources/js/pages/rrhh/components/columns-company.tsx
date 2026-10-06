@@ -1,3 +1,4 @@
+import type { ColumnDef } from '@tanstack/react-table';
 import { SquarePen, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { SimpleModel } from '@/types';
@@ -6,7 +7,7 @@ interface CompanyProps {
   onDelete: (item: SimpleModel) => void;
 }
 
-export function getCompanyColumns({ onDelete }) {
+export function getCompanyColumns({ onDelete }: CompanyProps): ColumnDef<SimpleModel>[] {
   return [
     {
       cell: ({ row }) => <div className="font-semibold">{row.original.name}</div>,

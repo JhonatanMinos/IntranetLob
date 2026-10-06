@@ -7,16 +7,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 
-type CalendarEvent = {
-  id: string;
-  title: string;
-  start_date: string;
-  end_date: string;
-  type: 'birthday' | 'holiday' | 'event' | 'launch';
-};
+import type { DashboardEvent } from '@/types';
 
 interface CalendarAgendaProps {
-  events: CalendarEvent[];
+  events: DashboardEvent[];
 }
 
 const locales = { es };
@@ -30,7 +24,7 @@ const localizer = dateFnsLocalizer({
 });
 
 export function CalendarEvent({ events }: CalendarAgendaProps) {
-  const [view, setView] = useState(Views.MONTH);
+  const [view, setView] = useState<import('react-big-calendar').View>(Views.MONTH);
   const [date, setDate] = useState(new Date());
   const parsedEvents = useMemo(
     () =>

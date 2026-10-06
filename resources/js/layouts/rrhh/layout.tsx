@@ -127,7 +127,7 @@ export default function RrhhLayout({ children }: RrhhLayoutProps) {
                 const active = isCurrentUrl(barNavItem.href);
                 return (
                   <Link
-                    key={barNavItem.href}
+                    key={barNavItem.title}
                     href={barNavItem.href}
                     className={cn(
                       'rounded-md border p-1 text-sm font-medium whitespace-nowrap transition-colors',

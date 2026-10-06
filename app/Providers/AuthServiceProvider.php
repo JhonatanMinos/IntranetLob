@@ -2,9 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Gate;
-use App\Models\User;
 use App\Models\Brand;
 use App\Models\Company;
 use App\Models\Department;
@@ -12,7 +9,7 @@ use App\Models\Event;
 use App\Models\IdentityContent;
 use App\Models\Notification;
 use App\Models\Store;
-use App\Policies\UserPolicy;
+use App\Models\User;
 use App\Policies\BrandPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\DepartmentPolicy;
@@ -20,6 +17,9 @@ use App\Policies\EventPolicy;
 use App\Policies\IdentityContentPolicy;
 use App\Policies\NotificationPolicy;
 use App\Policies\StorePolicy;
+use App\Policies\UserPolicy;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -44,6 +44,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('view-processes', fn (User $user) => $user->hasAnyRole(['sa', 'rh', 'user']));
+        Gate::define('manage-processes', fn (User $user) => $user->hasRole('sa') || $user->getAllPermissions()->contains('name', 'manage processes'));
+
         // Super Admin bypass - Super Admins can perform any action
         Gate::before(function (User $user) {
             return $user->hasRole('sa') ? true : null;

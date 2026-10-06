@@ -6,9 +6,10 @@ use App\Http\Requests\StoreEmployeeFileRequest;
 use App\Http\Requests\UpdateEmployeeFileRequest;
 use App\Http\Resources\EmployeeFileResource;
 use App\Models\EmployeeFile;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 use App\Services\EmployeeFileService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class EmployeeFileController extends Controller
 {
@@ -54,6 +55,7 @@ class EmployeeFileController extends Controller
     public function show(EmployeeFile $employeeFile)
     {
         $this->authorize('view', $employeeFile);
+
         return Inertia::render('EmployeeFiles/status', [
             'employeeFile' => EmployeeFileResource::make($employeeFile)->resolve(),
         ]);
@@ -79,17 +81,18 @@ class EmployeeFileController extends Controller
     {
         $this->authorize('update', $employeeFile);
 
-        $employeeFile = $this->service->ensureForUser($request->user());
-
         // Aquí agregar la lógica para actualizar emergency_contact_name y phone
-        $employeeFile->update($request->only(['emergency_contact_name', 'emergency_contact_phone']));
+        $employeeFile->update($request->validated());
+
+        return back()->with('success', 'Contacto actualizado.');
     }
 
     public function updateStatus(Request $request, EmployeeFile $employeeFile)
     {
-        $this->authorize('update', $employeeFile);
+        $this->authorize('review', $employeeFile);
         $request->validate([
-            'type'   => 'required|string',
+            'type' => ['required', Rule::in(EmployeeFileService::DOCUMENT_TYPES)],
+            'note' => 'nullable|string|max:2000',
             'status' => 'required|in:pending,approved,rejected',
         ]);
 
@@ -106,21 +109,26 @@ class EmployeeFileController extends Controller
     public function updateDocument(Request $request, EmployeeFile $employeeFile)
     {
         $this->authorize('update', $employeeFile);
+        $request->validate([
+            'type' => ['required', Rule::in(EmployeeFileService::DOCUMENT_TYPES)],
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:10240',
+        ]);
         $this->service->updateDocument(
             $employeeFile,
             $request->type,
             $request->file('document')
         );
+
         return back()->with('success', 'Archivo subido con exito');
     }
 
-
     /**
-    * download the specified file
-    */
+     * download the specified file
+     */
     public function download(EmployeeFile $employeeFile, string $type)
     {
         $this->authorize('view', $employeeFile);
+
         return $this->service->downloadResponse($employeeFile, $type);
     }
 

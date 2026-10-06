@@ -20,7 +20,7 @@ import { payrollUploadSchema } from '@/schemas/payrollSchema';
 import type { BreadcrumbItem, User } from '@/types';
 
 export default function CreatePayRoll() {
-  const { user } = usePage<User>().props;
+  const { user } = usePage<{ user: User }>().props;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const breadcrumbs: BreadcrumbItem[] = [
@@ -101,19 +101,17 @@ export default function CreatePayRoll() {
                       render={({ field: { value, onChange, ...fieldProps } }) => (
                         <FormItem>
                           <FormControl>
-                            <div
-                              className="relative flex w-full flex-col items-center justify-center pb-4"
-                              onDragOver={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }}
-                              onDrop={(e) => {
-                                e.preventDefault();
-                                const file = e.dataTransfer.files?.[0];
-                                if (file?.name.endsWith('.pdf')) onChange(file);
-                              }}
-                            >
+                            <div className="relative flex w-full flex-col items-center justify-center pb-4">
                               <label
+                                onDragOver={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                onDrop={(e) => {
+                                  e.preventDefault();
+                                  const file = e.dataTransfer.files?.[0];
+                                  if (file?.name.endsWith('.pdf')) onChange(file);
+                                }}
                                 htmlFor="dropzone-file"
                                 className={`flex h-44 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all ${value ? 'border-blue-500 bg-blue-50/10' : 'border-muted-foreground/25 bg-sidebar hover:bg-muted/50'} `}
                               >
@@ -141,7 +139,7 @@ export default function CreatePayRoll() {
                                       </p>
                                       <br />
                                       <p className="text-xs text-muted-foreground">
-                                        Solo .pdf — Máx. 50MB
+                                        Solo .pdf — Máx. 100MB
                                       </p>
                                     </>
                                   )}

@@ -1,5 +1,5 @@
 import { Monitor, Moon, Sun } from 'lucide-react';
-import type { HTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 export default function AppearanceToggleTab({
   className = '',
   ...props
-}: HTMLAttributes<HTMLDivElement>) {
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
   const { appearance, updateAppearance } = useAppearance();
 
   const modes = ['light', 'dark', 'system'] as const;

@@ -2,10 +2,10 @@
 import { usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-import type { PageProps } from '@/types';
+import type { SharedData } from '@/types';
 
 export function useFlash() {
-  const { flash } = usePage<PageProps>().props;
+  const { flash } = usePage<SharedData>().props;
 
   useEffect(() => {
     if (flash?.success) toast.success(flash.success);

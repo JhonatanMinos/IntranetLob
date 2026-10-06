@@ -5,29 +5,11 @@ import { buttonVariants } from '@/components/ui/button';
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination';
 import { cn } from '@/lib/utils';
 
-interface PaginationLink {
-  url: string | null;
-  label: string;
-  active: boolean;
-}
+import type { PaginatedResponse, PaginationMeta } from '@/types';
 
 interface PaginationProps {
-  links: {
-    first: string;
-    last: string;
-    prev: string;
-    next: string;
-  };
-  meta: {
-    current_page: number;
-    from: number;
-    last_page: number;
-    links: PaginationLink[]; // Laravel suele duplicar los links aquí en meta
-    path: string;
-    per_page: number;
-    to: number;
-    total: number;
-  };
+  links: PaginatedResponse<unknown>['links'];
+  meta: PaginationMeta;
 }
 
 export default function PaginationGeneric({ meta, links }: PaginationProps) {

@@ -10,7 +10,10 @@ interface DeparmentProps {
   userAll: number;
   onDelete: (item: Department) => void;
 }
-export function getDeparmentColumns({ userAll, onDelete }: DeparmentProps): ColumnDef<Department> {
+export function getDeparmentColumns({
+  userAll,
+  onDelete,
+}: DeparmentProps): ColumnDef<Department>[] {
   return [
     {
       cell: ({ row }: { row: Row<Department> }) => (

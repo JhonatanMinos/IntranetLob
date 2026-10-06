@@ -1,152 +1,64 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolesSeeder;
+use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
-    $this->withHeaders(['Accept' => 'application/json']);
-    // Si usas Policies, esto saltará las autorizaciones para que el test se centre en la lógica
-    $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+    $this->withoutVite();
+    $this->seed(RolesSeeder::class);
 });
 
-
-it('can list users', function () {
-    User::factory()->count(3)->create();
-
-    $response = actingAsAuthenticatedUser()
-        ->getJson(route('users.index'));
-
-    $response->assertStatus(200)
-        ->assertJsonStructure([
-            'props' => [
-                'data' => ['data']
-            ]
-        ]);
+it('can list users in the directory', function () {
+    $user = createUserWithRole('user');
+    $this->actingAs($user)->get(route('users.index'))->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('directory/users')->has('data.data', 1));
 });
 
-it('can get user by id', function () {
-    $targetUser = User::factory()->create();
-
-    $response = actingAsAuthenticatedUser()
-        ->getJson(route('users.show', $targetUser->id));
-
-    $response->assertStatus(200)
-        ->assertJsonPath('data.id', $targetUser->id)
-        ->assertJsonPath('data.email', $targetUser->email);
+it('can create user as administrator', function () {
+    $admin = createUserWithRole('sa');
+    $template = User::factory()->make();
+    $data = $template->only(['name', 'email', 'position', 'birthday', 'dateEntry', 'phone', 'department_id', 'company_id', 'store_id']);
+    $data['employeeNumber'] = (string) $template->employeeNumber;
+    $data['password'] = 'password123';
+    $this->actingAs($admin)->post(route('users.store'), $data)->assertSessionHasNoErrors()->assertRedirect(route('users.index'));
+    $this->assertDatabaseHas('users', ['email' => $template->email]);
+    expect(User::where('email', $template->email)->first()->hasRole('user'))->toBeTrue();
 });
 
-it('can create user', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
-    $userData = [
-        'name' => 'John Doe',
-        'email' => 'john@example.com',
-        'password' => 'password123',
-        'password_confirmation' => 'password123',
-        'employeeNumber' => 'EMP001',
-        'position' => 'Developer',
-        'department_id' => 1
-    ];
-
-    $response = $this->postJson('/api/users', $userData);
-
-    $response->assertStatus(201)
-        ->assertJsonStructure([
-            'data' => [
-                'id',
-                'name',
-                'email',
-                'employeeNumber',
-                'position',
-                'departmentId',
-                'createdAt',
-                'updatedAt'
-            ],
-            'message'
-        ]);
-
-    $this->assertDatabaseHas('users', [
-        'name' => 'John Doe',
-        'email' => 'john@example.com',
-        'employeeNumber' => 'EMP001'
-    ]);
+it('can update user as administrator', function () {
+    $target = User::factory()->create(['employeeNumber' => 34567]);
+    $data = $target->only(['employeeNumber', 'email', 'position', 'birthday', 'dateEntry', 'phone', 'department_id', 'company_id', 'store_id']);
+    $data['name'] = 'Nombre actualizado';
+    $this->actingAs(createUserWithRole('sa'))->put(route('users.update', $target), $data)->assertSessionHasNoErrors()->assertRedirect();
+    expect($target->refresh()->name)->toBe('Nombre actualizado');
 });
 
-it('can update user', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
-    $targetUser = User::factory()->create();
-
-    $updateData = [
-        'name' => 'Jane Doe Updated',
-        'position' => 'Senior Developer'
-    ];
-
-    $response = $this->putJson("/api/users/{$targetUser->id}", $updateData);
-
-    $response->assertStatus(200)
-        ->assertJson([
-            'data' => [
-                'id' => $targetUser->id,
-                'name' => 'Jane Doe Updated',
-                'position' => 'Senior Developer'
-            ],
-            'message'
-        ]);
-
-    $this->assertDatabaseHas('users', [
-        'name' => 'Jane Doe Updated',
-        'position' => 'Senior Developer'
-    ]);
-});
-
-it('can delete user', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
-    $targetUser = User::factory()->create();
-
-    $response = $this->deleteJson("/api/users/{$targetUser->id}");
-
-    $response->assertStatus(200)
-        ->assertJson(['message']);
-
-    $this->assertSoftDeleted($targetUser);
+it('can soft delete user as administrator', function () {
+    $target = User::factory()->create();
+    $this->actingAs(createUserWithRole('sa'))->delete(route('users.destroy', $target))->assertRedirect(route('users.index'));
+    $this->assertSoftDeleted($target);
 });
 
 it('can search users', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
     User::factory()->create(['name' => 'John Smith']);
-    User::factory()->create(['name' => 'Jane Doe']);
-    User::factory()->create(['email' => 'test@example.com']);
-
-    $response = $this->getJson('/api/users?search=john');
-
-    $response->assertStatus(200)
-        ->assertJsonCount(1, 'data')
-        ->assertJson([
-            'data' => [
-                ['name' => 'John Smith']
-            ]
-        ]);
+    $this->actingAs(createUserWithRole('user'))->get(route('users.index', ['search' => 'John Smith']))->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->has('data.data', 1)->where('data.data.0.name', 'John Smith'));
 });
 
 it('validates required fields when creating user', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
-    $response = $this->postJson('/api/users', []);
-
-    $response->assertStatus(422)
+    $this->actingAs(createUserWithRole('sa'))->postJson(route('users.store'), [])->assertUnprocessable()
         ->assertJsonValidationErrors(['name', 'email', 'password']);
 });
 
-it('returns 401 when not authenticated', function () {
-    $response = $this->getJson('/api/users');
-
-    $response->assertStatus(401);
+it('rejects unauthenticated directory requests', function () {
+    $this->getJson(route('users.index'))->assertUnauthorized();
 });
 
+it('rejects employee attempts to create users', function () {
+    $template = User::factory()->make();
+    $data = $template->only(['name', 'email', 'position', 'birthday', 'dateEntry', 'phone', 'department_id', 'company_id', 'store_id']);
+    $data['employeeNumber'] = (string) $template->employeeNumber;
+    $data['password'] = 'password123';
+    $this->actingAs(createUserWithRole('user'))->postJson(route('users.store'), $data)->assertForbidden();
+});

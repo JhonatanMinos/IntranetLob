@@ -3,21 +3,18 @@
 namespace App\Services;
 
 use App\Models\EmployeeFile;
-use Illuminate\Support\Facades\Storage;
 use App\Notifications\DocumentRejected;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeFileService
 {
+    public const DOCUMENT_TYPES = ['curp', 'rfc', 'nss', 'birth_certificate', 'ine', 'address_proof', 'education_certificate', 'criminal_record', 'recommendation_letter_1', 'recommendation_letter_2', 'bank_account', 'profile_photo'];
+
     protected array $defaultDocuments;
 
     public function __construct()
     {
-        $this->defaultDocuments = collect([
-            'curp', 'rfc', 'nss',
-            'birth_certificate', 'ine', 'address_proof',
-            'education_certificate', 'criminal_record', 'recommendation_letter_1',
-            'recommendation_letter_2', 'bank_account', 'profile_photo',
-        ])->mapWithKeys(fn($doc) => [
+        $this->defaultDocuments = collect(self::DOCUMENT_TYPES)->mapWithKeys(fn ($doc) => [
             $doc => ['path' => null, 'status' => 'pending', 'note' => null],
         ])->toArray();
     }
@@ -56,21 +53,21 @@ class EmployeeFileService
     {
         if ($status === 'rejected') {
             $documentLabels = [
-                'curp'                   => 'CURP',
-                'rfc'                    => 'RFC',
-                'nss'                    => 'Número de Seguro Social',
-                'birth_certificate'      => 'Acta de Nacimiento',
-                'ine'                    => 'INE / Identificación Oficial',
-                'address_proof'          => 'Comprobante de Domicilio',
-                'education_certificate'  => 'Certificado de Estudios',
-                'criminal_record'        => 'Antecedentes No Penales',
+                'curp' => 'CURP',
+                'rfc' => 'RFC',
+                'nss' => 'Número de Seguro Social',
+                'birth_certificate' => 'Acta de Nacimiento',
+                'ine' => 'INE / Identificación Oficial',
+                'address_proof' => 'Comprobante de Domicilio',
+                'education_certificate' => 'Certificado de Estudios',
+                'criminal_record' => 'Antecedentes No Penales',
                 'recommendation_letter_1' => 'Carta de Recomendación 1',
                 'recommendation_letter_2' => 'Carta de Recomendación 2',
-                'bank_account'           => 'Cuenta Bancaria',
-                'profile_photo'          => 'Foto de Perfil',
+                'bank_account' => 'Cuenta Bancaria',
+                'profile_photo' => 'Foto de Perfil',
             ];
 
-            $label   = $documentLabels[$type] ?? $type;
+            $label = $documentLabels[$type] ?? $type;
             $message = "Tu documento '{$label}' fue rechazado.";
             $note ??= 'Sin motivo especificado';
             $notifType = 'file';
@@ -80,7 +77,7 @@ class EmployeeFileService
         $documents = $employeeFile->documents ?? [];
         $documents[$type] = array_merge(
             $documents[$type] ?? [],
-            ['status' => $status]
+            ['status' => $status, 'note' => $note]
         );
 
         $employeeFile->update(['documents' => $documents]);
@@ -92,22 +89,25 @@ class EmployeeFileService
     public function updateDocument(EmployeeFile $employeeFile, string $type, $uploadedFile): void
     {
         $documents = $employeeFile->documents ?? [];
-        if (isset($documents[$type]['path'])) {
-            Storage::delete($documents[$type]['path']);
-        }
-
-        $path = $uploadedFile->storeAs(
-            "employee-files/{$employeeFile->user_id}",
-            "{$type}.{$uploadedFile->extension()}"
-        );
+        $previousPath = $documents[$type]['path'] ?? null;
+        $path = $uploadedFile->store("employee-files/{$employeeFile->user_id}", 'local');
+        abort_if(! $path, 500, 'No se pudo guardar el documento.');
 
         $documents[$type] = [
-            'path'   => $path,
+            'path' => $path,
             'status' => 'pending',
-            'note'   => null,
+            'note' => null,
         ];
 
-        $employeeFile->update(['documents' => $documents]);
+        try {
+            $employeeFile->update(['documents' => $documents]);
+        } catch (\Throwable $e) {
+            Storage::disk('local')->delete($path);
+            throw $e;
+        }
+        if ($previousPath) {
+            Storage::disk('local')->delete($previousPath);
+        }
     }
 
     /**
@@ -116,8 +116,8 @@ class EmployeeFileService
     public function downloadResponse(EmployeeFile $employeeFile, string $type)
     {
         $path = $employeeFile->documents[$type]['path'] ?? null;
-        abort_if(!$path || !Storage::exists($path), 404);
+        abort_if(! $path || ! Storage::disk('local')->exists($path), 404);
 
-        return Storage::response($path);
+        return Storage::disk('local')->download($path);
     }
 }

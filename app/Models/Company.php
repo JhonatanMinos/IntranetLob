@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\CompanyFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 
 /**
@@ -13,27 +17,31 @@ use Laravel\Scout\Searchable;
  *
  * @description Entidad principal que representa a una empresa en el sistema.
  * * --- Atributos de la Base de Datos ---
+ *
  * @property int $id
  * @property string $name Nombre legal o comercial de la empresa.
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at Fecha de eliminación (SoftDelete).
- * * --- Relaciones ---
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $user Usuarios asociados a la empresa.
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at Fecha de eliminación (SoftDelete).
+ *                                   * --- Relaciones ---
+ * @property-read Collection<int, User> $user Usuarios asociados a la empresa.
  * @property-read int|null $user_count Conteo total de usuarios.
  * * --- Mixins y Métodos de Búsqueda ---
- * @mixin \Illuminate\Database\Eloquent\Builder
- * @mixin \Laravel\Scout\Searchable
+ *
+ * @mixin Builder
+ * @mixin Searchable
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Company query()
  * @method static \Illuminate\Database\Eloquent\Builder|Company newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Company search(string $query) Realiza una búsqueda mediante Scout.
  */
 class Company extends Model
 {
-    /** @use HasFactory<\Database\Factories\CompanyFactory> */
+    /** @use HasFactory<CompanyFactory> */
     use HasFactory;
-    use SoftDeletes;
+
     use Searchable;
+    use SoftDeletes;
 
     /**
      * Atributos que se pueden asignar masivamente.
@@ -57,7 +65,7 @@ class Company extends Model
     /**
      * Obtiene todos los usuarios que pertenecen a esta empresa.
      *
-     * @return HasMany<\App\Models\User, self>
+     * @return HasMany<User, self>
      */
     public function user(): HasMany
     {

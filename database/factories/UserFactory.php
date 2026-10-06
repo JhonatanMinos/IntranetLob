@@ -2,12 +2,16 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
+use App\Models\Department;
+use App\Models\Store;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -33,16 +37,16 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
 
-            'employeeNumber' => fake()->unique()->bothify('####'),
-            'position'       => fake()->jobTitle(),
-            'birthday'       => fake()->date('Y-m-d', '-40 years'),
-            'dateEntry'      => fake()->date(),
-            'phone'          => fake()->phoneNumber(),
+            'employeeNumber' => fake()->unique()->numberBetween(10000, 999999),
+            'position' => fake()->jobTitle(),
+            'birthday' => fake()->date('Y-m-d', '-40 years'),
+            'dateEntry' => fake()->date(),
+            'phone' => fake()->phoneNumber(),
 
             // Relaciones (creará uno nuevo si no se especifica)
-            'department_id'  => \App\Models\Department::factory(),
-            'company_id'     => \App\Models\Company::factory(),
-            'store_id'       => \App\Models\Store::factory(),
+            'department_id' => Department::factory(),
+            'company_id' => Company::factory(),
+            'store_id' => Store::factory(),
         ];
     }
 
@@ -51,7 +55,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
@@ -61,7 +65,7 @@ class UserFactory extends Factory
      */
     public function withTwoFactor(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),

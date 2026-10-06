@@ -11,10 +11,7 @@ import { store } from '@/routes/register';
 
 export default function Register() {
   return (
-    <AuthLayout
-      title="Crear una cuenta"
-      description="Ingresa tus datos para crear tu cuenta"
-    >
+    <AuthLayout title="Crear una cuenta" description="Ingresa tus datos para crear tu cuenta">
       <Head title="Registro" />
       <Form
         {...store.form()}
@@ -32,7 +29,7 @@ export default function Register() {
                   type="text"
                   required
                   autoFocus
-                  tabIndex="0"
+                  tabIndex={0}
                   autoComplete="name"
                   name="name"
                   placeholder="Nombre completo"
@@ -41,12 +38,17 @@ export default function Register() {
               </div>
 
               <div className="grid gap-2">
+                <Label htmlFor="employeeNumber">Número de empleado</Label>
+                <Input id="employeeNumber" name="employeeNumber" type="number" min="1" required />
+                <InputError message={errors.employeeNumber} />
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="email">Correo electrónico</Label>
                 <Input
                   id="email"
                   type="email"
                   required
-                  tabIndex="0"
+                  tabIndex={0}
                   autoComplete="email"
                   name="email"
                   placeholder="correo@ejemplo.com"
@@ -60,7 +62,7 @@ export default function Register() {
                   id="password"
                   type="password"
                   required
-                  tabIndex="0"
+                  tabIndex={0}
                   autoComplete="new-password"
                   name="password"
                   placeholder="Contraseña"
@@ -74,7 +76,7 @@ export default function Register() {
                   id="password_confirmation"
                   type="password"
                   required
-                  tabIndex="0"
+                  tabIndex={0}
                   autoComplete="new-password"
                   name="password_confirmation"
                   placeholder="Confirmar contraseña"
@@ -85,7 +87,7 @@ export default function Register() {
               <Button
                 type="submit"
                 className="mt-2 w-full"
-                tabIndex="0"
+                tabIndex={0}
                 data-test="register-user-button"
               >
                 {processing && <Spinner />}
@@ -95,7 +97,7 @@ export default function Register() {
 
             <div className="text-center text-sm text-muted-foreground">
               ¿Ya tienes cuenta?{' '}
-              <TextLink href={login()} tabIndex="0">
+              <TextLink href={login()} tabIndex={0}>
                 Iniciar sesión
               </TextLink>
             </div>

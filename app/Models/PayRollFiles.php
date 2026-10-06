@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\PayRollFiles
  *
  * @description Representa un archivo físico asociado a un registro de nómina.
  * * --- Atributos de la Base de Datos ---
+ *
  * @property int $id
  * @property int $payroll_id ID de la nómina relacionada.
  * @property string $file_path Ruta de almacenamiento del archivo.
@@ -19,13 +21,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $employee_id ID del usuario/empleado asociado.
  * @property string $status Estado del procesamiento (ej: pending, completed, error).
  * @property string|null $error_message Detalle de error si el procesamiento falla.
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * * --- Relaciones ---
- * @property-read \App\Models\PayRoll $upload El registro de nómina padre.
- * @property-read \App\Models\User|null $employee El empleado dueño del archivo.
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *                                   * --- Relaciones ---
+ * @property-read PayRoll $upload El registro de nómina padre.
+ * @property-read User|null $employee El empleado dueño del archivo.
  */
-
 class PayRollFiles extends Model
 {
     /**
@@ -45,21 +46,25 @@ class PayRollFiles extends Model
 
     protected $table = 'payroll_files';
 
+    protected function casts(): array
+    {
+        return ['processed' => 'boolean'];
+    }
+
     /**
      * Obtiene el registro de nómina al que pertenece este archivo.
      *
-     * @return BelongsTo<\App\Models\PayRoll, self>
+     * @return BelongsTo<PayRoll, self>
      */
     /*public function upload(): BelongsTo
     {
         return $this->belongsTo(PayRoll::class, 'payroll_id');
     }*/
 
-
     /**
      * Obtiene el empleado (Usuario) asociado al archivo.
      *
-     * @return BelongsTo<\App\Models\User, self>
+     * @return BelongsTo<User, self>
      */
     public function employee(): BelongsTo
     {

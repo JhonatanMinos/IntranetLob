@@ -17,6 +17,7 @@ type Document = {
 
 type EmployeeFile = {
   id: number;
+  canReview: boolean;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
   documents: Record<string, Document>;
@@ -156,6 +157,7 @@ export default function Status() {
                         }
                       }
                       employeeFile={employeeFile.id}
+                      canReview={employeeFile.canReview}
                     />
                   ))}
                 </CardContent>

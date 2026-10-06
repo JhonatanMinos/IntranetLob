@@ -12,102 +12,82 @@ import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
 type Props = {
-    status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
+  status?: string;
+  canResetPassword: boolean;
+  canRegister: boolean;
 };
 
-export default function Login({
-    status,
-    canResetPassword,
-    canRegister,
-}: Props) {
-    return (
-        <AuthLayout
-            title="Inicia sesión en tu cuenta"
-            description="Ingresa tu correo y contraseña para iniciar sesión"
-        >
-            <Head title="Iniciar sesión" />
+export default function Login({ status, canResetPassword, canRegister }: Props) {
+  return (
+    <AuthLayout
+      title="Inicia sesión en tu cuenta"
+      description="Ingresa tu correo y contraseña para iniciar sesión"
+    >
+      <Head title="Iniciar sesión" />
 
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="employeeNumber">
-                                    Numero de empleado
-                                </Label>
-                                <Input
-                                    id="employeeNumber"
-                                    type="text"
-                                    name="employeeNumber"
-                                    required
-                                    autoFocus
-                                    tabIndex="0"
-                                    autoComplete="employeeNumber"
-                                    placeholder="xxxxxxx"
-                                />
-                                <InputError message={errors.employeeNumber} />
-                            </div>
+      <Form {...store.form()} resetOnSuccess={['password']} className="flex flex-col gap-6">
+        {({ processing, errors }) => (
+          <>
+            <div className="grid gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="employeeNumber">Numero de empleado</Label>
+                <Input
+                  id="employeeNumber"
+                  type="text"
+                  name="employeeNumber"
+                  required
+                  autoFocus
+                  tabIndex={0}
+                  autoComplete="employeeNumber"
+                  placeholder="xxxxxxx"
+                />
+                <InputError message={errors.employeeNumber} />
+              </div>
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Contraseña</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex="0"
-                                        >
-                                            ¿Olvidaste tu contraseña?
-                                        </TextLink>
-                                    )}
-                                </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex="0"
-                                    autoComplete="current-password"
-                                    placeholder="Contraseña"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
-
-                            <div className="flex items-center space-x-3">
-                                <Checkbox
-                                    id="remember"
-                                    name="remember"
-                                    tabIndex="0"
-                                />
-                                <Label htmlFor="remember">Recuérdame</Label>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="mt-4 w-full"
-                                tabIndex="0"
-                                disabled={processing}
-                                data-test="login-button"
-                            >
-                                {processing && <Spinner />}
-                                Iniciar sesión
-                            </Button>
-                        </div>
-                    </>
-                )}
-            </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Contraseña</Label>
+                  {canResetPassword && (
+                    <TextLink href={request()} className="ml-auto text-sm" tabIndex={0}>
+                      ¿Olvidaste tu contraseña?
+                    </TextLink>
+                  )}
                 </div>
-            )}
-        </AuthLayout>
-    );
+                <Input
+                  id="password"
+                  type="password"
+                  name="password"
+                  required
+                  tabIndex={0}
+                  autoComplete="current-password"
+                  placeholder="Contraseña"
+                />
+                <InputError message={errors.password} />
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <Checkbox id="remember" name="remember" tabIndex={0} />
+                <Label htmlFor="remember">Recuérdame</Label>
+              </div>
+
+              <Button
+                type="submit"
+                className="mt-4 w-full"
+                tabIndex={0}
+                disabled={processing}
+                data-test="login-button"
+              >
+                {processing && <Spinner />}
+                Iniciar sesión
+              </Button>
+            </div>
+          </>
+        )}
+      </Form>
+
+      {status && (
+        <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>
+      )}
+    </AuthLayout>
+  );
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\CacheService;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class CacheInvalidator
@@ -16,9 +16,13 @@ class CacheInvalidator
     {
         $response = $next($request);
 
-        // Invalidar caché después de operaciones de escritura
-        if ($request->isMethod('post') || $request->isMethod('put') || $request->isMethod('patch') || $request->isMethod('delete')) {
-            CacheService::clearAll();
+        // Invalidar solo consultas afectadas; flush también borraba límites de login.
+        if (! $request->isMethodSafe() && $response->getStatusCode() < 400 && ! $request->session()->has('errors')) {
+            if ($request->routeIs('users.*', 'profile.update', 'profile.destroy', 'departament.*', 'company.*', 'shops.*')) {
+                foreach (['all_users_with_relations', 'active_users'] as $key) {
+                    Cache::forget($key);
+                }
+            }
         }
 
         return $response;

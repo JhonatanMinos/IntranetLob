@@ -21,12 +21,14 @@ export default function DocumentRowStatus({
   description,
   doc,
   employeeFile,
+  canReview,
 }: {
   docKey: string;
   label: string;
   description: string;
   doc: Document;
   employeeFile: number;
+  canReview: boolean;
 }) {
   const fileName = doc.path ? doc.path.split('/').pop() : null;
   const handleStatusChange = (key: string, status: DocumentStatus) => {
@@ -65,25 +67,26 @@ export default function DocumentRowStatus({
         )}
       </div>
       <StatusBadge status={doc.status} />
-      <div>
-        <Select
-          defaultValue={doc.status ?? ''}
-          onValueChange={(value) => handleStatusChange(docKey, value)}
-          className="w-50 rounded-md border bg-background px-2 py-1 text-xs"
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecciona un estado" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Estado</SelectLabel>
-              <SelectItem value="pending">Pendiente</SelectItem>
-              <SelectItem value="approved">Aprobado</SelectItem>
-              <SelectItem value="rejected">Rechazado</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
+      {canReview && (
+        <div>
+          <Select
+            defaultValue={doc.status ?? ''}
+            onValueChange={(value) => handleStatusChange(docKey, value as DocumentStatus)}
+          >
+            <SelectTrigger className="w-50">
+              <SelectValue placeholder="Selecciona un estado" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Estado</SelectLabel>
+                <SelectItem value="pending">Pendiente</SelectItem>
+                <SelectItem value="approved">Aprobado</SelectItem>
+                <SelectItem value="rejected">Rechazado</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   );
 }

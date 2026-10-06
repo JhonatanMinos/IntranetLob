@@ -15,12 +15,13 @@ class EmployeeFileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                      => $this->id,
-            'emergency_contact_name'  => $this->emergency_contact_name,
+            'id' => $this->id,
+            'canReview' => $request->user()->can('review', $this->resource),
+            'emergency_contact_name' => $this->emergency_contact_name,
             'emergency_contact_phone' => $this->emergency_contact_phone,
-            'documents'               => $this->documents,
-            'user'                    => [
-                'id'   => $this->user?->id,
+            'documents' => $this->documents,
+            'user' => [
+                'id' => $this->user?->id,
                 'name' => $this->user?->name,
                 'position' => $this->user?->position,
             ],

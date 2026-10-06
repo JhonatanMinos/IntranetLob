@@ -31,17 +31,11 @@ const chartConfig = {
   visitors: { label: 'Día', color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig;
 
-type CalendarEvent = {
-  id: string;
-  title: string;
-  start_date: Date;
-  end_date: Date;
-  type: 'birthday' | 'holiday' | 'event' | 'launch';
-};
+import type { DashboardEvent } from '@/types';
 
 interface CalendarAgendaProps {
   setOpen: (open: boolean) => void;
-  events: CalendarEvent[];
+  events: DashboardEvent[];
 }
 
 export function EventsCard({ setOpen, events }: CalendarAgendaProps) {

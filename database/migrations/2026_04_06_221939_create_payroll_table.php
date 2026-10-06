@@ -11,6 +11,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::dropIfExists('payrolls');
         Schema::create('payrolls', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->restrictOnDelete()->comment('Quien subio el archivo');

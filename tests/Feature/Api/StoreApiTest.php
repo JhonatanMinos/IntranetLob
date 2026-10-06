@@ -1,104 +1,32 @@
 <?php
 
 use App\Models\Store;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Database\Seeders\RolesSeeder;
+use Inertia\Testing\AssertableInertia as Assert;
 
-uses(TestCase::class, RefreshDatabase::class);
+beforeEach(function () {
+    $this->withoutVite();
+    $this->seed(RolesSeeder::class);
+});
 
-it('can list stores', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
+it('can list stores in the directory', function () {
+    $user = createUserWithRole('user');
+    $count = Store::count();
     Store::factory()->count(3)->create();
-
-    $response = $this->getJson('/api/stores');
-
-    $response->assertStatus(200)
-             ->assertJsonStructure([
-                 'data' => [
-                     '*' => [
-                         'id', 'name', 'code', 'type', 'address', 'city',
-                         'brandId', 'brandName', 'lat', 'lng', 'createdAt', 'updatedAt'
-                     ]
-                 ],
-                 'links', 'meta'
-             ]);
-});
-
-it('can create store', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
-    $storeData = [
-        'name' => 'Nueva Tienda',
-        'code' => 'NT001',
-        'type' => 'sucursal',
-        'address' => 'Calle Principal 123',
-        'city' => 'Madrid',
-        'brand_id' => 1,
-        'lat' => 40.4168,
-        'lng' => -3.7038
-    ];
-
-    $response = $this->postJson('/api/stores', $storeData);
-
-    $response->assertStatus(201)
-             ->assertJsonStructure([
-                 'data' => [
-                     'id', 'name', 'code', 'type', 'address', 'city',
-                     'brandId', 'lat', 'lng', 'createdAt'
-                 ],
-                 'message'
-             ]);
-
-    $this->assertDatabaseHas('stores', [
-        'name' => 'Nueva Tienda',
-        'code' => 'NT001',
-        'city' => 'Madrid'
-    ]);
-});
-
-it('can filter stores by city', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
-    Store::factory()->create(['city' => 'Madrid']);
-    Store::factory()->create(['city' => 'Barcelona']);
-    Store::factory()->create(['city' => 'Madrid']);
-
-    $response = $this->getJson('/api/stores?city=Madrid');
-
-    $response->assertStatus(200)
-             ->assertJsonCount(2, 'data');
+    $this->actingAs($user)->get(route('shops.index'))->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('directory/shops')->has('data.data', $count + 3));
 });
 
 it('can search stores by name', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
-
-    Store::factory()->create(['name' => 'Tienda Central']);
-    Store::factory()->create(['name' => 'Sucursal Norte']);
-    Store::factory()->create(['name' => 'Centro Comercial']);
-
-    $response = $this->getJson('/api/stores?search=central');
-
-    $response->assertStatus(200)
-             ->assertJsonCount(1, 'data')
-             ->assertJson([
-                 'data' => [
-                     ['name' => 'Tienda Central']
-                 ]
-             ]);
+    Store::factory()->create(['name' => 'Sucursal Especial']);
+    $this->actingAs(createUserWithRole('user'))->get(route('shops.index', ['search' => 'Sucursal Especial']))->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->has('data.data', 1)->where('data.data.0.name', 'Sucursal Especial'));
 });
 
-it('validates required fields when creating store', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user, 'sanctum');
+it('rejects unauthenticated store requests', function () {
+    $this->getJson(route('shops.index'))->assertUnauthorized();
+});
 
-    $response = $this->postJson('/api/stores', []);
-
-    $response->assertStatus(422)
-             ->assertJsonValidationErrors(['name', 'code', 'city']);
+it('rejects employee attempts to create stores', function () {
+    $this->actingAs(createUserWithRole('user'))->postJson(route('shops.store'), [])->assertForbidden();
 });

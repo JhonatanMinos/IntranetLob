@@ -16,7 +16,7 @@ import type { Role, User } from '@/types';
 interface UsersTableProps {
   data: User[];
   roles: Role[];
-  handleChange: (userId: string, roleId: string) => void;
+  handleChange: (userId: number, roleId: string) => void;
 }
 
 export function TableUser({ data, roles, handleChange }: UsersTableProps) {
@@ -51,10 +51,9 @@ export function TableUser({ data, roles, handleChange }: UsersTableProps) {
           <CardFooter className="flex justify-center">
             <div className="flex justify-center gap-2">
               <Select
-                className="w-full rounded px-3 py-2"
                 defaultValue={user.roles?.[0]?.id?.toString() ?? ''}
                 onValueChange={(value) => {
-                  handleChange(user.id.toString(), value);
+                  handleChange(user.id, value);
                 }}
               >
                 <SelectTrigger>
