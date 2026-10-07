@@ -104,18 +104,22 @@ export default function DirectoryLayout({
         className={cn(
           'min-h-0 w-full pt-5',
           aside
-            ? 'grid grid-cols-1 gap-6 lg:grid-cols-[1fr_2fr]'
+            ? 'grid grid-cols-1 gap-6 lg:h-[calc(100dvh-13rem)] lg:grid-cols-[minmax(20rem,1fr)_minmax(0,2fr)] lg:overflow-hidden'
             : 'mx-auto flex w-full max-w-5xl flex-col'
         )}
       >
         {/* MAIN */}
-        <main className="flex h-full min-h-0 flex-col">
-          <div className="flex-1 overflow-y-auto">{children}</div>
+        <main className="flex min-h-0 flex-col lg:h-full lg:overflow-hidden">
+          <div className="min-h-0 flex-1 lg:overflow-y-auto lg:pr-2">{children}</div>
 
           {pagination && <div className="sticky bottom-0 bg-background py-2">{pagination}</div>}
         </main>
         {/* ASIDE */}
-        {aside && <aside className="z-10 min-h-0 overflow-y-auto border-l pl-4">{aside}</aside>}
+        {aside && (
+          <aside className="z-10 min-h-0 border-l pl-4 lg:sticky lg:top-0 lg:h-full lg:overflow-hidden">
+            {aside}
+          </aside>
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

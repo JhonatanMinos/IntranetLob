@@ -101,7 +101,7 @@ function ShopsMap({ stores }: { stores: Store[] }) {
     }));
 
   return (
-    <Card className="h-[calc(100vh-210px)] overflow-hidden">
+    <Card className="h-[28rem] overflow-hidden p-0 lg:h-full">
       <div className="h-full">
         <OpenStreetMapLazy locations={locations} />
       </div>
