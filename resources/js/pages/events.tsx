@@ -1,20 +1,27 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/react';
-import { getCoreRowModel, getFilteredRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { endOfDay, format, isWithinInterval, parseISO, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { CalendarDays, CalendarX, List, SquarePen, Trash } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { DataTablePanel } from '@/components/data-table-panel';
 import PaginationGeneric from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
-import TableGeneric from '@/components/table';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useTablePreferences } from '@/hooks/use-table-preferences';
 import AppLayout from '@/layouts/app-layout';
 import EventLayout from '@/layouts/event/layout';
 import { CalendarEvent } from '@/pages/Dashboard/calendar-event';
@@ -55,7 +62,8 @@ export default function Events() {
     const today = new Date();
     return selectedYear === today.getFullYear() ? today : new Date(selectedYear, 0, 1);
   });
-  const [activeTypes, setActiveTypes] = useState<EventType[]>([]);
+  const [activeTypes, setActiveTypes] = usePersistentState<EventType[]>('calendar:event-types', []);
+  const tablePreferences = useTablePreferences('events');
 
   const handleEditOpen = useCallback((event: EventItem) => {
     setEditingEvent(event);
@@ -94,8 +102,19 @@ export default function Events() {
   const table = useReactTable({
     data: results.data ?? [],
     columns,
+    state: {
+      globalFilter: tablePreferences.preferences.search,
+      sorting: tablePreferences.preferences.sorting,
+      columnVisibility: tablePreferences.preferences.columnVisibility,
+      columnFilters: tablePreferences.preferences.columnFilters,
+    },
+    onGlobalFilterChange: tablePreferences.setSearch,
+    onSortingChange: tablePreferences.setSorting,
+    onColumnVisibilityChange: tablePreferences.setColumnVisibility,
+    onColumnFiltersChange: tablePreferences.setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   const filteredEvents = useMemo(
@@ -282,10 +301,19 @@ export default function Events() {
           </TabsContent>
 
           <TabsContent value="list" className="space-y-4">
-            <TableGeneric
+            <DataTablePanel
               table={table}
               searchPlaceholder="Buscar eventos…"
-              emptyMessage="No hay eventos para mostrar."
+              emptyTitle="No hay eventos para mostrar"
+              emptyDescription="Prueba con otra búsqueda o restablece la vista guardada."
+              onReset={tablePreferences.reset}
+              filters={[
+                {
+                  columnId: 'type',
+                  label: 'Tipo',
+                  options: eventTypes.map(({ value, label }) => ({ value, label })),
+                },
+              ]}
             />
             <PaginationGeneric meta={results.meta} links={results.links} />
           </TabsContent>

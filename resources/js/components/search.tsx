@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ContentState } from '@/components/content-state';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -247,21 +248,20 @@ export default function SearchForm() {
               )}
 
               {!loading && error && (
-                <div className="flex h-48 flex-col items-center justify-center px-6 text-center">
-                  <p className="font-medium">No pudimos realizar la búsqueda</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Revisa tu conexión e inténtalo de nuevo.
-                  </p>
-                </div>
+                <ContentState
+                  variant="error"
+                  title="No pudimos realizar la búsqueda"
+                  description="Revisa tu conexión e inténtalo de nuevo."
+                  className="min-h-48 border-0 bg-transparent"
+                />
               )}
 
               {!loading && !error && normalizedQuery.length >= 2 && results.length === 0 && (
-                <div className="flex h-48 flex-col items-center justify-center px-6 text-center">
-                  <p className="font-medium">Sin resultados para “{normalizedQuery}”</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Prueba con un nombre, tienda, tema o documento diferente.
-                  </p>
-                </div>
+                <ContentState
+                  title={`Sin resultados para “${normalizedQuery}”`}
+                  description="Prueba con un nombre, tienda, tema o documento diferente."
+                  className="min-h-48 border-0 bg-transparent"
+                />
               )}
 
               {!loading &&

@@ -1,5 +1,6 @@
 import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { ContentState } from '@/components/content-state';
 import PaginationGeneric from '@/components/pagination';
 import { useDeleteUser } from '@/hooks/use-delete-user';
 import AppLayout from '@/layouts/app-layout';
@@ -57,16 +58,24 @@ export default function Users() {
         pagination={<PaginationGeneric meta={data.meta} links={data.links} />}
         can={can}
       >
-        <div className="grid grid-cols-1 gap-4 p-5">
-          {data.data.map((user) => (
-            <UserCard
-              key={user.id}
-              user={user}
-              onEdit={handleEdit}
-              onDelete={() => handleDelete(user.id)}
-            />
-          ))}
-        </div>
+        {data.data.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 p-5">
+            {data.data.map((user) => (
+              <UserCard
+                key={user.id}
+                user={user}
+                onEdit={handleEdit}
+                onDelete={() => handleDelete(user.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <ContentState
+            title="No se encontraron colaboradores"
+            description="Prueba con otro nombre, puesto o número de empleado."
+            className="my-5"
+          />
+        )}
       </DirectoryLayout>
       <EditUserDialog
         user={selectedUser}

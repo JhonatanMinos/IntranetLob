@@ -1,7 +1,9 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { Package, SlidersHorizontal } from 'lucide-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { ContentState } from '@/components/content-state';
 import { PageHeader } from '@/components/page-header';
+import { PersistentPageSearch } from '@/components/persistent-page-search';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -19,6 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { usePersistentState } from '@/hooks/use-persistent-state';
 import { cn } from '@/lib/utils';
 import { create, index } from '@/routes/my-items';
 
@@ -56,6 +59,8 @@ const PAYMENT_OPTIONS = [
   { value: 'swap', label: 'Trueque' },
 ] as const;
 
+const emptyMarketplaceFilters: MarketplaceFilters = {};
+
 function buildParams(
   current: MarketplaceFilters,
   update: Partial<MarketplaceFilters>
@@ -84,11 +89,39 @@ export default function MarketplaceLayout({
   const activeCategory = filters.category ?? 'all';
   const activeSort = filters.sort ?? 'newest';
   const activePayment = filters.payment_type ?? 'all';
-  const hasActiveFilters = activeCategory !== 'all' || activePayment !== 'all';
+  const hasActiveFilters =
+    activeCategory !== 'all' ||
+    activePayment !== 'all' ||
+    activeSort !== 'newest' ||
+    Boolean(filters.search);
 
   const isMyItemsPage = component === 'Marketplace/MyItems';
 
   const [isNavigating, setIsNavigating] = useState(false);
+  const [savedFilters, setSavedFilters, resetSavedFilters] = usePersistentState<MarketplaceFilters>(
+    'filters:marketplace',
+    emptyMarketplaceFilters
+  );
+  const restoredFilters = useRef(false);
+
+  useEffect(() => {
+    if (restoredFilters.current || isMyItemsPage) return;
+    restoredFilters.current = true;
+
+    const hasUrlFilters = Object.values(filters).some(Boolean);
+    if (hasUrlFilters) {
+      setSavedFilters(filters);
+      return;
+    }
+
+    const restored = buildParams({}, savedFilters);
+    if (Object.keys(restored).length > 0) {
+      router.get(window.location.pathname, restored, {
+        preserveState: true,
+        replace: true,
+      });
+    }
+  }, [filters, isMyItemsPage, savedFilters, setSavedFilters]);
 
   useEffect(() => {
     const offStart = router.on('start', () => setIsNavigating(true));
@@ -100,7 +133,9 @@ export default function MarketplaceLayout({
   }, []);
 
   const applyFilter = (key: keyof MarketplaceFilters, value: string) => {
-    router.get(window.location.pathname, buildParams(filters, { [key]: value }), {
+    const params = buildParams(filters, { [key]: value });
+    if (!isMyItemsPage) setSavedFilters(params);
+    router.get(window.location.pathname, params, {
       preserveState: true,
       preserveScroll: false,
       replace: true,
@@ -108,6 +143,7 @@ export default function MarketplaceLayout({
   };
 
   const clearFilters = () => {
+    if (!isMyItemsPage) resetSavedFilters();
     router.get(window.location.pathname, {}, { replace: true });
   };
 
@@ -129,7 +165,7 @@ export default function MarketplaceLayout({
           </Button>
         }
       />
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
           <Package className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
@@ -147,7 +183,10 @@ export default function MarketplaceLayout({
             </button>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        {!isMyItemsPage && (
+          <PersistentPageSearch preferenceKey="marketplace" placeholder="Buscar artículos…" />
+        )}
+        <div className="ml-auto flex items-center gap-2">
           <div className="hidden items-center gap-2 sm:flex">
             {!isMyItemsPage && (
               <Select value={activePayment} onValueChange={(v) => applyFilter('payment_type', v)}>
@@ -256,12 +295,33 @@ export default function MarketplaceLayout({
       <div
         className={cn(
           'grid gap-4 transition-opacity duration-200',
-          'grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6',
-          isNavigating && 'pointer-events-none opacity-50'
+          'grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
         )}
       >
-        {totalCount === 0 ? (
-          <EmptyState hasFilters={hasActiveFilters} onClearFilters={clearFilters} />
+        {isNavigating ? (
+          <ContentState
+            variant="loading"
+            title="Actualizando resultados…"
+            description="Estamos aplicando tus filtros guardados."
+            className="col-span-full"
+          />
+        ) : totalCount === 0 ? (
+          <ContentState
+            title={hasActiveFilters ? 'Sin resultados para estos filtros' : 'El mercado está vacío'}
+            description={
+              hasActiveFilters
+                ? 'Prueba con otra búsqueda, categoría o tipo de pago.'
+                : 'Sé el primero en publicar un artículo.'
+            }
+            action={
+              hasActiveFilters ? (
+                <Button variant="outline" size="sm" onClick={clearFilters}>
+                  Ver todos los artículos
+                </Button>
+              ) : undefined
+            }
+            className="col-span-full"
+          />
         ) : (
           children
         )}
@@ -299,41 +359,5 @@ function CategoryPill({ label, count, active, onClick }: CategoryPillProps) {
         <span className={cn('ml-1', active ? 'opacity-70' : 'opacity-50')}>({count})</span>
       )}
     </button>
-  );
-}
-
-interface EmptyStateProps {
-  hasFilters: boolean;
-  onClearFilters: () => void;
-}
-
-function EmptyState({ hasFilters, onClearFilters }: EmptyStateProps) {
-  return (
-    <div className="col-span-full flex flex-col items-center justify-center gap-3 py-24 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-        <Package className="h-6 w-6 text-muted-foreground" />
-      </div>
-
-      <div className="space-y-1">
-        <p className="text-sm font-medium">
-          {hasFilters ? 'Sin resultados para estos filtros' : 'El mercado está vacío'}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {hasFilters
-            ? 'Prueba con otra categoría o tipo de pago.'
-            : 'Sé el primero en publicar un artículo.'}
-        </p>
-      </div>
-
-      {hasFilters && (
-        <button
-          type="button"
-          onClick={onClearFilters}
-          className="mt-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent"
-        >
-          Ver todos los artículos
-        </button>
-      )}
-    </div>
   );
 }

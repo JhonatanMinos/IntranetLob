@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { PageHeader } from '@/components/page-header';
+import { PersistentPageSearch } from '@/components/persistent-page-search';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useCurrentUrl } from '@/hooks/use-current-url';
@@ -100,9 +101,20 @@ export default function DirectoryLayout({
         </nav>
       </PageHeader>
 
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <PersistentPageSearch
+          key={activeItem?.title}
+          preferenceKey={`directory:${activeItem?.title ?? 'general'}`}
+          placeholder={`Buscar en ${activeItem?.title?.toLowerCase() ?? 'el directorio'}…`}
+        />
+        <span className="hidden text-xs text-muted-foreground sm:inline">
+          La búsqueda se conserva automáticamente
+        </span>
+      </div>
+
       <div
         className={cn(
-          'min-h-0 w-full pt-5',
+          'min-h-0 w-full pt-4',
           aside
             ? 'grid grid-cols-1 gap-6 lg:h-[calc(100dvh-13rem)] lg:grid-cols-[minmax(20rem,1fr)_minmax(0,2fr)] lg:overflow-hidden'
             : 'mx-auto flex w-full max-w-5xl flex-col'

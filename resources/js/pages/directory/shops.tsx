@@ -10,6 +10,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
+import { ContentState } from '@/components/content-state';
 import PaginationGeneric from '@/components/pagination';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -261,20 +262,28 @@ export default function ShopsDirectory({ data, can }: ShopsDirectoryProps) {
             {locations.length === 1 ? 'tienda' : 'tiendas'}
           </Button>
         </div>
-        {stores.map((shop) => (
-          <ShopCard
-            key={shop.id}
-            shop={shop}
-            active={selectedStoreId === shop.id}
-            highlighted={hoveredStoreId === shop.id}
-            cardRef={(element) => {
-              if (element) cardRefs.current.set(shop.id, element);
-              else cardRefs.current.delete(shop.id);
-            }}
-            onHighlight={setHoveredStoreId}
-            onShowMap={handleShowMap}
+        {stores.length > 0 ? (
+          stores.map((shop) => (
+            <ShopCard
+              key={shop.id}
+              shop={shop}
+              active={selectedStoreId === shop.id}
+              highlighted={hoveredStoreId === shop.id}
+              cardRef={(element) => {
+                if (element) cardRefs.current.set(shop.id, element);
+                else cardRefs.current.delete(shop.id);
+              }}
+              onHighlight={setHoveredStoreId}
+              onShowMap={handleShowMap}
+            />
+          ))
+        ) : (
+          <ContentState
+            title="No se encontraron tiendas"
+            description="Prueba con otro nombre, código o ubicación."
+            className="my-3"
           />
-        ))}
+        )}
         <Sheet open={mobileMapOpen} onOpenChange={setMobileMapOpen}>
           <SheetContent side="bottom" className="h-[92dvh] gap-0 rounded-t-xl p-0">
             <SheetHeader>
