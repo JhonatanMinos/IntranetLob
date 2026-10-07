@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProcessController;
@@ -22,6 +23,7 @@ Route::patch('notifications/{id}/read', function (string $id) {
     ->name('notifications.read');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('global-search', GlobalSearchController::class)->name('global-search');
     Route::resource('events', EventController::class);
     Route::resource('notifications', NotificationController::class);
     Route::post('processes/upload', [ProcessController::class, 'upload']);

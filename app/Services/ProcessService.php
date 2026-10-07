@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
+
 class ProcessService
 {
     public function buildTree(string $path)
@@ -43,6 +45,43 @@ class ProcessService
         }
 
         return $items;
+    }
+
+    public function searchDocuments(string $query, int $limit = 5): array
+    {
+        $tree = $this->buildTree(storage_path('app/public/sistemas-de-calidad'));
+        $matches = [];
+        $needle = Str::lower($query);
+
+        $walk = function (array $items) use (&$walk, &$matches, $needle, $limit): void {
+            foreach ($items as $item) {
+                if (count($matches) >= $limit) {
+                    return;
+                }
+
+                if (isset($item['file']) && Str::contains(Str::lower($item['label']), $needle)) {
+                    $folder = dirname(str_replace('sistemas-de-calidad/', '', $item['path']));
+
+                    $matches[] = [
+                        'id' => 'document-'.sha1($item['path']),
+                        'group' => 'Procesos',
+                        'type' => 'document',
+                        'title' => $item['label'],
+                        'subtitle' => $folder === '.' ? 'Documentos' : str_replace(['-', '_'], ' ', $folder),
+                        'url' => $item['url'],
+                        'external' => true,
+                    ];
+                }
+
+                if (isset($item['children'])) {
+                    $walk($item['children']);
+                }
+            }
+        };
+
+        $walk($tree);
+
+        return $matches;
     }
 
     private function relativePath(string $fullPath): string
