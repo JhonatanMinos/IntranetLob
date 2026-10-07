@@ -7,8 +7,8 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Services\EventService;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class EventController extends Controller
 {
@@ -20,7 +20,7 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        $year = $request->year ? (int) $request->year : null;
+        $year = $request->year ? (int) $request->year : now()->year;
 
         $result = $this->eventService->searchEventsByYear($search, $year);
 
@@ -30,8 +30,19 @@ class EventController extends Controller
             return $resource->response()->getData(true);
         }
 
+        $canManageEvents = $request->user()->can('create', Event::class);
+
         return Inertia::render('events', [
             'results' => $resource,
+            'calendarEvents' => EventResource::collection(
+                $this->eventService->getEventsForYear($year)
+            )->resolve(),
+            'selectedYear' => $year,
+            'can' => [
+                'create' => $canManageEvents,
+                'update' => $canManageEvents,
+                'delete' => $canManageEvents,
+            ],
         ]);
     }
 
@@ -41,6 +52,7 @@ class EventController extends Controller
     public function create()
     {
         $this->authorize('create', Event::class);
+
         return Inertia::render('Event/create', [
             'types' => Event::typeOptions(),
         ]);
@@ -58,7 +70,7 @@ class EventController extends Controller
         if ($request->wantsJson()) {
             return response()->json([
                 'data' => $event,
-                'message' => 'Evento creado correctamente'
+                'message' => 'Evento creado correctamente',
             ], 201);
         }
 
@@ -71,6 +83,7 @@ class EventController extends Controller
     public function show(Event $event)
     {
         $this->authorize('view', $event);
+
         return Inertia::render('Event/show', [
             'event' => $this->eventService->getEventById($event->id),
         ]);
@@ -82,6 +95,7 @@ class EventController extends Controller
     public function edit(Event $event)
     {
         $this->authorize('update', $event);
+
         return Inertia::render('Event/edit', [
             'event' => $this->eventService->getEventById($event->id),
             'types' => Event::typeOptions(),

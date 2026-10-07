@@ -1,12 +1,11 @@
 import type { PageProps } from '@inertiajs/core';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { format } from 'date-fns';
+import { Head, usePage } from '@inertiajs/react';
+import { endOfDay, format, isWithinInterval, parseISO, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CalendarDays, CalendarX, FolderTree, Workflow } from 'lucide-react';
-import { useState } from 'react';
+import { CalendarX } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { DashboardSkeleton } from '@/components/skeletons/dashboard-skeleton';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/app-layout';
@@ -15,10 +14,8 @@ import { CalendarEvent } from '@/pages/Dashboard/calendar-event';
 import { CarouselLob } from '@/pages/Dashboard/carousel-lob';
 import { EventsCard } from '@/pages/Dashboard/events-card';
 import { NewsCard } from '@/pages/Dashboard/news-card';
+import { QuickAccess, type ShortcutId } from '@/pages/Dashboard/quick-access';
 import { dashboard } from '@/routes';
-import { index as eventsRoute } from '@/routes/events';
-import { index as processesRoute } from '@/routes/processes';
-import { index as usersRoute } from '@/routes/users';
 import type { BreadcrumbItem, DashboardEvent, Notification, SharedData } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -39,6 +36,7 @@ interface DashboardProps extends PageProps, SharedData {
   events: DashboardEvent[];
   news: Notification[];
   birthday: birthday[];
+  dashboardShortcuts: ShortcutId[] | null;
 }
 
 export default function Dashboard() {
@@ -49,10 +47,22 @@ export default function Dashboard() {
     processing,
     auth,
     permissions = [],
+    dashboardShortcuts,
   } = usePage<DashboardProps>().props;
 
   const [open, setOpen] = useState(false);
+  const [calendarDate, setCalendarDate] = useState(new Date());
   const today = new Date();
+  const selectedDayEvents = useMemo(
+    () =>
+      events.filter((event) =>
+        isWithinInterval(startOfDay(calendarDate), {
+          start: startOfDay(parseISO(event.start_date)),
+          end: endOfDay(parseISO(event.end_date || event.start_date)),
+        })
+      ),
+    [calendarDate, events]
+  );
 
   const modifiersBorder = {
     cumpleanos: 'border-pink-300',
@@ -89,29 +99,7 @@ export default function Dashboard() {
           description={format(today, "EEEE, d 'de' MMMM", { locale: es })}
           eyebrow="Panel"
         />
-        <nav className="grid gap-3 sm:grid-cols-3" aria-label="Accesos rápidos">
-          {permissions.includes('view Directory') && (
-            <Button asChild variant="outline" className="h-auto justify-start p-4">
-              <Link href={usersRoute().url}>
-                <FolderTree /> Abrir directorio
-              </Link>
-            </Button>
-          )}
-          {permissions.includes('view Process') && (
-            <Button asChild variant="outline" className="h-auto justify-start p-4">
-              <Link href={processesRoute().url}>
-                <Workflow /> Consultar procesos
-              </Link>
-            </Button>
-          )}
-          {permissions.includes('view Event') && (
-            <Button asChild variant="outline" className="h-auto justify-start p-4">
-              <Link href={eventsRoute().url}>
-                <CalendarDays /> Ver calendario
-              </Link>
-            </Button>
-          )}
-        </nav>
+        <QuickAccess permissions={permissions} savedShortcuts={dashboardShortcuts} />
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
           <div className="min-w-0 space-y-8 xl:col-span-2">
             <CarouselLob />
@@ -132,17 +120,23 @@ export default function Dashboard() {
           <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 pb-6 lg:flex-row">
             {/* Calendario: min-h-0 es clave para que flex no lo desborde */}
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-              <CalendarEvent events={events} />
+              <CalendarEvent
+                events={events}
+                selectedDate={calendarDate}
+                onSelectDate={setCalendarDate}
+              />
             </div>
 
             <aside className="flex w-full shrink-0 flex-col overflow-y-auto lg:h-full lg:w-[300px]">
               <div className="mb-6">
                 <h2 className="mb-1 text-xl font-medium text-foreground">Eventos del día</h2>
-                <p className="text-sm text-muted-foreground">{format(today, 'dd MMM yyyy')}</p>
+                <p className="text-sm text-muted-foreground">
+                  {format(calendarDate, 'dd MMM yyyy', { locale: es })}
+                </p>
               </div>
 
-              {events?.length > 0 ? (
-                events.map((event) => (
+              {selectedDayEvents.length > 0 ? (
+                selectedDayEvents.map((event) => (
                   <div key={event.id} className="flex flex-col pt-2">
                     <Card
                       className={`group cursor-pointer rounded-lg border-l-4 ${modifiersBorder[event.type]} bg-sidebar p-2 transition-colors`}

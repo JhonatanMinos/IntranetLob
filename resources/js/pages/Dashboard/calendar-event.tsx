@@ -1,4 +1,4 @@
-import { format, getDay, parseISO, startOfWeek } from 'date-fns';
+import { endOfDay, format, getDay, parseISO, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useMemo, useState } from 'react';
 import type { EventPropGetter, ToolbarProps, View } from 'react-big-calendar';
@@ -12,6 +12,10 @@ import type { DashboardEvent } from '@/types';
 
 interface CalendarAgendaProps {
   events: DashboardEvent[];
+  selectedDate?: Date;
+  onSelectDate?: (date: Date) => void;
+  onSelectEvent?: (event: DashboardEvent) => void;
+  onNavigate?: (date: Date) => void;
 }
 
 interface CalendarItem {
@@ -20,6 +24,7 @@ interface CalendarItem {
   start: Date;
   end: Date;
   resource: DashboardEvent['type'];
+  source: DashboardEvent;
 }
 
 const locales = { es };
@@ -32,17 +37,24 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-export function CalendarEvent({ events }: CalendarAgendaProps) {
+export function CalendarEvent({
+  events,
+  selectedDate,
+  onSelectDate,
+  onSelectEvent,
+  onNavigate,
+}: CalendarAgendaProps) {
   const [view, setView] = useState<View>(Views.MONTH);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(selectedDate ?? new Date());
   const parsedEvents = useMemo(
     () =>
       events.map((e) => ({
         id: e.id,
         title: e.title,
         start: parseISO(e.start_date),
-        end: parseISO(e.end_date),
+        end: endOfDay(parseISO(e.end_date || e.start_date)),
         resource: e.type,
+        source: e,
       })),
     [events]
   );
@@ -77,14 +89,14 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
     return (
       <div className="mb-6 flex flex-col items-center justify-between gap-4 md:flex-row">
         <ButtonGroup>
-          <Button onClick={goToBack} className="rounded-lg px-3 py-1">
+          <Button type="button" variant="outline" onClick={goToBack} className="px-3">
             <ChevronLeft />
           </Button>
 
-          <Button onClick={goToToday} className="rounded-lg px-4 py-1">
+          <Button type="button" variant="outline" onClick={goToToday} className="px-4">
             Hoy
           </Button>
-          <Button onClick={goToNext} className="rounded-lg px-3 py-1">
+          <Button type="button" variant="outline" onClick={goToNext} className="px-3">
             <ChevronRight />
           </Button>
         </ButtonGroup>
@@ -94,8 +106,10 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
             {['month', 'week', 'day', 'agenda'].map((v) => (
               <Button
                 key={v}
+                type="button"
                 onClick={() => toolbar.onView(v as View)}
-                className={`rounded-lg px-3 py-1 capitalize`}
+                variant={toolbar.view === v ? 'default' : 'outline'}
+                className="px-3 capitalize"
               >
                 {v === 'month' ? 'Mes' : v === 'week' ? 'Semana' : v === 'day' ? 'Día' : 'Agenda'}
               </Button>
@@ -117,10 +131,24 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
         view={view}
         onView={setView}
         date={date}
-        onNavigate={setDate}
+        onNavigate={(nextDate) => {
+          setDate(nextDate);
+          onNavigate?.(nextDate);
+        }}
         views={['month', 'week', 'day', 'agenda']}
         components={{ toolbar: CustomToolbar }}
         eventPropGetter={eventStyleGetter}
+        selectable
+        dayPropGetter={(day) =>
+          selectedDate && format(day, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+            ? { style: { backgroundColor: 'color-mix(in oklab, var(--primary) 10%, transparent)' } }
+            : {}
+        }
+        onSelectSlot={({ start }) => onSelectDate?.(start)}
+        onSelectEvent={(event) => {
+          onSelectDate?.(event.start);
+          onSelectEvent?.(event.source);
+        }}
         messages={{
           today: 'hoy',
           previous: 'Anterior',
@@ -134,7 +162,7 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
           event: 'Evento',
           noEventsInRange: 'No hay eventos en este rango',
         }}
-        className="overflow-y-auto"
+        className="overflow-y-auto rounded-lg bg-background"
       />
     </div>
   );

@@ -14,6 +14,9 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::patch('dashboard/shortcuts', [DashboardController::class, 'updateShortcuts'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard.shortcuts.update');
 Route::patch('notifications/{id}/read', function (string $id) {
     auth()->user()->notifications()->findOrFail($id)->markAsRead();
 

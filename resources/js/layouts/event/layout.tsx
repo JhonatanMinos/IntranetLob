@@ -1,7 +1,5 @@
 import { router } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { Plus } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { toast } from 'sonner';
@@ -12,23 +10,23 @@ import { CreateEvent } from '@/pages/Events/create-event';
 
 interface EventLayoutProps {
   children: ReactNode;
+  canCreate?: boolean;
 }
 
-export default function EventLayout({ children }: EventLayoutProps) {
+export default function EventLayout({ children, canCreate = false }: EventLayoutProps) {
   const [openModal, setOpenModal] = useState(false);
-  const today = new Date();
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col space-y-6 px-4 py-6 sm:px-6">
       <PageHeader
-        title={format(today, 'MMMM yyyy', {
-          locale: es,
-        })}
+        title="Calendario corporativo"
         description="Consulta y administra los eventos del calendario corporativo."
         eyebrow="Calendario"
         actions={
-          <Button className="shrink-0" onClick={() => setOpenModal(true)}>
-            <Plus size={16} /> Agregar evento
-          </Button>
+          canCreate ? (
+            <Button className="shrink-0" onClick={() => setOpenModal(true)}>
+              <Plus size={16} /> Agregar evento
+            </Button>
+          ) : undefined
         }
       />
       <main>{children}</main>
@@ -40,7 +38,7 @@ export default function EventLayout({ children }: EventLayoutProps) {
           <CreateEvent
             onSuccess={() => {
               setOpenModal(false);
-              router.reload({ only: ['results'] });
+              router.reload({ only: ['results', 'calendarEvents'] });
               toast.success('Evento creado correctamente', {
                 position: 'bottom-right',
               });

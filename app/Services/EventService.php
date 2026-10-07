@@ -6,7 +6,7 @@ use App\DTOs\EventDTO;
 use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class EventService
 {
@@ -18,19 +18,31 @@ class EventService
         $year ??= Carbon::now()->year;
 
         $query = Event::when($search, function ($q) use ($search) {
-            return $q->where('title', 'like', "%{$search}%")
-                ->orWhere('start_date', 'like', "%{$search}%");
+            return $q->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('start_date', 'like', "%{$search}%");
+            });
         })
-        ->whereYear('start_date', $year)
-        ->orderBy('start_date');
+            ->whereYear('start_date', $year)
+            ->orderBy('start_date');
 
         return $query->paginate(10)->withQueryString();
     }
 
     /**
+     * Get all events required to render a calendar year.
+     */
+    public function getEventsForYear(int $year): Collection
+    {
+        return Event::whereYear('start_date', $year)
+            ->orderBy('start_date')
+            ->get();
+    }
+
+    /**
      * Get all events for current month
      */
-    public function getCurrentMonthEvents(): \Illuminate\Database\Eloquent\Collection
+    public function getCurrentMonthEvents(): Collection
     {
         $now = Carbon::now();
 
@@ -43,7 +55,7 @@ class EventService
     /**
      * Get events for a specific date range
      */
-    public function getEventsByDateRange(string $startDate, string $endDate): \Illuminate\Database\Eloquent\Collection
+    public function getEventsByDateRange(string $startDate, string $endDate): Collection
     {
         return Event::whereBetween('start_date', [$startDate, $endDate])
             ->orderBy('start_date')
@@ -56,6 +68,7 @@ class EventService
     public function getEventById(int $id): ?EventDTO
     {
         $event = Event::find($id);
+
         return $event ? EventDTO::fromModel($event) : null;
     }
 
@@ -65,6 +78,7 @@ class EventService
     public function createEvent(array $data): EventDTO
     {
         $event = Event::create($data);
+
         return EventDTO::fromModel($event);
     }
 
@@ -74,6 +88,7 @@ class EventService
     public function updateEvent(Event $event, array $data): EventDTO
     {
         $event->update($data);
+
         return EventDTO::fromModel($event);
     }
 
@@ -88,8 +103,8 @@ class EventService
     /**
      * Convert events collection to DTOs
      */
-    public function toEventDTOs(\Illuminate\Database\Eloquent\Collection $events): array
+    public function toEventDTOs(Collection $events): array
     {
-        return $events->map(fn($event) => EventDTO::fromModel($event))->toArray();
+        return $events->map(fn ($event) => EventDTO::fromModel($event))->toArray();
     }
 }

@@ -28,6 +28,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property \Illuminate\Support\Carbon|null $birthday
  * @property \Illuminate\Support\Carbon|null $dateEntry Fecha de ingreso a la empresa.
  * @property string|null $phone
+ * @property array<int, string>|null $dashboard_shortcuts
  * @property int|null $department_id
  * @property int|null $company_id
  * @property int|null $store_id
@@ -74,6 +75,7 @@ class User extends Authenticatable
         'birthday',
         'dateEntry',
         'phone',
+        'dashboard_shortcuts',
         'department_id',
         'company_id',
         'store_id',
@@ -103,6 +105,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'date_entry' => 'date',
+            'dashboard_shortcuts' => 'array',
         ];
     }
 
