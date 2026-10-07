@@ -23,7 +23,7 @@ export function TableUser({ data, roles, handleChange }: UsersTableProps) {
   const getInitials = useInitials();
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {data.map((user) => (
         <Card key={user.id}>
           <CardHeader className="flex justify-center">

@@ -36,17 +36,25 @@ export function NewsCard({ news }: NewsCardProps) {
   if (!news.length) return <p className="text-muted-foreground">No hay noticias disponibles.</p>;
   return (
     <div>
-      <h2 className="mb-10 text-2xl">Noticias y Artículos</h2>
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold tracking-wider text-primary uppercase">Actualidad</p>
+          <h2 className="text-2xl font-semibold tracking-tight">Noticias y artículos</h2>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3">
         {news.map(({ publishedAt, title, content, imagenPath, type, id }) => (
-          <Card key={id} className="flex w-full flex-col overflow-hidden pt-0">
+          <Card
+            key={id}
+            className="group flex h-full w-full flex-col overflow-hidden pt-0 transition-shadow hover:shadow-md"
+          >
             {imagenPath ? (
               <div className="relative aspect-video w-full shrink-0">
                 <div className="absolute inset-0 z-10 bg-black/35" />
                 <img
                   src={`/storage/${imagenPath}`}
                   alt={title}
-                  className="h-full w-full object-cover brightness-75 dark:brightness-50"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 />
               </div>
             ) : (
@@ -60,19 +68,19 @@ export function NewsCard({ news }: NewsCardProps) {
               <CardAction>
                 <Badge
                   variant="secondary"
-                  className={`uppercase ${badgeColor[type] ?? 'bg-gray-100 text-gray-700'}`}
+                  className={`uppercase ${badgeColor[type] ?? 'bg-muted text-muted-foreground'}`}
                 >
                   {type}
                 </Badge>
               </CardAction>
               <CardTitle className="line-clamp-2">{title}</CardTitle>
-              <CardDescription>
-                <div
-                  className="prose prose-sm max-h-20 max-w-none overflow-hidden [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)] dark:prose-invert"
-                  dangerouslySetInnerHTML={{
-                    __html: content,
-                  }}
-                />
+              <CardDescription className="space-y-3">
+                <p className="line-clamp-3 leading-relaxed">
+                  {content
+                    .replace(/<[^>]*>/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim()}
+                </p>
                 {publishedAt && (
                   <time dateTime={publishedAt} className="block text-xs text-muted-foreground">
                     {format(parseISO(publishedAt), "dd 'de' MMMM, yyyy", { locale: es })}
@@ -81,7 +89,7 @@ export function NewsCard({ news }: NewsCardProps) {
               </CardDescription>
             </CardHeader>
             <CardFooter>
-              <Button asChild className="w-full">
+              <Button asChild variant="outline" className="w-full">
                 <Link href={show({ notification: id }).url}>Ver notificación</Link>
               </Button>
             </CardFooter>

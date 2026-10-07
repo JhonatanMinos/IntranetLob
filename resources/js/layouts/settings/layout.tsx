@@ -3,7 +3,6 @@ import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Toaster } from '@/components/ui/sonner';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as employeeFiles } from '@/routes/employeeFiles';
@@ -81,9 +80,9 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
       <div className="flex flex-1 flex-col gap-6 overflow-hidden lg:flex-row lg:space-x-12">
         <aside className="w-full shrink-0 lg:w-48">
           <nav className="flex flex-col space-y-1 space-x-0" aria-label="Settings">
-            {allowedSidebarNavItems.map((item, index) => (
+            {allowedSidebarNavItems.map((item) => (
               <Button
-                key={`${toUrl(item.href)}-${index}`}
+                key={toUrl(item.href)}
                 size="sm"
                 variant="ghost"
                 asChild
@@ -104,7 +103,6 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
         <div className="flex-1 overflow-y-auto">
           <section className="space-y-12 pr-6 md:max-w-2xl">{children}</section>
-          <Toaster richColors />
         </div>
       </div>
     </div>

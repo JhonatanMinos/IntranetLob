@@ -1,9 +1,12 @@
 import type { PageProps } from '@inertiajs/core';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { CalendarX } from 'lucide-react';
+import { es } from 'date-fns/locale';
+import { CalendarDays, CalendarX, FolderTree, Workflow } from 'lucide-react';
 import { useState } from 'react';
+import { PageHeader } from '@/components/page-header';
 import { DashboardSkeleton } from '@/components/skeletons/dashboard-skeleton';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/app-layout';
@@ -13,7 +16,10 @@ import { CarouselLob } from '@/pages/Dashboard/carousel-lob';
 import { EventsCard } from '@/pages/Dashboard/events-card';
 import { NewsCard } from '@/pages/Dashboard/news-card';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem, DashboardEvent, Notification } from '@/types';
+import { index as eventsRoute } from '@/routes/events';
+import { index as processesRoute } from '@/routes/processes';
+import { index as usersRoute } from '@/routes/users';
+import type { BreadcrumbItem, DashboardEvent, Notification, SharedData } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -29,14 +35,21 @@ interface birthday {
   birthday: string;
 }
 
-interface DashboardProps extends PageProps {
+interface DashboardProps extends PageProps, SharedData {
   events: DashboardEvent[];
   news: Notification[];
   birthday: birthday[];
 }
 
 export default function Dashboard() {
-  const { events, news, birthday, processing } = usePage<DashboardProps>().props;
+  const {
+    events,
+    news,
+    birthday,
+    processing,
+    auth,
+    permissions = [],
+  } = usePage<DashboardProps>().props;
 
   const [open, setOpen] = useState(false);
   const today = new Date();
@@ -70,33 +83,61 @@ export default function Dashboard() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
-      <div className="flex h-screen flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
-          <div className="rounded bg-background lg:col-span-2">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6">
+        <PageHeader
+          title={`Hola, ${auth.user.name.split(' ')[0]}`}
+          description={format(today, "EEEE, d 'de' MMMM", { locale: es })}
+          eyebrow="Panel"
+        />
+        <nav className="grid gap-3 sm:grid-cols-3" aria-label="Accesos rápidos">
+          {permissions.includes('view Directory') && (
+            <Button asChild variant="outline" className="h-auto justify-start p-4">
+              <Link href={usersRoute().url}>
+                <FolderTree /> Abrir directorio
+              </Link>
+            </Button>
+          )}
+          {permissions.includes('view Process') && (
+            <Button asChild variant="outline" className="h-auto justify-start p-4">
+              <Link href={processesRoute().url}>
+                <Workflow /> Consultar procesos
+              </Link>
+            </Button>
+          )}
+          {permissions.includes('view Event') && (
+            <Button asChild variant="outline" className="h-auto justify-start p-4">
+              <Link href={eventsRoute().url}>
+                <CalendarDays /> Ver calendario
+              </Link>
+            </Button>
+          )}
+        </nav>
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+          <div className="min-w-0 space-y-8 xl:col-span-2">
             <CarouselLob />
             <NewsCard news={news} />
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex min-w-0 flex-col gap-6">
             <BirthDays birthdays={birthday} />
             <EventsCard setOpen={setOpen} events={events} />
           </div>
         </div>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="flex max-w-5xl flex-col gap-0 overflow-hidden rounded-lg p-0 shadow-lg md:h-[90vh] md:w-[90vw] md:max-w-none">
+        <DialogContent className="flex max-h-[90dvh] max-w-5xl flex-col gap-0 overflow-hidden rounded-xl p-0 shadow-lg md:h-[90dvh] md:w-[90vw] md:max-w-none">
           <DialogHeader className="shrink-0 px-6 pt-6 pb-4">
             <DialogTitle>Calendario</DialogTitle>
           </DialogHeader>
 
-          <div className="flex min-h-0 flex-1 flex-row gap-6 px-6 pb-6">
+          <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 pb-6 lg:flex-row">
             {/* Calendario: min-h-0 es clave para que flex no lo desborde */}
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <CalendarEvent events={events} />
             </div>
 
-            <aside className="flex h-full w-full shrink-0 flex-col overflow-y-auto lg:w-[300px]">
+            <aside className="flex w-full shrink-0 flex-col overflow-y-auto lg:h-full lg:w-[300px]">
               <div className="mb-6">
-                <h2 className="mb-1 text-xl font-medium text-white">Eventos del dia</h2>
+                <h2 className="mb-1 text-xl font-medium text-foreground">Eventos del día</h2>
                 <p className="text-sm text-muted-foreground">{format(today, 'dd MMM yyyy')}</p>
               </div>
 
@@ -106,9 +147,7 @@ export default function Dashboard() {
                     <Card
                       className={`group cursor-pointer rounded-lg border-l-4 ${modifiersBorder[event.type]} bg-sidebar p-2 transition-colors`}
                     >
-                      <p className="text-xs font-medium text-gray-400 group-hover:text-gray-300">
-                        10:00 AM
-                      </p>
+                      <p className="text-xs font-medium text-muted-foreground">10:00 AM</p>
                       <h3 className="mb-2 text-base font-medium">{event.title}</h3>
                       <div className="flex items-center gap-2 text-xs">
                         <span

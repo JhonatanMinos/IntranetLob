@@ -1,6 +1,6 @@
 import type { PageProps } from '@inertiajs/core';
 import { Head, usePage } from '@inertiajs/react';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { getCoreRowModel, getFilteredRowModel, useReactTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import TableGeneric from '@/components/table';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,12 +40,13 @@ export default function PayRolls() {
     data: users.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Nomina" />
-      <div className="grid grid-cols-4 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+      <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:px-6 xl:grid-cols-4 dark:*:data-[slot=card]:bg-card">
         <Card className="@container/card">
           <CardHeader>
             <CardDescription>Completados</CardDescription>
@@ -80,7 +81,11 @@ export default function PayRolls() {
         </Card>
       </div>
       <RrhhLayout>
-        <TableGeneric table={table} />
+        <TableGeneric
+          table={table}
+          searchPlaceholder="Buscar colaboradores…"
+          emptyMessage="No hay colaboradores para mostrar."
+        />
       </RrhhLayout>
     </AppLayout>
   );

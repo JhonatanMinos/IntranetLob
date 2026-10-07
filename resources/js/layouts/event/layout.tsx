@@ -5,9 +5,9 @@ import { es } from 'date-fns/locale';
 import { Plus } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { toast } from 'sonner';
+import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
-import { Toaster } from '@/components/ui/sonner';
 import { CreateEvent } from '@/pages/Events/create-event';
 
 interface EventLayoutProps {
@@ -18,23 +18,22 @@ export default function EventLayout({ children }: EventLayoutProps) {
   const [openModal, setOpenModal] = useState(false);
   const today = new Date();
   return (
-    <div className="flex h-full flex-col space-y-6 overflow-y-auto px-3 py-5">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-        <div className="space-y-1">
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            {format(today, 'MMMM', {
-              locale: es,
-            }).toUpperCase()}
-          </h2>
-        </div>
-        <Button className="shrink-0" onClick={() => setOpenModal(true)}>
-          <Plus size={16} /> Agregar evento
-        </Button>
-      </div>
+    <div className="mx-auto flex w-full max-w-7xl flex-col space-y-6 px-4 py-6 sm:px-6">
+      <PageHeader
+        title={format(today, 'MMMM yyyy', {
+          locale: es,
+        })}
+        description="Consulta y administra los eventos del calendario corporativo."
+        eyebrow="Calendario"
+        actions={
+          <Button className="shrink-0" onClick={() => setOpenModal(true)}>
+            <Plus size={16} /> Agregar evento
+          </Button>
+        }
+      />
       <main>{children}</main>
-      <Toaster richColors />
       <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Crear nuevo evento</DialogTitle>
           </DialogHeader>

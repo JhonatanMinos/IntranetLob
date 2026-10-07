@@ -37,14 +37,16 @@ export function CarouselLob() {
       className="w-full"
     >
       <CarouselContent className="h-full w-full">
-        {slides.map(({ title, content, image }, index) => (
-          <CarouselItem key={index} className="flex h-full w-full items-center justify-center">
-            <Card className="max-w-4xl p-10">
-              <div className="-m-10 mb-2 overflow-hidden rounded-t-lg">
-                <img src={image} className="h-56 w-full object-cover" alt={title} />
+        {slides.map(({ title, content, image }) => (
+          <CarouselItem key={title} className="flex h-full w-full items-center justify-center">
+            <Card className="max-w-4xl p-5 sm:p-8 lg:p-10">
+              <div className="-m-5 mb-2 overflow-hidden rounded-t-lg sm:-m-8 sm:mb-2 lg:-m-10 lg:mb-2">
+                <img src={image} className="h-40 w-full object-cover sm:h-56" alt={title} />
               </div>
-              <h2 className="mb-4 text-3xl font-bold">{title}</h2>
-              <p className="text-base leading-relaxed whitespace-pre-line">{content}</p>
+              <h2 className="mb-3 text-2xl font-semibold sm:text-3xl">{title}</h2>
+              <p className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground sm:text-base">
+                {content}
+              </p>
             </Card>
           </CarouselItem>
         ))}

@@ -1,6 +1,7 @@
 import { format, getDay, parseISO, startOfWeek } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useMemo, useState } from 'react';
+import type { EventPropGetter, ToolbarProps, View } from 'react-big-calendar';
 import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -11,6 +12,14 @@ import type { DashboardEvent } from '@/types';
 
 interface CalendarAgendaProps {
   events: DashboardEvent[];
+}
+
+interface CalendarItem {
+  id: number;
+  title: string;
+  start: Date;
+  end: Date;
+  resource: DashboardEvent['type'];
 }
 
 const locales = { es };
@@ -24,7 +33,7 @@ const localizer = dateFnsLocalizer({
 });
 
 export function CalendarEvent({ events }: CalendarAgendaProps) {
-  const [view, setView] = useState<import('react-big-calendar').View>(Views.MONTH);
+  const [view, setView] = useState<View>(Views.MONTH);
   const [date, setDate] = useState(new Date());
   const parsedEvents = useMemo(
     () =>
@@ -38,22 +47,20 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
     [events]
   );
 
-  const eventStyleGetter = (event: any) => {
-    const colors: Record<string, { bg: string; hover: string }> = {
-      birthday: { bg: '#ec4899', hover: '#db2777' }, // pink-500
-      holiday: { bg: '#22c55e', hover: '#16a34a' }, // green-500
-      event: { bg: '#3b82f6', hover: '#2563eb' }, // blue-500
-      launch: { bg: '#a855f7', hover: '#9333ea' }, // purple-500
+  const eventStyleGetter: EventPropGetter<CalendarItem> = (event) => {
+    const colors: Record<DashboardEvent['type'], string> = {
+      cumpleanos: '#db2777',
+      festivo: '#16a34a',
+      evento: '#2563eb',
+      lanzamiento: '#9333ea',
+      campania: '#ea580c',
     };
 
-    const color = colors[event.resource] ?? {
-      bg: '#6b7280',
-      hover: '#4b5563',
-    };
+    const color = colors[event.resource] ?? '#6b7280';
 
     return {
       style: {
-        backgroundColor: color.bg,
+        backgroundColor: color,
         border: 'none',
         borderRadius: '0.35rem',
         color: 'white',
@@ -62,7 +69,7 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
     };
   };
 
-  const CustomToolbar = (toolbar: any) => {
+  const CustomToolbar = (toolbar: ToolbarProps<CalendarItem>) => {
     const goToBack = () => toolbar.onNavigate('PREV');
     const goToNext = () => toolbar.onNavigate('NEXT');
     const goToToday = () => toolbar.onNavigate('TODAY');
@@ -87,7 +94,7 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
             {['month', 'week', 'day', 'agenda'].map((v) => (
               <Button
                 key={v}
-                onClick={() => toolbar.onView(v)}
+                onClick={() => toolbar.onView(v as View)}
                 className={`rounded-lg px-3 py-1 capitalize`}
               >
                 {v === 'month' ? 'Mes' : v === 'week' ? 'Semana' : v === 'day' ? 'Día' : 'Agenda'}
@@ -100,7 +107,7 @@ export function CalendarEvent({ events }: CalendarAgendaProps) {
   };
 
   return (
-    <div className="h-screen w-full">
+    <div className="min-h-[32rem] w-full flex-1">
       <BigCalendar
         localizer={localizer}
         culture="es"

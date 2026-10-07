@@ -80,7 +80,7 @@ export function FormUser({ departments, stores, company, user }: CreateUserProps
       >
         <div className="mb-2 flex flex-row items-center gap-2">
           <UserIcon />
-          <h2 className="text-sm font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
+          <h2 className="text-sm font-medium tracking-wider text-muted-foreground uppercase">
             Informacion personal
           </h2>
         </div>
@@ -153,7 +153,7 @@ export function FormUser({ departments, stores, company, user }: CreateUserProps
         <div className="space-y-4">
           <div className="mb-2 flex flex-row items-center gap-2">
             <BriefcaseBusiness color="#ffffff" />
-            <h2 className="text-sm font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
+            <h2 className="text-sm font-medium tracking-wider text-muted-foreground uppercase">
               Información Laboral
             </h2>
           </div>

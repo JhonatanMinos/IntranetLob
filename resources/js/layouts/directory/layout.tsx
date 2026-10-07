@@ -1,10 +1,9 @@
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
+import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Toaster } from '@/components/ui/sonner';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { FormStore } from '@/pages/directory/form-store';
@@ -62,10 +61,24 @@ export default function DirectoryLayout({
   if (typeof window === 'undefined') return null;
 
   return (
-    <div className="flex h-full flex-col px-3 py-5">
-      <div className="md:fex-row md:items-between flex flex-col justify-between gap-4 border-b pb-4">
-        <nav className="-mb-px flex justify-between gap-6">
-          <div className="m-4 flex gap-1 rounded-xl bg-muted p-1">
+    <div className="mx-auto flex w-full max-w-7xl flex-col px-4 py-6 sm:px-6">
+      <PageHeader
+        title="Directorio"
+        description="Encuentra colaboradores, áreas y tiendas de la organización."
+        eyebrow="Personas"
+        actions={
+          can.create ? (
+            <Button className="shrink-0" onClick={() => setOpen(true)}>
+              <Plus />
+              {activeItem?.title === 'Vendedores' || activeItem?.title === 'Corporativo LOB'
+                ? 'Agregar usuario'
+                : 'Agregar tienda'}
+            </Button>
+          ) : undefined
+        }
+      >
+        <nav className="mt-4 overflow-x-auto" aria-label="Secciones del directorio">
+          <div className="inline-flex gap-1 rounded-lg bg-muted p-1">
             {barNavItems.map((barNavItem) => {
               const active = isCurrentUrl(barNavItem.href);
               return (
@@ -73,10 +86,10 @@ export default function DirectoryLayout({
                   key={barNavItem.title}
                   href={barNavItem.href}
                   className={cn(
-                    'rounded-md border p-1 text-sm font-medium whitespace-nowrap transition-colors',
+                    'rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
                     active
-                      ? 'border-ring text-primary'
-                      : 'border-transparent text-muted-foreground hover:border-muted hover:text-foreground'
+                      ? 'bg-background text-foreground shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {barNavItem.title}
@@ -84,29 +97,12 @@ export default function DirectoryLayout({
               );
             })}
           </div>
-          {can.create && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button className="shrink-0" onClick={() => setOpen(true)}>
-                  <Plus />
-                  {activeItem?.title === 'Vendedores' || activeItem?.title === 'Corporativo'
-                    ? 'Agregar usuario'
-                    : 'Agregar tienda'}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {activeItem?.title === 'Vendedores' || activeItem?.title === 'Corporativo'
-                  ? 'Nuevo Usuario'
-                  : 'Nueva Tienda'}
-              </TooltipContent>
-            </Tooltip>
-          )}
         </nav>
-      </div>
+      </PageHeader>
 
       <div
         className={cn(
-          'h-[calc(100dvh-182px)] w-full overflow-hidden',
+          'min-h-0 w-full pt-5',
           aside
             ? 'grid grid-cols-1 gap-6 lg:grid-cols-[1fr_2fr]'
             : 'mx-auto flex w-full max-w-5xl flex-col'
@@ -120,19 +116,18 @@ export default function DirectoryLayout({
         </main>
         {/* ASIDE */}
         {aside && <aside className="z-10 min-h-0 overflow-y-auto border-l pl-4">{aside}</aside>}
-        <Toaster richColors />
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[700px]">
+        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-[700px]">
           <DialogHeader>
             <DialogTitle>
-              {activeItem?.title === 'Vendedores' || activeItem?.title === 'Corporativo'
+              {activeItem?.title === 'Vendedores' || activeItem?.title === 'Corporativo LOB'
                 ? 'Nuevo Usuario'
                 : 'Nueva Tienda'}
             </DialogTitle>
           </DialogHeader>
-          {(activeItem?.title === 'Vendedores' || activeItem?.title === 'Corporativo') && (
+          {(activeItem?.title === 'Vendedores' || activeItem?.title === 'Corporativo LOB') && (
             <FormUser
               departments={departments ?? []}
               stores={stores ?? []}

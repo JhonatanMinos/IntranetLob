@@ -2,6 +2,8 @@ import type { PageProps } from '@inertiajs/core';
 import { Head, usePage } from '@inertiajs/react';
 import { ChevronRight, File, FileSpreadsheet, FileText, Plus, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
+import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
@@ -33,6 +35,11 @@ interface Props extends PageProps {
 export default function Processes() {
   const { folders, canManage } = usePage<Props>().props;
   const [path, setPath] = useState<number[]>([]);
+  const [deletingItem, setDeletingItem] = useState<{
+    path: string;
+    type: 'file' | 'folder';
+    label: string;
+  } | null>(null);
 
   const levels = useMemo(() => {
     const result: FolderNode[][] = [];
@@ -45,7 +52,12 @@ export default function Processes() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Procesos" />
-      <div className="flex h-screen flex-col overflow-hidden font-sans">
+      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-col gap-5 px-4 py-6 font-sans sm:px-6">
+        <PageHeader
+          title="Procesos"
+          description="Navega por los documentos y procedimientos de gestión de calidad."
+          eyebrow="Trabajo"
+        />
         <div className="flex gap-2 overflow-x-auto p-4">
           {levels.map((items, levelIndex) => {
             const parentIndex = path[levelIndex - 1];
@@ -53,7 +65,7 @@ export default function Processes() {
             const parentLabel =
               levelIndex === 0 ? 'Gestion de Calidad' : (parentItems?.[parentIndex]?.label ?? '—');
             return (
-              <Card key={levelIndex} className="w-64 shrink-0 self-start bg-sidebar p-2">
+              <Card key={parentLabel} className="w-64 shrink-0 self-start bg-sidebar p-2">
                 <div className="border-gray/10 mb-2 border-b px-2 pb-2 dark:border-white/30">
                   <p className="truncate text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                     {parentLabel}
@@ -89,10 +101,15 @@ export default function Processes() {
                             <Button
                               size="icon"
                               variant="ghost"
+                              aria-label={`Eliminar ${item.label}`}
                               onClick={(event) => {
                                 event.preventDefault();
                                 event.stopPropagation();
-                                deleteItem(item.path, 'file');
+                                setDeletingItem({
+                                  path: item.path,
+                                  type: 'file',
+                                  label: item.label,
+                                });
                               }}
                             >
                               <Trash2 />
@@ -131,6 +148,7 @@ export default function Processes() {
                   <Button
                     size="lg"
                     variant="ghost"
+                    aria-label={`Crear carpeta en ${parentLabel}`}
                     onClick={() =>
                       createFolder(
                         levelIndex === 0
@@ -147,6 +165,17 @@ export default function Processes() {
           })}
         </div>
       </div>
+      <ConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => !open && setDeletingItem(null)}
+        title={`Eliminar “${deletingItem?.label ?? ''}”`}
+        description="El archivo desaparecerá de Procesos. Esta acción no se puede deshacer."
+        onConfirm={() => {
+          if (!deletingItem) return;
+          deleteItem(deletingItem.path, deletingItem.type);
+          setDeletingItem(null);
+        }}
+      />
     </AppLayout>
   );
 }

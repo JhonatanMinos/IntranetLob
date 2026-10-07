@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { SquarePen, Trash } from 'lucide-react';
+import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { NotificationItem } from '@/types';
@@ -26,16 +27,19 @@ export function getNotificationColumns({
       cell: ({ row }) => {
         const value = row.getValue<NotificationItem['priority']>('priority');
 
-        const colors = {
-          normal: 'bg-green-500/20 dark: text-green-950 dark:text-green-300  ',
-          importante: 'bg-orange-500/20 text-orange-950 dark:text-orange-300',
-          urgente: 'bg-red-500/20 text-red-950 dark:text-red-300',
+        const tones = {
+          normal: 'success',
+          importante: 'warning',
+          urgente: 'danger',
         };
 
         return (
-          <Badge variant="outline" className={`px-2.5 capitalize ${colors[value] ?? ''}`}>
+          <StatusBadge
+            tone={tones[value] as 'success' | 'warning' | 'danger'}
+            className="capitalize"
+          >
             {value}
-          </Badge>
+          </StatusBadge>
         );
       },
     },
@@ -70,7 +74,7 @@ export function getNotificationColumns({
       },
     },
     {
-      header: 'Fehca publicacion',
+      header: 'Fecha de publicación',
       accessorKey: 'publishedAt',
       cell: ({ row }) => {
         const dateValue = row.getValue('publishedAt');
@@ -90,7 +94,12 @@ export function getNotificationColumns({
         const event = row.original;
         return (
           <div className="flex justify-center gap-2">
-            <Button size="icon" onClick={() => onEdit?.(event)} variant="ghost">
+            <Button
+              size="icon"
+              onClick={() => onEdit?.(event)}
+              variant="ghost"
+              aria-label={`Editar ${event.title}`}
+            >
               <SquarePen />
             </Button>
             <Button
@@ -98,6 +107,7 @@ export function getNotificationColumns({
               onClick={() => onDelete?.(event)}
               variant="ghost"
               className="text-red-400 hover:text-red-500"
+              aria-label={`Eliminar ${event.title}`}
             >
               <Trash />
             </Button>

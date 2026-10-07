@@ -6,6 +6,7 @@ import '../css/app.css';
 import 'nprogress/nprogress.css';
 import { router } from '@inertiajs/react';
 import NProgress from 'nprogress';
+import { Toaster } from './components/ui/sonner';
 import { initializeTheme } from './hooks/use-appearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -20,6 +21,7 @@ createInertiaApp({
     root.render(
       <StrictMode>
         <App {...props} />
+        <Toaster richColors position="bottom-right" />
       </StrictMode>
     );
   },

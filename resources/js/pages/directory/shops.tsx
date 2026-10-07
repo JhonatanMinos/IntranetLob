@@ -57,23 +57,23 @@ function ShopAction({ shop }: { shop: Store }) {
 
 function ShopCard({ shop }: { shop: Store }) {
   return (
-    <Card key={shop.id} className="m-2 p-6">
-      <div className="flex items-center gap-6">
+    <Card key={shop.id} className="m-2 p-4 sm:p-6">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
         <ShopAvatar />
         <div className="flex flex-1 flex-col justify-between">
-          <CardHeader className="flex items-start justify-between">
+          <CardHeader className="p-0">
             <div>
-              <CardTitle className="flex items-center gap-3 text-xl font-semibold text-gray-500 dark:text-white">
+              <CardTitle className="flex flex-wrap items-center gap-3 text-xl font-semibold text-foreground">
                 {shop.code} - {shop.name}
               </CardTitle>
               <ShopAction shop={shop} />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-row items-center justify-start gap-2">
+          <CardContent className="mt-4 space-y-3 p-0 text-sm text-muted-foreground">
+            <div className="flex items-start gap-2">
               <MapPin /> {shop.address},{shop.neighborhood},{shop.state}
             </div>
-            <div className="flex flex-row items-center justify-around gap-1">
+            <div className="grid gap-3 sm:grid-cols-2">
               <span className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
                 {shop.phone}

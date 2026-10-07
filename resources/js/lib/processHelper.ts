@@ -42,8 +42,6 @@ export function uploadFile(path: string, file: File) {
 }
 
 export function deleteItem(path: string, type: 'file' | 'folder') {
-  if (!confirm('¿Eliminar este elemento?')) return;
-
   router.delete('/processes/delete', {
     data: { path, type },
   });

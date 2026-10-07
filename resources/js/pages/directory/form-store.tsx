@@ -75,7 +75,7 @@ export function FormStore({ store, onSuccess }: CreateStoreProps) {
       >
         <div className="mb-2 flex flex-row items-center gap-2">
           <StoreIcon />
-          <h2 className="text-sm font-medium tracking-wider text-slate-500 uppercase dark:text-slate-400">
+          <h2 className="text-sm font-medium tracking-wider text-muted-foreground uppercase">
             Información de la tienda
           </h2>
         </div>

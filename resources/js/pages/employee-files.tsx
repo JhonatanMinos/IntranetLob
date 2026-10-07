@@ -1,6 +1,6 @@
 import { Head, router } from '@inertiajs/react';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { getCoreRowModel, getFilteredRowModel, useReactTable } from '@tanstack/react-table';
+import { useCallback, useMemo } from 'react';
 import PaginationGeneric from '@/components/pagination';
 import TableGeneric from '@/components/table';
 import AppLayout from '@/layouts/app-layout';
@@ -36,9 +36,9 @@ interface EmployeeProps {
 }
 
 export default function EmployeeFiles({ data }: EmployeeProps) {
-  const handleEdit = (employeeFiles: EmployeeFileItem) => {
+  const handleEdit = useCallback((employeeFiles: EmployeeFileItem) => {
     router.get(show(employeeFiles.id).url);
-  };
+  }, []);
 
   const columns = useMemo(
     () =>
@@ -52,13 +52,18 @@ export default function EmployeeFiles({ data }: EmployeeProps) {
     data: data.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Expedientes" />
       <EmployeeFilesLayout>
-        <TableGeneric table={table} />
+        <TableGeneric
+          table={table}
+          searchPlaceholder="Buscar colaboradores…"
+          emptyMessage="No hay expedientes para mostrar."
+        />
         <PaginationGeneric links={data.links} meta={data.meta} />
       </EmployeeFilesLayout>
     </AppLayout>

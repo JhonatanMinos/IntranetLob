@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { SquarePen, Trash } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import type { EventItem } from '@/types';
 
@@ -34,17 +34,20 @@ export function getEventColumns({ onEdit, onDelete }: EventcolumnsProps): Column
       accessorKey: 'type',
       cell: ({ getValue }) => {
         const type = getValue<string>();
-        const colors = {
-          evento: 'bg-pink-500/20 text-pink-950 dark:text-pink-300',
-          festivo: 'bg-green-500/20 text-green-950 dark:text-green-300',
-          lanzamiento: 'bg-purple-500/20 text-purple-950 dark:text-purple-300',
+        const tones = {
+          evento: 'info',
+          festivo: 'success',
+          lanzamiento: 'warning',
+          campania: 'warning',
+          cumpleanos: 'info',
         };
         return (
-          <Badge
-            className={`rounded-full border px-3 py-1 text-xs ${colors[type as keyof typeof colors]}`}
+          <StatusBadge
+            tone={tones[type as keyof typeof tones] as 'info' | 'success' | 'warning'}
+            className="capitalize"
           >
             {type}
-          </Badge>
+          </StatusBadge>
         );
       },
     },
@@ -55,7 +58,12 @@ export function getEventColumns({ onEdit, onDelete }: EventcolumnsProps): Column
         const event = row.original;
         return (
           <div className="flex justify-center gap-2">
-            <Button size="icon" onClick={() => onEdit(event)} variant="ghost">
+            <Button
+              size="icon"
+              onClick={() => onEdit(event)}
+              variant="ghost"
+              aria-label={`Editar ${event.title}`}
+            >
               <SquarePen />
             </Button>
             <Button
@@ -63,6 +71,7 @@ export function getEventColumns({ onEdit, onDelete }: EventcolumnsProps): Column
               onClick={() => onDelete(event)}
               variant="ghost"
               className="text-red-400 hover:text-red-500"
+              aria-label={`Eliminar ${event.title}`}
             >
               <Trash />
             </Button>

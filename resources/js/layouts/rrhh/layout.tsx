@@ -1,6 +1,7 @@
 import { Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
+import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Toaster } from '@/components/ui/sonner';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { index as company, store as storeCompany } from '@/routes/company';
@@ -28,13 +28,13 @@ const barNavItems: NavItem[] = [
     can: '',
   },
   {
-    title: 'Companias',
+    title: 'Compañías',
     href: company().url,
     icon: null,
     can: '',
   },
   {
-    title: 'Nominas',
+    title: 'Nóminas',
     href: payroll().url,
     icon: null,
     can: '',
@@ -47,12 +47,12 @@ const itemConfig: Record<string, { title: string; label: string; placeholder: st
     label: 'Nombre del departamento',
     placeholder: 'Ej. Recursos Humanos',
   },
-  Companias: {
+  Compañías: {
     title: 'Agregar empresa',
     label: 'Nombre de la empresa',
     placeholder: 'Ej. LOB',
   },
-  Nominas: {
+  Nóminas: {
     title: 'Subir nómina',
     label: '',
     placeholder: '',
@@ -70,7 +70,7 @@ export default function RrhhLayout({ children }: RrhhLayoutProps) {
 
   const activeItem = barNavItems.find((item) => isCurrentUrl(item.href));
   const config = activeItem ? itemConfig[activeItem.title] : null;
-  const isPayRoll = activeItem?.title === 'Nominas';
+  const isPayRoll = activeItem?.title === 'Nóminas';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +91,7 @@ export default function RrhhLayout({ children }: RrhhLayoutProps) {
           }
         );
         return; // evitamos el setOpen/setName de abajo en el caso async
-      case 'Companias':
+      case 'Compañías':
         router.post(
           storeCompany().url,
           { name },
@@ -115,48 +115,43 @@ export default function RrhhLayout({ children }: RrhhLayoutProps) {
   }, [open]);
 
   return (
-    <div className="flex h-full flex-col space-y-6 overflow-y-auto px-3 py-5">
-      <div className="md:items-between flex flex-col justify-between gap-4 md:flex-row md:items-end">
-        <div className="space-y-1">
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Capital Humano
-          </h2>
-          <nav className="flex justify-between gap-4">
-            <div className="flex gap-2 rounded-xl bg-muted p-1">
-              {barNavItems.map((barNavItem) => {
-                const active = isCurrentUrl(barNavItem.href);
-                return (
-                  <Link
-                    key={barNavItem.title}
-                    href={barNavItem.href}
-                    className={cn(
-                      'rounded-md border p-1 text-sm font-medium whitespace-nowrap transition-colors',
-                      active
-                        ? 'border-ring text-primary'
-                        : 'border-transparent text-muted-foreground hover:border-muted hover:text-foreground'
-                    )}
-                  >
-                    {barNavItem.title}
-                  </Link>
-                );
-              })}
-            </div>
-          </nav>
-        </div>
-        {!isPayRoll && (
-          <Button
-            className="shrink-0"
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            <Plus size={16} />
-            {config?.title ?? 'Agregar'}
-          </Button>
-        )}
-      </div>
+    <div className="mx-auto flex w-full max-w-7xl flex-col space-y-6 px-4 py-6 sm:px-6">
+      <PageHeader
+        title="Capital Humano"
+        description="Administra departamentos, compañías y nóminas del personal."
+        eyebrow="Personas"
+        actions={
+          !isPayRoll ? (
+            <Button className="shrink-0" onClick={() => setOpen(true)}>
+              <Plus size={16} />
+              {config?.title ?? 'Agregar'}
+            </Button>
+          ) : undefined
+        }
+      >
+        <nav className="mt-4 overflow-x-auto" aria-label="Secciones de Capital Humano">
+          <div className="inline-flex gap-1 rounded-lg bg-muted p-1">
+            {barNavItems.map((barNavItem) => {
+              const active = isCurrentUrl(barNavItem.href);
+              return (
+                <Link
+                  key={barNavItem.title}
+                  href={barNavItem.href}
+                  className={cn(
+                    'rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                    active
+                      ? 'bg-background text-foreground shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {barNavItem.title}
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      </PageHeader>
       <main>{children}</main>
-      <Toaster richColors />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>

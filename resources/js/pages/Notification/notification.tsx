@@ -41,7 +41,7 @@ export default function NotificationShow() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={notification.title} />
       <main className="flex h-full flex-col overflow-y-auto px-5 py-5">
-        <p className="text-slate dark: text-slate-400">Comunicado oficial</p>
+        <p className="text-muted-foreground">Comunicado oficial</p>
 
         <div>
           <div className="flex flex-col justify-between gap-4 md:flex-row">

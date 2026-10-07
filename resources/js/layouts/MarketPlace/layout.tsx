@@ -1,6 +1,7 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { Package, SlidersHorizontal } from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
+import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -10,6 +11,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { create, index } from '@/routes/my-items';
 
@@ -103,8 +112,24 @@ export default function MarketplaceLayout({
   };
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-6 sm:px-6 lg:px-5">
-      <div className="items-wrap flex items-center justify-between gap-3">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-6 sm:px-6">
+      <PageHeader
+        title={isMyItemsPage ? 'Mis publicaciones' : 'Marketplace LOB'}
+        description={
+          isMyItemsPage
+            ? 'Administra los artículos que has publicado.'
+            : 'Compra, vende o intercambia artículos con otros colaboradores.'
+        }
+        eyebrow="Servicios"
+        actions={
+          <Button asChild>
+            <Link href={isMyItemsPage ? create() : index()}>
+              {isMyItemsPage ? 'Publicar artículo' : 'Mis publicaciones'}
+            </Link>
+          </Button>
+        }
+      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Package className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
@@ -123,38 +148,83 @@ export default function MarketplaceLayout({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-5 w-5 text-muted-foreground" aria-hidden />
-          <Button asChild>
-            <Link href={isMyItemsPage ? create() : index()}>
-              {isMyItemsPage ? 'Vender articulo' : 'Vender'}
-            </Link>
-          </Button>
-          {!isMyItemsPage && (
-            <Select value={activePayment} onValueChange={(v) => applyFilter('payment_type', v)}>
-              <SelectTrigger className="h-9 w-[140px] text-xs">
-                <SelectValue placeholder="Tipo de pago" />
+          <div className="hidden items-center gap-2 sm:flex">
+            {!isMyItemsPage && (
+              <Select value={activePayment} onValueChange={(v) => applyFilter('payment_type', v)}>
+                <SelectTrigger className="h-9 w-[140px] text-xs">
+                  <SelectValue placeholder="Tipo de pago" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAYMENT_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value} className="text-xs">
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            <Select value={activeSort} onValueChange={(v) => applyFilter('sort', v)}>
+              <SelectTrigger className="h-9 w-[155px] text-xs">
+                <SelectValue placeholder="Ordenar por" />
               </SelectTrigger>
               <SelectContent>
-                {PAYMENT_OPTIONS.map((opt) => (
+                {SORT_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value} className="text-xs">
                     {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          )}
-          <Select value={activeSort} onValueChange={(v) => applyFilter('sort', v)}>
-            <SelectTrigger className="h-9 w-[155px] text-xs">
-              <SelectValue placeholder="Ordenar por" />
-            </SelectTrigger>
-            <SelectContent>
-              {SORT_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value} className="text-xs">
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="sm:hidden"
+                aria-label="Abrir filtros"
+              >
+                <SlidersHorizontal />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-xl p-4">
+              <SheetHeader className="px-0 text-left">
+                <SheetTitle>Filtros y orden</SheetTitle>
+                <SheetDescription>Ajusta los artículos que quieres ver.</SheetDescription>
+              </SheetHeader>
+              <div className="grid gap-4 pb-4">
+                {!isMyItemsPage && (
+                  <Select
+                    value={activePayment}
+                    onValueChange={(v) => applyFilter('payment_type', v)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Tipo de pago" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAYMENT_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <Select value={activeSort} onValueChange={(v) => applyFilter('sort', v)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Ordenar por" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
       {categories.length > 0 && (
@@ -186,7 +256,7 @@ export default function MarketplaceLayout({
       <div
         className={cn(
           'grid gap-4 transition-opacity duration-200',
-          'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6',
+          'grid-cols-1 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6',
           isNavigating && 'pointer-events-none opacity-50'
         )}
       >
@@ -239,7 +309,7 @@ interface EmptyStateProps {
 
 function EmptyState({ hasFilters, onClearFilters }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+    <div className="col-span-full flex flex-col items-center justify-center gap-3 py-24 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
         <Package className="h-6 w-6 text-muted-foreground" />
       </div>
