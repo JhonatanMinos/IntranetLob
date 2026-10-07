@@ -116,7 +116,7 @@ export default function DirectoryLayout({
         </main>
         {/* ASIDE */}
         {aside && (
-          <aside className="z-10 min-h-0 border-l pl-4 lg:sticky lg:top-0 lg:h-full lg:overflow-hidden">
+          <aside className="z-10 hidden min-h-0 border-l pl-4 lg:sticky lg:top-0 lg:block lg:h-full lg:overflow-hidden">
             {aside}
           </aside>
         )}
